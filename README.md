@@ -316,6 +316,7 @@ val criteria = bookConditions {
         fields.title sort ASC
         fields.published sort DESC
     }
+}
 ```
 
 
