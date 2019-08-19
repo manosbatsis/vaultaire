@@ -99,6 +99,7 @@ val sort = Sort(listOf(Sort.SortColumn(
 queryBy(query, sort)
 ```
 #### With Vaultaire DSL
+
 With Vaultaire's `@VaultQueryDsl` and the generated DSL this becomes:
 
 ```kotlin
