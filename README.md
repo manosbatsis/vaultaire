@@ -138,14 +138,7 @@ with `@VaultQueryDsl`.
 @Entity
 @Table(name = "books")
 data class PersistentBookState(
-    @Column(name = "publisher")
-    var publisher: String = "",
-    @Column(name = "author")
-    var author: String = "",
-    @Column(name = "title")
-    var title: String = "",
-    @Column(name = "published")
-    var published: Date
+    // state properties...
 ) : PersistentState()
 ```
 
