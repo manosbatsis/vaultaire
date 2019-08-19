@@ -1,4 +1,6 @@
-Vaultaire: query DSL and data access utilities for Corda developers. [![Maven Central](https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg)](https://mvnrepository.com/artifact/com.github.manosbatsis.vaultaire/vaultaire) 
+Vaultaire provides query DSL and data access utilities for Corda developers. 
+
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg)](https://mvnrepository.com/artifact/com.github.manosbatsis.vaultaire/vaultaire) [![Build Status](https://travis-ci.org/manosbatsis/vaultaire.svg?branch=master)](https://travis-ci.org/manosbatsis/vaultaire) 
 
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
