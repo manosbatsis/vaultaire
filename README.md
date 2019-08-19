@@ -61,7 +61,7 @@ data class BookState(
 
 
 // Use Vaultaire's DSL generation!
-@VaultQueryDsl(name = "bookConditions", constractStateType = BookState::class)
+@VaultQueryDsl(name = "booksQuery", constractStateType = BookState::class)
 @Entity
 @Table(name = "books")
 data class PersistentBookState(
@@ -76,7 +76,7 @@ data class PersistentBookState(
 ) : PersistentState()
 ```
 
-_Before_ Vaultaire, you probably had to create query criteria etc. like this
+_Before_ Vaultaire, you probably had to create query criteria with something like:
 
 ```kotlin
 val query = VaultQueryCriteria(
@@ -90,14 +90,14 @@ val query = VaultQueryCriteria(
 val sort = Sort(listOf(Sort.SortColumn(
     SortAttribute.Custom(PersistentBookState::class.java, "published"), Sort.Direction.DESC)))
 
-queryBy(criteria, sort)
+queryBy(query, sort)
 ```
 
 With Vaultaire's `@VaultQueryDsl` and the generated DSL this becomes:
 
 ```kotlin
 // Use the generated DSL to create query criteria
-val criteria = bookConditions {
+val query = booksQuery {
     status = Vault.StateStatus.ALL
     where {
         fields.publisher `==` "Corda Books Ltd."
@@ -121,7 +121,7 @@ The generated DSL allows setting `QueryCriteria.VaultQueryCriteria` members. Her
 using the defaults:
 
 ```kotlin
-val criteria = bookConditions {
+val query = booksQuery {
     // settings
     status = Vault.StateStatus.UNCONSUMED
     stateRefs = null
@@ -143,7 +143,7 @@ Query riteria are defined within the `and` / `or` functions. Both functions can 
 with criteria like:
 
 ```kotlin
-val criteria = bookConditions {
+val query = booksQuery {
     // settings...
 
     // criteria
