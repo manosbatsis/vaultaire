@@ -295,7 +295,8 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
         <code>fields.foo.notIn(bars)</code>
     </td>
   </tr>
-</table>                                           	|
+</table>
+
 
 ### Sorting
 
