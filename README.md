@@ -305,7 +305,7 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
 
 ### Sorting
 
-Sorting is defined using the
+Sorting is defined using the `orderBy` function:
 
 ```kotlin
 val criteria = bookConditions {
