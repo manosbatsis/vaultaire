@@ -1,12 +1,14 @@
-# Vaultaire [![Maven Central](https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg)](http://central.maven.org/maven2/com/github/manosbatsis/vaultaire/) [![Build Status](https://travis-ci.org/manosbatsis/vaultaire.svg?branch=master)](https://travis-ci.org/manosbatsis/vaultaire) 
+# Vaultaire [![Maven Central](https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg)](http://central.maven.org/maven2/com/github/manosbatsis/vaultaire/) [![Build Status](https://travis-ci.org/manosbatsis/vaultaire.svg?branch=master)](https://travis-ci.org/manosbatsis/vaultaire)
 
-Query DSL and data access utilities for Corda developers. 
+Query DSL and data access utilities for Corda developers.
 
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [Installation](#installation)
 - [Query DSL](#query-dsl)
 	- [Quick Example](#quick-example)
+		- [Without Vaultaire](#without-vaultaire)
+		- [With Vaultaire DSL](#with-vaultaire-dsl)
 	- [Query Settings](#query-settings)
 	- [Adding Criteria](#adding-criteria)
 		- [Accessing Fields](#accessing-fields)
@@ -78,6 +80,8 @@ data class PersistentBookState(
 ) : PersistentState()
 ```
 
+#### Without Vaultaire
+
 _Before_ Vaultaire, you probably had to create query criteria with something like:
 
 ```kotlin
@@ -94,7 +98,7 @@ val sort = Sort(listOf(Sort.SortColumn(
 
 queryBy(query, sort)
 ```
-
+#### With Vaultaire DSL
 With Vaultaire's `@VaultQueryDsl` and the generated DSL this becomes:
 
 ```kotlin
