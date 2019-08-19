@@ -1,0 +1,247 @@
+buildscript {
+    ext {
+
+        autodsl_version = '0.0.9'
+        corda_release_group = 'net.corda'
+        corda_release_version = '4.1'
+        corda_gradle_plugins_version = '4.0.45'
+        corda_platform_version = '4'
+        dokka_version = '0.9.17'
+        junitVersion = '5.1.1'
+        junit_jupiter_version = '5.3.1' // TODO
+        kotlin_version = '1.2.71'
+        kotlintest_version = '3.1.10'
+        kotlinpoet_version = '1.3.0'
+        partiture_version = '0.5'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+    }
+
+    dependencies {
+
+        classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:api-scanner:$corda_gradle_plugins_version"
+        // kotlin plugins
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
+        // release to Maven Central through Sonatype OSSRH
+        // without the need to use Nexus GUI
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0"
+    }
+}
+
+
+plugins {
+    id "com.github.hierynomus.license" version "0.14.0"
+}
+
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    packageGroup = 'com.github.manosbatsis.vaultaire'
+    stagingProfileId = 'com.github.manosbatsis'
+}
+
+allprojects {
+    group = 'com.github.manosbatsis.vaultaire'
+    version = '0.1'
+    apply plugin: "kotlin"
+
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+        //Needed only for Corda SNAPSHOT versions
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev/' }
+        //Needed only for SNAPSHOT versions
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+        // For Gradle Tooling API
+        maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
+    }
+
+    configurations {
+        // Adding a configuration that extends existing configuration:
+        //(testCompile was added by the java plugin)
+        integrationTestCompile.extendsFrom(testCompile)
+        all {
+            // Exclude old Junit since we use jupiter
+            exclude group: 'junit', module: 'junit'
+            // Stop deprecation warnings since we use stdlib-jdkX
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
+            resolutionStrategy {
+                // Force dependencies to use the same version of Guava as Corda.
+                force "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
+                force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+                force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+                force "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+                force "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+            }
+        }
+    }
+}
+subprojects {
+    apply plugin: 'license'
+    apply plugin: 'kotlin'
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            languageVersion = "1.2"
+            apiVersion = "1.2"
+            jvmTarget = "1.8"
+            freeCompilerArgs = ["-Xjsr305=strict"]
+            javaParameters = true   // Useful for reflection.
+        }
+    }
+    test {
+        useJUnitPlatform {
+            includeEngines 'junit-jupiter'
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+            }
+            exclude '**/*IntegrationTest.class'
+        }
+    }
+    // Run integration tests using junit5
+    task integrationTest(type: Test) {
+        useJUnitPlatform {
+            includeEngines 'junit-jupiter'
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+            }
+            include '**/*IntegrationTest.class'
+
+        }
+    }
+    dependencies {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+        testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+        testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+
+        testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    }
+    // convenient report on all dependencies
+    task allDeps(type: DependencyReportTask) {}
+
+    configurations {
+        all {
+            // Exclude old Junit since we use jupiter
+            exclude group: 'junit', module: 'junit'
+            // Stop deprecation warnings since we use stdlib-jdkX
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
+            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
+        }
+    }
+
+    license {
+        header rootProject.file("${rootProject.rootDir}/etc/license/header.txt")
+        includes(["**/*.java", "**/*.kt"])
+        mapping {
+            kt='SLASHSTAR_STYLE'
+        }
+        strictCheck true
+    }
+}
+
+configure([project(':vaultaire'), project(':vaultaire-processor')]) {
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+    apply plugin: 'org.jetbrains.dokka'
+
+    dokka {
+        outputFormat = 'javadoc'
+        outputDirectory = javadoc.destinationDir
+        //inputs.dir 'src/main/kotlin'
+        linkMapping {
+            dir = "src/main/kotlin"
+            url = "https://github.com/manosbatsis/vaultaire/tree/master/${project.name}/src/main/kotlin"
+            suffix = "#L"
+        }
+    }
+
+    task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+        outputFormat = 'javadoc'
+        outputDirectory = javadoc.destinationDir
+        inputs.dir 'src/main/kotlin'
+    }
+    task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+
+    artifacts { archives jar, sourcesJar, javadocJar }
+    // Conditional signature of artifacts
+    if (project.findProperty('signing.password') != '<YOUR-PASSWORD>') {
+        signing {
+            sign configurations.archives
+        }
+    }
+
+    // Upload the archives
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // Sign POMs
+                beforeDeployment { deployment ->
+                    signing.signPom(deployment)
+                }
+                // Release and Snapshot repos
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: ossrhUsername, password: ossrhPassword)
+                }
+                // Add required metadata to POM
+                pom {
+                    project {
+                        name project.name
+                        packaging project.name == rootProject.name ? 'pom' : 'jar'
+                        description 'Vaultaire: Generate Corda vault helpers and query DSL for your contract states'
+                        url 'https://manosbatsis.github.io/vaultaire/'
+                        scm {
+                            connection 'scm:git:git://github.com/manosbatsis/vaultaire.git'
+                            developerConnection 'scm:git:ssh://github.com/manosbatsis/vaultaire.git'
+                            url 'http://github.com/manosbatsis/vaultaire/tree/master'
+                        }
+                        licenses {
+                            license {
+                                name 'GNU Lesser General Public License, Version 3'
+                                url 'https://www.gnu.org/licenses/lgpl-3.0.txt'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'manosbatsis'
+                                name 'Manos Batsis'
+                                email 'manosbatsis@gmail.com'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
