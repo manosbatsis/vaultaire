@@ -236,7 +236,7 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
   </tr>
   <tr>
     <td>greaterThan</td>
-    <td>lt</td>
+    <td>gt</td>
     <td>
         <code>fields.foo gt bar</code><br>
         <code>fields.foo greaterThan bar</code><br>
@@ -245,7 +245,7 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
   </tr>
   <tr>
     <td>greaterThanOrEqual</td>
-    <td>lte</td>
+    <td>gte</td>
     <td>
         <code>fields.foo gte bar</code><br>
         <code>fields.foo greaterThanOrEqual bar</code><br>
