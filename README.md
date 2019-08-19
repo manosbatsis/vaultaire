@@ -125,8 +125,8 @@ queryBy(query.toCriteria(), query.toSort())
 
 ### Create a DSL
 
-To create a query DSL for your state, annotate the corresponding `PersistentState`
-with `@VaultQueryDsl`. 
+To create a query DSL for your state after [installing](#installation) Vaultaire, annotate the 
+corresponding `PersistentState` with `@VaultQueryDsl`:
 
 ```kotlin
 // Use Vaultaire's DSL generation!
