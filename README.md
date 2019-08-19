@@ -9,6 +9,7 @@ Query DSL and data access utilities for Corda developers.
 	- [Quick Example](#quick-example)
 		- [Without Vaultaire](#without-vaultaire)
 		- [With Vaultaire DSL](#with-vaultaire-dsl)
+	- [Create a DSL](#create-a-dsl)
 	- [Query Settings](#query-settings)
 	- [Adding Criteria](#adding-criteria)
 		- [Accessing Fields](#accessing-fields)
@@ -120,6 +121,32 @@ val query = booksQuery {
 
 queryBy(query.toCriteria(), query.toSort())
 
+```
+
+### Create a DSL
+
+To create a query DSL for your state, annotate the corresponding `PersistentState`
+with `@VaultQueryDsl`. 
+
+```kotlin
+// Use Vaultaire's DSL generation!
+@VaultQueryDsl(
+  // If you omit the name, the DSL function will be named by appending "Query"
+  // to the decapitalized contract state name, e.g. "bookStateQuery"
+  name = "booksQuery",
+  constractStateType = BookState::class)
+@Entity
+@Table(name = "books")
+data class PersistentBookState(
+    @Column(name = "publisher")
+    var publisher: String = "",
+    @Column(name = "author")
+    var author: String = "",
+    @Column(name = "title")
+    var title: String = "",
+    @Column(name = "published")
+    var published: Date
+) : PersistentState()
 ```
 
 ### Query Settings
