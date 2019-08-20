@@ -2,6 +2,7 @@
 
 Query DSL and data access utilities for Corda developers.
 
+
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [Installation](#installation)
@@ -16,8 +17,10 @@ Query DSL and data access utilities for Corda developers.
 	- [Functions and Operators](#functions-and-operators)
 	- [Sorting](#sorting)
 - [State Service](#state-service)
+	- [Custom Service](#custom-service)
 
 <!-- /TOC -->
+
 
 ## Installation
 
@@ -125,7 +128,7 @@ queryBy(query.toCriteria(), query.toSort())
 
 ### Create a DSL
 
-To create a query DSL for your state after [installing](#installation) Vaultaire, annotate the 
+To create a query DSL for your state after [installing](#installation) Vaultaire, annotate the
 corresponding `PersistentState` with `@VaultQueryDsl`:
 
 ```kotlin
@@ -342,12 +345,38 @@ val criteria = bookConditions {
 
 ## State Service
 
-Vaultaire's `StateService` provides a `ContractState`-specific interface for querying the Vault,  
-while decoupling data access or business logic code from Corda's `ServiceHub` and `CordaRPCOps`.
+Vaultaire's `StateService` provides a `ContractState`-specific interface for querying states and tracking events  
+from the Vault (`queryBy`, `trackBy`), while decoupling data access or business logic code from Corda's `ServiceHub` and `CordaRPCOps`.
+
 
 ```kotlin
-val bookSearchResult = StateService(b.services, BookContract.BookState::class.java)
-        .queryBy(criteria, paging, sort)
+val bookSearchResult = StateService(
+    serviceHub, // or RPC ops
+    BookContract.BookState::class.java
+).queryBy(criteria, paging, sort)
 ```
 
+The above constructor initializes the appropriate delegate under the hood, i.e. either `ServiceHub` or `CordaRPCOps` based.
+
+### Custom Service
+
 You can also subclass `StateService` to create custom components for reuse both inside and outside a node.
+
+```kotlin
+class BookStateService(
+        delegate: StateServiceDelegate<BookContract.BookState>
+) : StateService<BookContract.BookState>(delegate){
+
+    /** [CordaRPCOps]-based constructor */
+    constructor(
+            rpcOps: CordaRPCOps, contractStateType: Class<BookState>, defaults: StateServiceDefaults = StateServiceDefaults()
+    ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
+
+    /** [ServiceHub]-based constructor */
+    constructor(
+            serviceHub: ServiceHub, contractStateType: Class<BookState>, defaults: StateServiceDefaults = StateServiceDefaults()
+    ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
+
+    // Custom business methods...
+}
+```

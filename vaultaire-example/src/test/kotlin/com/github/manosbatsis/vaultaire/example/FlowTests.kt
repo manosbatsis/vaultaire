@@ -113,14 +113,25 @@ class FlowTests {
             }
 
 
+            // Test StateService
             val stateService = StateService(b.services, BookContract.BookState::class.java)
-            val bookSearchResult = stateService.queryBy(
+            var bookSearchResult = stateService.queryBy(
                     bookStateQuery.toCriteria(), 1, 1, bookStateQuery.toSort()
             ).states.single().state.data
-
             assertEquals(bookState.title, bookSearchResult.title)
             assertEquals(1, stateService.countBy(bookStateQuery.toCriteria()))
             print("$bookSearchResult == $bookState\n")
+
+            // Test BookStateService
+            val bookStateService = BookStateService(b.services, BookContract.BookState::class.java)
+            var bookSearchResult2 = stateService.queryBy(
+                    bookStateQuery.toCriteria(), 1, 1, bookStateQuery.toSort()
+            ).states.single().state.data
+            assertEquals(bookState.title, bookSearchResult2.title)
+            assertEquals(1, bookStateService.countBy(bookStateQuery.toCriteria()))
+            print("$bookSearchResult2 == $bookState\n")
+
+
         }
     }
 
