@@ -350,10 +350,14 @@ from the Vault (`queryBy`, `trackBy`), while decoupling data access or business 
 
 
 ```kotlin
-val bookSearchResult = StateService(
-    serviceHub, // or RPC ops
-    BookContract.BookState::class.java
-).queryBy(criteria, paging, sort)
+// Init a state service for books
+val bookStateService = StateService(
+    serviceHub,                         // Service hub or RPC ops
+    BookContract.BookState::class.java, // Target state type
+    serviceDefaults)                    // Optional: criteria, paging, sort defaults
+
+// query the vault for books
+val searchResults = bookStateService.queryBy(criteria, paging, sort)
 ```
 
 The above constructor initializes the appropriate delegate under the hood, i.e. either `ServiceHub` or `CordaRPCOps` based.
