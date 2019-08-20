@@ -110,7 +110,7 @@ With Vaultaire's `@VaultQueryDsl` and the generated DSL this becomes:
 // Use the generated DSL to create query criteria
 val query = booksQuery {
     status = Vault.StateStatus.ALL
-    where {
+    and {
         fields.publisher `==` "Corda Books Ltd."
         or {
             fields.title  `==` "A book on Corda"
