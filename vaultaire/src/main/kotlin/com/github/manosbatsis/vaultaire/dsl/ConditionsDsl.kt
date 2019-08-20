@@ -19,6 +19,8 @@
  */
 package com.github.manosbatsis.vaultaire.dsl
 
+import com.github.manosbatsis.vaultaire.util.FieldWrapper
+import com.github.manosbatsis.vaultaire.util.Fields
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateRef
 import net.corda.core.identity.AbstractParty
@@ -41,36 +43,8 @@ import net.corda.core.node.services.vault.QueryCriteria.VaultCustomQueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.SortAttribute
 import net.corda.core.schemas.StatePersistable
-import java.lang.IllegalArgumentException
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.Suppress as supress
-
-
-/** Wraps a [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators */
-class FieldWrapper<T : StatePersistable, S : Comparable<S>>(val property: KProperty1<T, S>)
-
-/** Extended by Vaultaire's annotation processing to provide easy access to fields of a [StatePersistable] type */
-interface Fields<T : StatePersistable>{
-
-    val fieldsByName: Map<String, FieldWrapper<T, *>>
-
-    fun contains(name: String) = fieldsByName.contains(name)
-
-    @supress("UNCHECKED_CAST")
-    operator fun get(name: String): FieldWrapper<T, *> =
-            fieldsByName[name] ?: throw IllegalArgumentException("Field not found: $name")
-}
-
-
-
-/** Generate a conditions DSL for the annotated [PersistentState] class or constructor. */
-@Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
-annotation class VaultQueryDsl(
-        val name: String = "",
-        val constractStateType: KClass<out ContractState>
-)
 
 
 /** Condition interface */
@@ -80,7 +54,7 @@ interface Condition {
     abstract fun toCriteria(): QueryCriteria?
 }
 
-/** A [Condition] that container other Conditions. Allows for nested and/or condition groups */
+/** A [Condition] that contains other conditions. Allows for nested and/or condition groups */
 abstract class ConditionsCondition<T : StatePersistable, out F: Fields<T>>: Condition {
 
     /** The fields of the target [StatePersistable] type `T` */
@@ -109,11 +83,13 @@ abstract class CompositeCondition<T : StatePersistable, out F: Fields<T>>(
     fun <T : StatePersistable, S : Comparable<S>> FieldWrapper<T, S>.isNull() =
             addCondition(VaultCustomQueryCriteriaCondition(VaultCustomQueryCriteria(this.property.isNull())))
 
+    @supress("unused")
     infix fun <T : StatePersistable, S : Comparable<S>> FieldWrapper<T, S>.isNull(none: Unit) = isNull()
 
     fun <T : StatePersistable, S : Comparable<S>> FieldWrapper<T, S>.notNull() =
             addCondition(VaultCustomQueryCriteriaCondition(VaultCustomQueryCriteria(this.property.notNull())))
 
+    @supress("unused")
     infix fun <T : StatePersistable, S : Comparable<S>> FieldWrapper<T, S>.notNull(none: Unit) = notNull()
 
     infix fun <T : StatePersistable, S : Comparable<S>> FieldWrapper<T, S>.equal(value: S) =
@@ -190,7 +166,7 @@ abstract class CompositeCondition<T : StatePersistable, out F: Fields<T>>(
             addCondition(VaultCustomQueryCriteriaCondition(VaultCustomQueryCriteria(this.asStringProperty().notLike(value))))
 
     @supress("UNCHECKED_CAST")
-    fun <T : StatePersistable> FieldWrapper<T, *>.asStringProperty() = this.property as KProperty1<T, String>
+    protected fun <T : StatePersistable> FieldWrapper<T, *>.asStringProperty() = this.property as KProperty1<T, String>
 }
 
 /** Defines a set of conditions where all items must be matched */

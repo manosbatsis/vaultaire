@@ -17,14 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.processor
+package com.github.manosbatsis.vaultaire.util
 
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
+import net.corda.core.schemas.StatePersistable
+import kotlin.reflect.KProperty1
 
-internal fun VaultaireGenerate?.getDslNameOrDefault(defaultString: String): String {
-    return if (this == null || name.isEmpty()) {
-        defaultString
-    } else {
-        name
-    }
+/**
+ * Wraps a [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
+ * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
+ */
+class FieldWrapper<T : StatePersistable, S : Comparable<S>>(val property: KProperty1<T, S>)
+
+/** Extended by Vaultaire's annotation processing to provide easy access to fields of a [StatePersistable] type */
+interface Fields<T : StatePersistable>{
+
+    val fieldsByName: Map<String, FieldWrapper<T, *>>
+
+    fun contains(name: String) = fieldsByName.contains(name)
+
+    @Suppress("UNCHECKED_CAST")
+    operator fun get(name: String): FieldWrapper<T, *> =
+            fieldsByName[name] ?: throw IllegalArgumentException("Field not found: $name")
 }

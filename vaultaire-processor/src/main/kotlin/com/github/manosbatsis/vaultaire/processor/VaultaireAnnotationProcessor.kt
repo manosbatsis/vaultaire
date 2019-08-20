@@ -19,10 +19,12 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
-import com.github.manosbatsis.vaultaire.dsl.FieldWrapper
-import com.github.manosbatsis.vaultaire.dsl.VaultQueryDsl
-import com.github.manosbatsis.vaultaire.dsl.Fields
+import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
+import com.github.manosbatsis.vaultaire.dao.FieldsAwareStateService
+import com.github.manosbatsis.vaultaire.dao.StateServiceDelegate
 import com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.util.FieldWrapper
+import com.github.manosbatsis.vaultaire.util.Fields
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import net.corda.core.contracts.ContractState
@@ -44,13 +46,13 @@ import javax.tools.Diagnostic.Kind.ERROR
 import javax.tools.Diagnostic.Kind.NOTE
 
 /**
- * Kapt processor for the @VaultQueryDsl core.
- * Constructs a VaultQueryDsl for the annotated class.
+ * Kapt processor for the `@VaultaireGenerate` annotation.
+ * Constructs a VaultaireGenerate for the annotated class.
  */
-@SupportedAnnotationTypes("com.github.manosbatsis.vaultaire.dsl.VaultQueryDsl")
+@SupportedAnnotationTypes("com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedOptions(VaultQueryDslProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
-class VaultQueryDslProcessor : AbstractProcessor() {
+@SupportedOptions(VaultaireAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
+class VaultaireAnnotationProcessor : AbstractProcessor() {
 
     companion object {
         const val BLOCK_FUN_NAME = "block"
@@ -63,9 +65,9 @@ class VaultQueryDslProcessor : AbstractProcessor() {
 
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        val annotatedElements = roundEnv.getElementsAnnotatedWith(VaultQueryDsl::class.java)
+        val annotatedElements = roundEnv.getElementsAnnotatedWith(VaultaireGenerate::class.java)
         if (annotatedElements.isEmpty()) {
-            processingEnv.noteMessage { "No classes annotated with @${VaultQueryDsl::class.java.simpleName} in this round ($roundEnv)" }
+            processingEnv.noteMessage { "No classes annotated with @${VaultaireGenerate::class.java.simpleName} in this round ($roundEnv)" }
             return false
         }
 
@@ -101,7 +103,7 @@ class VaultQueryDslProcessor : AbstractProcessor() {
         writeBuilder(constructor.enclosingElement as TypeElement, constructor.parameters, sourceRootFile)
     }
 
-    /** Writes the source code to create a [VaultQueryDsl] for [annotatedElement] within the [sourceRoot] directory. */
+    /** Writes the source code to create a [VaultaireGenerate] for [annotatedElement] within the [sourceRoot] directory. */
     private fun writeBuilder(annotatedElement: TypeElement, fields: List<VariableElement>, sourceRoot: File) {
         val annotatedPackageName = processingEnv.elementUtils.getPackageOf(annotatedElement).toString()
         val annotatedSimpleName = annotatedElement.simpleName.toString()
@@ -109,16 +111,18 @@ class VaultQueryDslProcessor : AbstractProcessor() {
         val generatedConditionsClassName = ClassName(annotatedPackageName, generatedConditionsSimpleName)
         val generatedFieldsSimpleName = "${annotatedSimpleName}Fields"
         val generatedFieldsClassName = ClassName(annotatedPackageName, generatedFieldsSimpleName)
-        val annotation = annotatedElement.getAnnotationMirror(VaultQueryDsl::class.java)
+        val annotation = annotatedElement.getAnnotationMirror(VaultaireGenerate::class.java)
         val contractStateTypeAnnotationValue = annotation.getAnnotationValue("constractStateType")
         val contractStateTypeElement = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
+        val generatedStateServiceSimpleName = "${contractStateTypeElement.simpleName}FieldsAwareService"
+        val generatedStateServiceClassName = ClassName(annotatedPackageName, generatedConditionsSimpleName)
 
         processingEnv.noteMessage { "Writing $annotatedPackageName.$generatedConditionsSimpleName" }
 
         // The fields interface and object specs for the annotated element being processed
         val fieldsSpec = buildFieldsObjectSpec(generatedFieldsSimpleName, annotatedElement, fields)
 
-        // The Conditions Class spec for the annotated element being processed
+        // The DSL, i.e. Conditions Class spec for the annotated element being processed
         val conditionsSpec = TypeSpec.classBuilder(generatedConditionsSimpleName)
                 .superclass(VaultQueryCriteriaCondition::class.asClassName()
                         .parameterizedBy(annotatedElement.asKotlinTypeName(), generatedFieldsClassName))
@@ -130,6 +134,24 @@ class VaultQueryDslProcessor : AbstractProcessor() {
         // Specify the fields property
         conditionsSpec.addProperty(buildFieldsPropertySpec(annotatedElement, generatedFieldsClassName))
 
+
+        // The  FieldAwareService
+        val fieldsAwareServicePrimaryConstructorSpec = FunSpec.constructorBuilder()
+                .addParameter("delegate", StateServiceDelegate::class.asClassName()
+                        .parameterizedBy(contractStateTypeElement.asKotlinTypeName()))
+                .build()
+
+        val fieldsAwareServiceTypeSpec = TypeSpec.classBuilder(generatedStateServiceSimpleName)
+                .addModifiers(KModifier.OPEN)
+                .superclass(FieldsAwareStateService::class.asClassName()
+                        .parameterizedBy(
+                                contractStateTypeElement.asKotlinTypeName(),
+                                annotatedElement.asKotlinTypeName(),
+                                generatedFieldsClassName))
+                .primaryConstructor(fieldsAwareServicePrimaryConstructorSpec)
+                .addSuperclassConstructorParameter("delegate")
+                .addProperty(buildFieldsPropertySpec(annotatedElement, generatedFieldsClassName))
+
         // Generate the Kotlin file
         FileSpec.builder(annotatedPackageName, generatedConditionsSimpleName)
                 .addComment("-------------------- DO NOT EDIT -------------------\n")
@@ -138,6 +160,7 @@ class VaultQueryDslProcessor : AbstractProcessor() {
                 .addComment("----------------------------------------------------")
                 .addType(fieldsSpec.build())
                 .addType(conditionsSpec.build())
+                .addType(fieldsAwareServiceTypeSpec.build())
                 .addFunction(buildDslFunSpec(generatedConditionsClassName, annotatedElement, contractStateTypeElement))
                 .build()
                 .writeTo(sourceRoot)
@@ -153,7 +176,7 @@ class VaultQueryDslProcessor : AbstractProcessor() {
 
         // Add a property per KProperty of the annotated StatePersistable being processed
         fields.forEachIndexed { index, field ->
-            val fieldProperty = buildQueryableKPropertyPropertySpec(field, annotatedElement)
+            val fieldProperty = buildPersistentStateFieldWrapperPropertySpec(field, annotatedElement)
             fieldsSpec.addProperty(fieldProperty)
             fieldsByNameBuilder.addStatement("\t%S to ${fieldProperty.name} ${if (index + 1 < fields.size) "," else ""}", fieldProperty.name)
         }
@@ -174,7 +197,8 @@ class VaultQueryDslProcessor : AbstractProcessor() {
         return fieldsSpec
     }
 
-    private fun buildQueryableKPropertyPropertySpec(field: VariableElement, annotatedElement: TypeElement): PropertySpec {
+    /** Create property that wraps a pesistent state field */
+    private fun buildPersistentStateFieldWrapperPropertySpec(field: VariableElement, annotatedElement: TypeElement): PropertySpec {
         val fieldType = FieldWrapper::class.asClassName().parameterizedBy(
                 field.enclosingElement.asKotlinTypeName(),
                 field.asKotlinTypeName())
@@ -182,7 +206,7 @@ class VaultQueryDslProcessor : AbstractProcessor() {
         processingEnv.noteMessage { "Adding field: $field" }
         return PropertySpec.builder(field.simpleName.toString(), fieldType, KModifier.PUBLIC)
                 .initializer( "FieldWrapper(${annotatedElement.qualifiedName}::${field.simpleName})")
-                .addKdoc("Reference to [%T.${field.simpleName}]", annotatedElement)
+                .addKdoc("Wraps [%T.${field.simpleName}]", annotatedElement)
                 .build()
     }
 
@@ -229,7 +253,7 @@ class VaultQueryDslProcessor : AbstractProcessor() {
                 receiver = generatedClassName,
                 returnType = Unit::class.asTypeName())).build()
 
-        val extFunName = annotatedElement.getAnnotation(VaultQueryDsl::class.java)
+        val extFunName = annotatedElement.getAnnotation(VaultaireGenerate::class.java)
                 .getDslNameOrDefault(contractStateTypeElement.simpleName.toString().decapitalize() + "Query")
         return FunSpec.builder(extFunName)
                 .addParameter(extensionFunParams)

@@ -68,8 +68,8 @@ data class BookState(
 }
 
 
-// Use Vaultaire's DSL generation!
-@VaultQueryDsl(name = "booksQuery", constractStateType = BookState::class)
+// Use Vaultaire's code generation!
+@VaultaireGenerate(name = "booksQuery", constractStateType = BookState::class)
 @Entity
 @Table(name = "books")
 data class PersistentBookState(
@@ -104,7 +104,7 @@ queryBy(query, sort)
 ```
 #### With Vaultaire DSL
 
-With Vaultaire's `@VaultQueryDsl` and the generated DSL this becomes:
+With Vaultaire's `@VaultaireGenerate` and the generated DSL this becomes:
 
 ```kotlin
 // Use the generated DSL to create query criteria
@@ -129,11 +129,11 @@ queryBy(query.toCriteria(), query.toSort())
 ### Create a DSL
 
 To create a query DSL for your state after [installing](#installation) Vaultaire, annotate the
-corresponding `PersistentState` with `@VaultQueryDsl`:
+corresponding `PersistentState` with `@VaultaireGenerate`:
 
 ```kotlin
 // Use Vaultaire's DSL generation!
-@VaultQueryDsl(
+@VaultaireGenerate(
   // If you omit the name, the DSL function will be named by appending "Query"
   // to the decapitalized contract state name, e.g. "bookStateQuery"
   name = "booksQuery",

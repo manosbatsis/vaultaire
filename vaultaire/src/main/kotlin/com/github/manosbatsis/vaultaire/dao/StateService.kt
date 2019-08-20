@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.dao
 
+import com.github.manosbatsis.vaultaire.util.Fields
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.LinearState
 import net.corda.core.contracts.StateAndRef
@@ -32,6 +33,7 @@ import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.schemas.QueryableState
+import net.corda.core.schemas.StatePersistable
 
 /**
  * Short-lived helper, used for vault operations on a specific [ContractState] type
@@ -96,5 +98,18 @@ open class StateService<T: ContractState>(
             sort: Sort = delegate.defaults.sort
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
         this.trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
+
+}
+
+/**
+ * A [StateService] extended by Vaultaire's annotation processing
+ * to create service type aware of the target [ContractState] type's fields
+ */
+abstract class FieldsAwareStateService<T: ContractState, P : StatePersistable, out F: Fields<P>>(
+        private val delegate: StateServiceDelegate<T>
+) : StateService<T>(delegate) {
+
+    /** The fields of the target [StatePersistable] type `T` */
+    abstract val fields: F
 
 }

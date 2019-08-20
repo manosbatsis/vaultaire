@@ -17,14 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.processor
+package com.github.manosbatsis.vaultaire.annotation
 
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
+import net.corda.core.contracts.ContractState
+import kotlin.reflect.KClass
 
-internal fun VaultaireGenerate?.getDslNameOrDefault(defaultString: String): String {
-    return if (this == null || name.isEmpty()) {
-        defaultString
-    } else {
-        name
-    }
-}
+/**
+ * Generate a conditions DSL and a state-specific [FieldsAwareStateService]
+ * for the annotated [PersistentState] class or constructor.
+ */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
+annotation class VaultaireGenerate(
+        val name: String = "",
+        val constractStateType: KClass<out ContractState>
+)

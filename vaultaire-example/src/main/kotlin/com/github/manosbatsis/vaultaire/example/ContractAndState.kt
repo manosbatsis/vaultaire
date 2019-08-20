@@ -19,7 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.example
 
-import com.github.manosbatsis.vaultaire.dsl.VaultQueryDsl
+import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import net.corda.core.contracts.*
 import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
@@ -70,7 +70,7 @@ class BookContract : Contract {
 
         object BookSchemaV1 : MappedSchema(BookSchema.javaClass, 1, listOf(PersistentBookState::class.java)) {
 
-            @VaultQueryDsl(/*name = "bookConditions", */constractStateType = BookState::class)
+            @VaultaireGenerate(/*name = "bookConditions", */constractStateType = BookState::class)
             @Entity
             @Table(name = "books")
             class PersistentBookState(
