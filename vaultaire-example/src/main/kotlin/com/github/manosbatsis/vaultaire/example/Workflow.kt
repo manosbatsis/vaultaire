@@ -29,32 +29,12 @@ import com.github.manosbatsis.partiture.flow.io.input.InputConverter
 import com.github.manosbatsis.partiture.flow.io.output.SingleFinalizedTxOutputConverter
 import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
-import com.github.manosbatsis.vaultaire.dao.*
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatedBy
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
 import net.corda.core.identity.Party
-import net.corda.core.messaging.CordaRPCOps
-import net.corda.core.node.ServiceHub
 import net.corda.core.transactions.SignedTransaction
-
-
-class BookStateService(
-        delegate: StateServiceDelegate<BookContract.BookState>
-) : StateService<BookContract.BookState>(delegate){
-    /** [CordaRPCOps]-based constructor */
-    constructor(
-            rpcOps: CordaRPCOps, contractStateType: Class<BookContract.BookState>, defaults: StateServiceDefaults = StateServiceDefaults()
-    ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
-
-    /** [ServiceHub]-based constructor */
-    constructor(
-            serviceHub: ServiceHub, contractStateType: Class<BookContract.BookState>, defaults: StateServiceDefaults = StateServiceDefaults()
-    ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
-
-    // Custom business methods...
-}
 
 /** Used as flow input, to send a recipient a message */
 data class BookMessage(

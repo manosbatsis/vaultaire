@@ -20,7 +20,7 @@
 package com.github.manosbatsis.vaultaire.example
 
 import com.github.manosbatsis.partiture.flow.PartitureFlow
-import com.github.manosbatsis.vaultaire.dao.StateService
+import com.github.manosbatsis.vaultaire.dao.BasicStateService
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.queryBy
 import net.corda.core.utilities.getOrThrow
@@ -100,7 +100,6 @@ class FlowTests {
                 relevancyStatus = Vault.RelevancyStatus.ALL // the default
                 and {
                     fields.title `==` bookTitle
-
                     or {
                         fields.title `!=` "false match"
                         //fields.title notEqual bookTitle
@@ -113,26 +112,29 @@ class FlowTests {
             }
 
 
-            // Test StateService
-            val stateService = StateService(b.services, BookContract.BookState::class.java)
-            var bookSearchResult = stateService.queryBy(
-                    bookStateQuery.toCriteria(), 1, 1, bookStateQuery.toSort()
-            ).states.single().state.data
-            assertEquals(bookState.title, bookSearchResult.title)
-            assertEquals(1, stateService.countBy(bookStateQuery.toCriteria()))
-            print("$bookSearchResult == $bookState\n")
+            // Test BasicStateService
+            val stateBasicService = BasicStateService(b.services, BookContract.BookState::class.java)
+            testStateService(stateBasicService, bookStateQuery, bookState)
 
-            // Test BookStateService
-            val bookStateService = BookStateService(b.services, BookContract.BookState::class.java)
-            var bookSearchResult2 = stateService.queryBy(
-                    bookStateQuery.toCriteria(), 1, 1, bookStateQuery.toSort()
-            ).states.single().state.data
-            assertEquals(bookState.title, bookSearchResult2.title)
-            assertEquals(1, bookStateService.countBy(bookStateQuery.toCriteria()))
-            print("$bookSearchResult2 == $bookState\n")
+            // Test manually coded subclass of BasicStateService
+            val bookBasicStateService = CustomBasicBookStateService(b.services)
+            testStateService(bookBasicStateService, bookStateQuery, bookState)
+
+            // Test generated BookStateService
+            val bookStateService = BookStateService(b.services)
+            testStateService(bookBasicStateService, bookStateQuery, bookState)
 
 
         }
+    }
+
+    private fun testStateService(stateService: BasicStateService<BookContract.BookState>, bookStateQuery: PersistentBookStateConditions, bookState: BookContract.BookState) {
+        var bookSearchResult = stateService.queryBy(
+                bookStateQuery.toCriteria(), 1, 1, bookStateQuery.toSort()
+        ).states.single().state.data
+        assertEquals(bookState.title, bookSearchResult.title)
+        assertEquals(1, stateService.countBy(bookStateQuery.toCriteria()))
+        print("$bookSearchResult == $bookState\n")
     }
 
 

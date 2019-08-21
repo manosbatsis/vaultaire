@@ -32,6 +32,7 @@ import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
+import net.corda.core.node.services.vault.SortAttribute
 import net.corda.core.schemas.QueryableState
 import net.corda.core.schemas.StatePersistable
 
@@ -39,7 +40,7 @@ import net.corda.core.schemas.StatePersistable
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-open class StateService<T: ContractState>(
+open class BasicStateService<T: ContractState>(
         private val delegate: StateServiceDelegate<T>
 ) : StateServiceDelegate<T> by delegate  {
 
@@ -102,14 +103,73 @@ open class StateService<T: ContractState>(
 }
 
 /**
- * A [StateService] extended by Vaultaire's annotation processing
- * to create service type aware of the target [ContractState] type's fields
+ * A [BasicStateService] extended by Vaultaire's annotation processing
+ * to create a service type aware of the target [ContractState] type's [StatePersistable] and [Fields]
  */
-abstract class FieldsAwareStateService<T: ContractState, P : StatePersistable, out F: Fields<P>>(
+abstract class StateService<T: ContractState, P : StatePersistable, out F: Fields<P>>(
         private val delegate: StateServiceDelegate<T>
-) : StateService<T>(delegate) {
+) : BasicStateService<T>(delegate) {
 
-    /** The fields of the target [StatePersistable] type `T` */
+    /** The type of the target state's [StatePersistable] */
+    abstract val statePersistableType: Class<P>
+
+    /** The fields of the target [StatePersistable] type `P` */
     abstract val fields: F
 
+    /** Build a sort from the given string/direction pairs */
+    fun toSort(vararg sort: Pair<String, Sort.Direction>): Sort =
+        Sort(sort.map {
+            if(!fields.contains(it.first))
+                    throw java.lang.IllegalArgumentException("Canot sort on invalid field name: ${it.first}")
+            Sort.SortColumn(
+                    SortAttribute.Custom(statePersistableType, it.first), it.second)
+        })
+
+    /**
+     * Query the vault for states matching the given criteria,
+     * applying the given page number, size and sorting specifications if any
+     */
+    fun queryBy(
+            criteria: QueryCriteria = delegate.defaults.criteria,
+            pageNumber: Int = delegate.defaults.pageNumber,
+            pageSize: Int = delegate.defaults.pageSize,
+            vararg sort: Pair<String, Sort.Direction>
+    ): Vault.Page<T> = if(sort.isNotEmpty()) queryBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
+    else queryBy(criteria, PageSpecification(pageNumber, pageSize))
+
+    /**
+     * Query the vault for states matching the given criteria,
+     * applying the given page number, size and sorting specifications if any
+     */
+    fun queryBy(
+            criteria: QueryCriteria = delegate.defaults.criteria,
+            paging: PageSpecification = defaults.paging,
+            vararg sort: Pair<String, Sort.Direction>
+    ): Vault.Page<T> = if(sort.isNotEmpty()) queryBy(criteria, paging, toSort(*sort))
+    else queryBy(criteria, paging)
+
+    /**
+     * Track the vault for events of `T` states matching the given criteria,
+     * applying the given page number, size and sorting specifications if any
+     */
+    fun trackBy(
+            criteria: QueryCriteria = delegate.defaults.criteria,
+            pageNumber: Int = delegate.defaults.pageNumber,
+            pageSize: Int = delegate.defaults.pageSize,
+            vararg sort: Pair<String, Sort.Direction>
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
+            if(sort.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
+            else trackBy(criteria, PageSpecification(pageNumber, pageSize))
+
+    /**
+     * Track the vault for events of `T` states matching the given criteria,
+     * applying the given page number, size and sorting specifications if any
+     */
+    fun trackBy(
+            criteria: QueryCriteria = delegate.defaults.criteria,
+            paging: PageSpecification = defaults.paging,
+            vararg sort: Pair<String, Sort.Direction>
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
+            if(sort.isNotEmpty()) trackBy(criteria, paging, toSort(*sort))
+            else trackBy(criteria, paging)
 }

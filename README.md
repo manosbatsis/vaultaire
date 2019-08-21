@@ -215,14 +215,12 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
     <td>isNull</td>
     <td></td>
     <td>
-        <code>fields.foo isNull</code><br>
         <code>fields.foo.isNull()</code></td>
   </tr>
   <tr>
     <td>notNull</td>
     <td></td>
     <td>
-        <code>fields.foo notNull</code><br>
         <code>fields.foo.notNull()</code>
     </td>
   </tr>
@@ -345,41 +343,50 @@ val criteria = bookConditions {
 
 ## State Service
 
-Vaultaire's `StateService` provides a `ContractState`-specific interface for querying states and tracking events  
-from the Vault (`queryBy`, `trackBy`), while decoupling data access or business logic code from Corda's `ServiceHub` and `CordaRPCOps`.
+Vaultaire's state services provide an interface for querying states and tracking events 
+from the Vault (`queryBy`, `trackBy`), while decoupling data access or business logic code
+from Corda's `ServiceHub` and `CordaRPCOps`. 
+
+### Generated State Service 
+
+Vaultaire will automatically subclass `StateService` to generate an extended sercice per annotated element.
+The generated component 
 
 
 ```kotlin
-// Init a state service for books
-val bookStateService = StateService(
-    serviceHub,                         // Service hub or RPC ops
-    BookContract.BookState::class.java, // Target state type
-    serviceDefaults)                    // Optional: criteria, paging, sort defaults
+// Create an instance of the generated service type
+val bookStateService = BookStateService(
+    serviceHub,        // Service hub or RPC ops
+    serviceDefaults)   // Optional: criteria, paging, sort defaults
 
 // query the vault for books
-val searchResults = bookStateService.queryBy(criteria, paging, sort)
+val searchResults = bookStateService.queryBy(
+    criteria, paging, Pair("published", DESC), Pair("title", DESC))
 ```
 
-The above constructor initializes the appropriate delegate under the hood, i.e. either `ServiceHub` or `CordaRPCOps` based.
 
-### Custom Service
+### Custom Services
 
-You can also subclass `StateService` to create custom components for reuse both inside and outside a node.
+You can also subclass `BasicStateService`, `StateService` or even generated service types  
+to create custom components.
 
 ```kotlin
-class BookStateService(
-        delegate: StateServiceDelegate<BookContract.BookState>
-) : StateService<BookContract.BookState>(delegate){
+class MyExtendedBookStateService(
+        delegate: StateServiceDelegate<BookState>
+) : BookStateService<BookState>(delegate){
 
+    // Add the appropriate constructors 
+    // to initialize per delegate type:
+    
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, contractStateType: Class<BookState>, defaults: StateServiceDefaults = StateServiceDefaults()
-    ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
+            rpcOps: CordaRPCOps, defaults: StateServiceDefaults = StateServiceDefaults()
+    ) : this(StateServiceRpcDelegate(rpcOps, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, contractStateType: Class<BookState>, defaults: StateServiceDefaults = StateServiceDefaults()
-    ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
+            serviceHub: ServiceHub, defaults: StateServiceDefaults = StateServiceDefaults()
+    ) : this(StateServiceHubDelegate(serviceHub, defaults))
 
     // Custom business methods...
 }
