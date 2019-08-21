@@ -165,14 +165,10 @@ configure([project(':vaultaire'), project(':vaultaire-processor')]) {
     apply plugin: 'org.jetbrains.dokka'
 
     dokka {
-        outputFormat = 'javadoc'
-        outputDirectory = javadoc.destinationDir
-        //inputs.dir 'src/main/kotlin'
-        linkMapping {
-            dir = "src/main/kotlin"
-            url = "https://github.com/manosbatsis/vaultaire/tree/master/${project.name}/src/main/kotlin"
-            suffix = "#L"
-        }
+        skipDeprecated = true
+        outputDirectory = "$rootDir/docs/0.x"
+        outputFormat = "gfm"
+
     }
 
     task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
