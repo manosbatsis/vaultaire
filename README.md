@@ -18,6 +18,7 @@ Query DSL and data access utilities for Corda developers.
 - [State Services](#state-services)
 	- [Generated State Service](#generated-state-service)
 	- [Custom Services](#custom-services)
+- [Credits](#credits)
 
 <!-- /TOC -->
 
@@ -348,7 +349,7 @@ from Corda's `ServiceHub` and `CordaRPCOps`.
 
 ### Generated State Service
 
-Vaultaire's annotation processor  will automatically subclass `StateService` to generate 
+Vaultaire's annotation processor  will automatically subclass `StateService` to generate
 an extended service per annotated element. The generated service name is "${contractStateTypeName}Service":  
 
 
@@ -390,3 +391,7 @@ class MyExtendedBookStateService(
     // Custom business methods...
 }
 ```
+
+## Credits
+
+- The following projects where of great help in creating my first DSL: [AutoDsl](https://github.com/juanchosaravia/autodsl), [SqlDsl](https://www.baeldung.com/kotlin-dsl) and of course the amazing [KotlinPoet](https://github.com/square/kotlinpoet)
