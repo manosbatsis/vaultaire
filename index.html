@@ -1,0 +1,1014 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Query DSL and data access utilities for Corda developers.">
+      
+      
+      
+        <meta name="author" content="Manos Batsis">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+    
+    
+      
+        <title>Vaultaire</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.0284f74d.css">
+      
+        <link rel="stylesheet" href="assets/stylesheets/application-palette.01803549.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#00bcd4">
+      
+    
+    
+      <script src="assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="cyan" data-md-color-accent="deep-purple">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#vaultaire" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="Vaultaire" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              Vaultaire
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Overview
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/manosbatsis/vaultaire/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    Vaultaire
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="." title="Vaultaire" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    Vaultaire
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/manosbatsis/vaultaire/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    Vaultaire
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Overview
+      </label>
+    
+    <a href="." title="Overview" class="md-nav__link md-nav__link--active">
+      Overview
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-dsl" title="Query DSL" class="md-nav__link">
+    Query DSL
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-example" title="Quick Example" class="md-nav__link">
+    Quick Example
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#without-vaultaire" title="Without Vaultaire" class="md-nav__link">
+    Without Vaultaire
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-vaultaire-dsl" title="With Vaultaire DSL" class="md-nav__link">
+    With Vaultaire DSL
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-dsl" title="Create a DSL" class="md-nav__link">
+    Create a DSL
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-settings" title="Query Settings" class="md-nav__link">
+    Query Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-criteria" title="Adding Criteria" class="md-nav__link">
+    Adding Criteria
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-fields" title="Accessing Fields" class="md-nav__link">
+    Accessing Fields
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions-and-operators" title="Functions and Operators" class="md-nav__link">
+    Functions and Operators
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sorting" title="Sorting" class="md-nav__link">
+    Sorting
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-services" title="State Services" class="md-nav__link">
+    State Services
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generated-state-service" title="Generated State Service" class="md-nav__link">
+    Generated State Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-services" title="Custom Services" class="md-nav__link">
+    Custom Services
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#credits" title="Credits" class="md-nav__link">
+    Credits
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="0.x/vaultaire/com.github.manosbatsis.vaultaire/index.md" title="API" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="changelog/" title="Change Log" class="md-nav__link">
+      Change Log
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" title="Installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#query-dsl" title="Query DSL" class="md-nav__link">
+    Query DSL
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-example" title="Quick Example" class="md-nav__link">
+    Quick Example
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#without-vaultaire" title="Without Vaultaire" class="md-nav__link">
+    Without Vaultaire
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-vaultaire-dsl" title="With Vaultaire DSL" class="md-nav__link">
+    With Vaultaire DSL
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-a-dsl" title="Create a DSL" class="md-nav__link">
+    Create a DSL
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-settings" title="Query Settings" class="md-nav__link">
+    Query Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-criteria" title="Adding Criteria" class="md-nav__link">
+    Adding Criteria
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-fields" title="Accessing Fields" class="md-nav__link">
+    Accessing Fields
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions-and-operators" title="Functions and Operators" class="md-nav__link">
+    Functions and Operators
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sorting" title="Sorting" class="md-nav__link">
+    Sorting
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-services" title="State Services" class="md-nav__link">
+    State Services
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generated-state-service" title="Generated State Service" class="md-nav__link">
+    Generated State Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-services" title="Custom Services" class="md-nav__link">
+    Custom Services
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#credits" title="Credits" class="md-nav__link">
+    Credits
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="vaultaire">Vaultaire <a href="http://central.maven.org/maven2/com/github/manosbatsis/vaultaire/"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg" /></a> <a href="https://travis-ci.org/manosbatsis/vaultaire"><img alt="Build Status" src="https://travis-ci.org/manosbatsis/vaultaire.svg?branch=master" /></a><a class="headerlink" href="#vaultaire" title="Permanent link">&para;</a></h1>
+<p>Query DSL and data access utilities for Corda developers.</p>
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#query-dsl">Query DSL</a><ul>
+<li><a href="#quick-example">Quick Example</a><ul>
+<li><a href="#without-vaultaire">Without Vaultaire</a></li>
+<li><a href="#with-vaultaire-dsl">With Vaultaire DSL</a></li>
+</ul>
+</li>
+<li><a href="#create-a-dsl">Create a DSL</a></li>
+<li><a href="#query-settings">Query Settings</a></li>
+<li><a href="#adding-criteria">Adding Criteria</a><ul>
+<li><a href="#accessing-fields">Accessing Fields</a></li>
+</ul>
+</li>
+<li><a href="#functions-and-operators">Functions and Operators</a></li>
+<li><a href="#sorting">Sorting</a></li>
+</ul>
+</li>
+<li><a href="#state-services">State Services</a><ul>
+<li><a href="#generated-state-service">Generated State Service</a></li>
+<li><a href="#custom-services">Custom Services</a></li>
+</ul>
+</li>
+<li><a href="#credits">Credits</a></li>
+</ul>
+<!-- /TOC -->
+
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p>Add to your Cordapp&rsquo;s Gradle dependencies:</p>
+<div class="codehilite"><pre><span></span>    <span class="c1">// Core dependency</span>
+    <span class="n">cordaCompile</span> <span class="s2">&quot;com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version&quot;</span>
+    <span class="c1">// Annotation processing</span>
+    <span class="n">kapt</span> <span class="s2">&quot;com.github.manosbatsis.vaultaire:vaultaire-processor:$vaultaire_version&quot;</span>
+
+    <span class="c1">// Corda dependencies etc.</span>
+    <span class="c1">// ...</span>
+</pre></div>
+
+<p>The core module can also be useful outside a cordapp, e.g. in a Spring application
+interacting with Corda nodes via RPC:</p>
+<div class="codehilite"><pre><span></span>    <span class="c1">// Core dependency</span>
+    <span class="n">compile</span> <span class="s2">&quot;com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version&quot;</span>
+
+    <span class="c1">// Corda dependencies etc.</span>
+    <span class="c1">// ...</span>
+</pre></div>
+
+<h2 id="query-dsl">Query DSL<a class="headerlink" href="#query-dsl" title="Permanent link">&para;</a></h2>
+<p>Vaultaire uses an annotation processor at build-time to create a query DSL for your contract/persistent states.</p>
+<h3 id="quick-example">Quick Example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h3>
+<p>Consider the following Contract/Persistent States:</p>
+<div class="codehilite"><pre><span></span><span class="cm">/** Book ContractState */</span>
+<span class="k">data</span> <span class="k">class</span> <span class="nc">BookState</span><span class="p">(</span>
+    <span class="k">val</span> <span class="py">publisher</span><span class="p">:</span> <span class="n">Party</span><span class="p">,</span>
+    <span class="k">val</span> <span class="py">author</span><span class="p">:</span> <span class="n">Party</span><span class="p">,</span>
+    <span class="k">val</span> <span class="py">title</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+    <span class="k">val</span> <span class="py">published</span><span class="p">:</span> <span class="n">Date</span> <span class="p">=</span> <span class="n">Date</span><span class="p">()</span>
+<span class="p">)</span> <span class="p">:</span> <span class="n">ContractState</span><span class="p">,</span> <span class="n">QueryableState</span> <span class="p">{</span>
+     <span class="c1">// ...</span>
+<span class="p">}</span>
+
+
+<span class="c1">// Use Vaultaire&#39;s code generation!</span>
+<span class="n">@VaultaireGenerate</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;booksQuery&quot;</span><span class="p">,</span> <span class="n">constractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="n">@Entity</span>
+<span class="n">@Table</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;books&quot;</span><span class="p">)</span>
+<span class="k">data</span> <span class="k">class</span> <span class="nc">PersistentBookState</span><span class="p">(</span>
+    <span class="n">@Column</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;publisher&quot;</span><span class="p">)</span>
+    <span class="k">var</span> <span class="py">publisher</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">@Column</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;author&quot;</span><span class="p">)</span>
+    <span class="k">var</span> <span class="py">author</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">@Column</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;title&quot;</span><span class="p">)</span>
+    <span class="k">var</span> <span class="py">title</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">@Column</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;published&quot;</span><span class="p">)</span>
+    <span class="k">var</span> <span class="py">published</span><span class="p">:</span> <span class="n">Date</span>
+<span class="p">)</span> <span class="p">:</span> <span class="n">PersistentState</span><span class="p">()</span>
+</pre></div>
+
+<h4 id="without-vaultaire">Without Vaultaire<a class="headerlink" href="#without-vaultaire" title="Permanent link">&para;</a></h4>
+<p><em>Before</em> Vaultaire, you probably had to create query criteria with something like:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">query</span> <span class="p">=</span> <span class="n">VaultQueryCriteria</span><span class="p">(</span>
+        <span class="n">contractStateTypes</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">),</span>
+        <span class="n">status</span> <span class="p">=</span> <span class="n">Vault</span><span class="p">.</span><span class="n">StateStatus</span><span class="p">.</span><span class="n">ALL</span>
+    <span class="p">)</span>
+    <span class="p">.</span><span class="n">and</span><span class="p">(</span><span class="n">VaultCustomQueryCriteria</span><span class="p">(</span><span class="n">PersistentBookState</span><span class="o">::</span><span class="n">publisher</span><span class="p">.</span><span class="n">equal</span><span class="p">(</span><span class="s">&quot;Corda Books Ltd.&quot;</span><span class="p">)))</span>
+    <span class="p">.</span><span class="n">and</span><span class="p">(</span><span class="n">VaultCustomQueryCriteria</span><span class="p">(</span><span class="n">PersistentBookState</span><span class="o">::</span><span class="n">title</span><span class="p">.</span><span class="n">equal</span><span class="p">(</span><span class="s">&quot;A book on Corda&quot;</span><span class="p">))</span>
+        <span class="p">.</span><span class="n">or</span><span class="p">(</span><span class="n">VaultCustomQueryCriteria</span><span class="p">(</span><span class="n">PersistentBookState</span><span class="o">::</span><span class="n">author</span><span class="p">.</span><span class="n">notEqual</span><span class="p">(</span><span class="s">&quot;John Doe&quot;</span><span class="p">))))</span>
+
+<span class="k">val</span> <span class="py">sort</span> <span class="p">=</span> <span class="n">Sort</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="n">Sort</span><span class="p">.</span><span class="n">SortColumn</span><span class="p">(</span>
+    <span class="n">SortAttribute</span><span class="p">.</span><span class="n">Custom</span><span class="p">(</span><span class="n">PersistentBookState</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">,</span> <span class="s">&quot;published&quot;</span><span class="p">),</span> <span class="n">Sort</span><span class="p">.</span><span class="n">Direction</span><span class="p">.</span><span class="n">DESC</span><span class="p">)))</span>
+
+<span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">sort</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="with-vaultaire-dsl">With Vaultaire DSL<a class="headerlink" href="#with-vaultaire-dsl" title="Permanent link">&para;</a></h4>
+<p>With Vaultaire&rsquo;s <code>@VaultaireGenerate</code> and the generated DSL this becomes:</p>
+<div class="codehilite"><pre><span></span><span class="c1">// Use the generated DSL to create query criteria</span>
+<span class="k">val</span> <span class="py">query</span> <span class="p">=</span> <span class="n">booksQuery</span> <span class="p">{</span>
+    <span class="n">status</span> <span class="p">=</span> <span class="n">Vault</span><span class="p">.</span><span class="n">StateStatus</span><span class="p">.</span><span class="n">ALL</span>
+    <span class="n">and</span> <span class="p">{</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">publisher</span> <span class="err">`</span><span class="p">==</span><span class="err">`</span> <span class="s">&quot;Corda Books Ltd.&quot;</span>
+        <span class="n">or</span> <span class="p">{</span>
+            <span class="n">fields</span><span class="p">.</span><span class="n">title</span>  <span class="err">`</span><span class="p">==</span><span class="err">`</span> <span class="s">&quot;A book on Corda&quot;</span>
+            <span class="n">fields</span><span class="p">.</span><span class="n">author</span> <span class="err">`</span><span class="p">!=</span><span class="err">`</span> <span class="s">&quot;John Doe&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">orderBy</span> <span class="p">{</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">sort</span> <span class="n">DESC</span>
+    <span class="p">}</span>
+<span class="p">}.</span><span class="n">toCriteria</span><span class="p">()</span>
+
+<span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">(),</span> <span class="n">query</span><span class="p">.</span><span class="n">toSort</span><span class="p">())</span>
+</pre></div>
+
+<h3 id="create-a-dsl">Create a DSL<a class="headerlink" href="#create-a-dsl" title="Permanent link">&para;</a></h3>
+<p>To create a query DSL for your state after <a href="#installation">installing</a> Vaultaire, annotate the
+corresponding <code>PersistentState</code> with <code>@VaultaireGenerate</code>:</p>
+<div class="codehilite"><pre><span></span><span class="c1">// Use Vaultaire&#39;s DSL generation!</span>
+<span class="n">@VaultaireGenerate</span><span class="p">(</span>
+  <span class="c1">// If you omit the name, the DSL function will be named by appending &quot;Query&quot;</span>
+  <span class="c1">// to the decapitalized contract state name, e.g. &quot;bookStateQuery&quot;</span>
+  <span class="n">name</span> <span class="p">=</span> <span class="s">&quot;booksQuery&quot;</span><span class="p">,</span>
+  <span class="n">constractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="n">@Entity</span>
+<span class="n">@Table</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;books&quot;</span><span class="p">)</span>
+<span class="k">data</span> <span class="k">class</span> <span class="nc">PersistentBookState</span><span class="p">(</span>
+    <span class="c1">// state properties...</span>
+<span class="p">)</span> <span class="p">:</span> <span class="n">PersistentState</span><span class="p">()</span>
+</pre></div>
+
+<h3 id="query-settings">Query Settings<a class="headerlink" href="#query-settings" title="Permanent link">&para;</a></h3>
+<p>The generated DSL allows setting <code>QueryCriteria.VaultQueryCriteria</code> members. Here&rsquo;s an example
+using the defaults:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">query</span> <span class="p">=</span> <span class="n">booksQuery</span> <span class="p">{</span>
+    <span class="c1">// settings</span>
+    <span class="n">status</span> <span class="p">=</span> <span class="n">Vault</span><span class="p">.</span><span class="n">StateStatus</span><span class="p">.</span><span class="n">UNCONSUMED</span>
+    <span class="n">stateRefs</span> <span class="p">=</span> <span class="k">null</span>
+    <span class="n">notary</span> <span class="p">=</span> <span class="k">null</span>
+    <span class="n">softLockingCondition</span> <span class="p">=</span> <span class="k">null</span>
+    <span class="n">timeCondition</span> <span class="p">=</span> <span class="k">null</span>
+    <span class="n">relevancyStatus</span> <span class="p">=</span> <span class="n">Vault</span><span class="p">.</span><span class="n">RelevancyStatus</span><span class="p">.</span><span class="n">ALL</span>
+    <span class="n">constraintTypes</span> <span class="p">=</span> <span class="n">emptySet</span><span class="p">()</span>
+    <span class="n">constraints</span> <span class="p">=</span> <span class="n">emptySet</span><span class="p">()</span>
+    <span class="n">participants</span> <span class="p">=</span> <span class="k">null</span>
+
+    <span class="c1">// criteria and sorting...</span>
+<span class="p">}</span>
+</pre></div>
+
+<h3 id="adding-criteria">Adding Criteria<a class="headerlink" href="#adding-criteria" title="Permanent link">&para;</a></h3>
+<p>Query riteria are defined within the <code>and</code> / <code>or</code> functions. Both functions can be nested and mixed
+with criteria like:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">query</span> <span class="p">=</span> <span class="n">booksQuery</span> <span class="p">{</span>
+    <span class="c1">// settings...</span>
+
+    <span class="c1">// criteria</span>
+    <span class="n">or</span> <span class="p">{</span> <span class="c1">// Match at least one</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">foo1</span> <span class="err">`</span><span class="p">==</span><span class="err">`</span> <span class="n">someValue</span>
+        <span class="n">and</span> <span class="p">{</span> <span class="c1">// Match all</span>
+            <span class="n">fields</span><span class="p">.</span><span class="n">foo1</span><span class="p">.</span><span class="n">isNull</span><span class="p">()</span>
+            <span class="n">fields</span><span class="p">.</span><span class="n">foo2</span> <span class="err">`</span><span class="p">==</span><span class="err">`</span> <span class="n">someOtherValue</span>
+            <span class="n">and</span> <span class="p">{</span>
+                <span class="c1">// ...</span>
+            <span class="p">}</span>
+            <span class="n">or</span> <span class="p">{</span>
+                <span class="c1">// ...</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// sorting...</span>
+<span class="p">}</span>
+</pre></div>
+
+<h4 id="accessing-fields">Accessing Fields<a class="headerlink" href="#accessing-fields" title="Permanent link">&para;</a></h4>
+<p>Fields can be accessed via the generated DSL&rsquo;s <code>fields</code> object within <code>and</code>, <code>or</code>, or <code>orderBy</code>
+functions using dot notation e.g. <code>fields.foo</code>.</p>
+<blockquote>
+<p>You can also retrieve fields by name with e.g. <code>fields["foo"]</code> or  <code>fields.get("foo")</code> and use
+non typesafe functions like <code>_equal</code>, <code>_notEqual</code>, <code>_like</code>, <code>_notLike</code> but this may change in a future release.</p>
+</blockquote>
+<h3 id="functions-and-operators">Functions and Operators<a class="headerlink" href="#functions-and-operators" title="Permanent link">&para;</a></h3>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Aliases</th>
+    <th>Examples</th>
+  </tr>
+  <tr>
+    <td>isNull</td>
+    <td></td>
+    <td>
+        <code>fields.foo.isNull()</code></td>
+  </tr>
+  <tr>
+    <td>notNull</td>
+    <td></td>
+    <td>
+        <code>fields.foo.notNull()</code>
+    </td>
+  </tr>
+  <tr>
+    <td>equal</td>
+    <td>`==`</td>
+    <td>
+        <code>fields.foo `==` bar</code><br>
+        <code>fields.foo equal bar</code><br>
+        <code>fields.foo.equal(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>notEqual</td>
+    <td>`!=`</td>
+    <td>
+        <code>fields.foo `!=` bar</code><br>
+        <code>fields.foo notEqual bar</code><br>
+        <code>fields.foo.notEqual(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>lessThan</td>
+    <td>lt</td>
+    <td>
+        <code>fields.foo lt bar</code><br>
+        <code>fields.foo lessThan bar</code><br>
+        <code>fields.foo.lessThan(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>lessThanOrEqual</td>
+    <td>lte</td>
+    <td>
+        <code>fields.foo lte bar</code><br>
+        <code>fields.foo lessThanOrEqual bar</code><br>
+        <code>fields.foo.lessThanOrEqual(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>greaterThan</td>
+    <td>gt</td>
+    <td>
+        <code>fields.foo gt bar</code><br>
+        <code>fields.foo greaterThan bar</code><br>
+        <code>fields.foo.greaterThan(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>greaterThanOrEqual</td>
+    <td>gte</td>
+    <td>
+        <code>fields.foo gte bar</code><br>
+        <code>fields.foo greaterThanOrEqual bar</code><br>
+        <code>fields.foo.greaterThanOrEqual(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>between</td>
+    <td>btw</td>
+    <td>
+        <code>fields.foo btw Pair(bar1, bar2)</code><br>
+        <code>fields.foo between Pair(bar1, bar2)</code><br>
+        <code>fields.foo.between(bar1, bar2)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>like</td>
+    <td></td>
+    <td>
+        <code>fields.foo like bar</code><br>
+        <code>fields.foo.like(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>notLike</td>
+    <td></td>
+    <td>
+        <code>fields.foo notLike bar</code><br>
+        <code>fields.foo.notLike(bar)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>isIn</td>
+    <td>`in`</td>
+    <td>
+        <code>fields.foo `in` bars</code><br>
+        <code>fields.foo isIn bars</code><br>
+        <code>fields.foo.isIn(bars)</code>
+    </td>
+  </tr>
+  <tr>
+    <td>notIn</td>
+    <td>`!in`</td>
+    <td>
+        <code>fields.foo `!in` bars</code><br>
+        <code>fields.foo notIn bars</code><br>
+        <code>fields.foo.notIn(bars)</code>
+    </td>
+  </tr>
+</table>
+
+<h3 id="sorting">Sorting<a class="headerlink" href="#sorting" title="Permanent link">&para;</a></h3>
+<p>Sorting is defined using the <code>orderBy</code> function:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">criteria</span> <span class="p">=</span> <span class="n">bookConditions</span> <span class="p">{</span>
+    <span class="c1">// settings and criteria...</span>
+
+    <span class="c1">// sorting</span>
+    <span class="n">orderBy</span> <span class="p">{</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">sort</span> <span class="n">ASC</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">published</span> <span class="n">sort</span> <span class="n">DESC</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h2>
+<p>Vaultaire&rsquo;s state services provide an interface for querying states and tracking events
+from the Vault (<code>queryBy</code>, <code>trackBy</code>), while decoupling data access or business logic code
+from Corda&rsquo;s <code>ServiceHub</code> and <code>CordaRPCOps</code>.</p>
+<h3 id="generated-state-service">Generated State Service<a class="headerlink" href="#generated-state-service" title="Permanent link">&para;</a></h3>
+<p>Vaultaire&rsquo;s annotation processor  will automatically subclass <code>StateService</code> to generate
+an extended service per annotated element. The generated service name is &ldquo;${contractStateTypeName}Service&rdquo;:  </p>
+<div class="codehilite"><pre><span></span><span class="c1">// Create an instance of the generated service type</span>
+<span class="k">val</span> <span class="py">bookStateService</span> <span class="p">=</span> <span class="n">BookStateService</span><span class="p">(</span>
+    <span class="n">serviceHub</span><span class="p">,</span>        <span class="c1">// Service hub or RPC ops</span>
+    <span class="n">serviceDefaults</span><span class="p">)</span>   <span class="c1">// Optional: criteria, paging, sort defaults</span>
+
+<span class="c1">// query the vault for books</span>
+<span class="k">val</span> <span class="py">searchResults</span> <span class="p">=</span> <span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span>
+    <span class="n">criteria</span><span class="p">,</span> <span class="n">paging</span><span class="p">,</span> <span class="n">Pair</span><span class="p">(</span><span class="s">&quot;published&quot;</span><span class="p">,</span> <span class="n">DESC</span><span class="p">),</span> <span class="n">Pair</span><span class="p">(</span><span class="s">&quot;title&quot;</span><span class="p">,</span> <span class="n">DESC</span><span class="p">))</span>
+</pre></div>
+
+<h3 id="custom-services">Custom Services<a class="headerlink" href="#custom-services" title="Permanent link">&para;</a></h3>
+<p>You can also subclass <code>BasicStateService</code>, <code>StateService</code> or even generated service types<br />
+to create custom components.</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MyExtendedBookStateService</span><span class="p">(</span>
+        <span class="n">delegate</span><span class="p">:</span> <span class="n">StateServiceDelegate</span><span class="p">&lt;</span><span class="n">BookState</span><span class="p">&gt;</span>
+<span class="p">)</span> <span class="p">:</span> <span class="n">BookStateService</span><span class="p">&lt;</span><span class="n">BookState</span><span class="p">&gt;(</span><span class="n">delegate</span><span class="p">){</span>
+
+    <span class="c1">// Add the appropriate constructors</span>
+    <span class="c1">// to initialize per delegate type:</span>
+
+    <span class="cm">/** [CordaRPCOps]-based constructor */</span>
+    <span class="k">constructor</span><span class="p">(</span>
+            <span class="n">rpcOps</span><span class="p">:</span> <span class="n">CordaRPCOps</span><span class="p">,</span> <span class="n">defaults</span><span class="p">:</span> <span class="n">StateServiceDefaults</span> <span class="p">=</span> <span class="n">StateServiceDefaults</span><span class="p">()</span>
+    <span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">StateServiceRpcDelegate</span><span class="p">(</span><span class="n">rpcOps</span><span class="p">,</span> <span class="n">defaults</span><span class="p">))</span>
+
+    <span class="cm">/** [ServiceHub]-based constructor */</span>
+    <span class="k">constructor</span><span class="p">(</span>
+            <span class="n">serviceHub</span><span class="p">:</span> <span class="n">ServiceHub</span><span class="p">,</span> <span class="n">defaults</span><span class="p">:</span> <span class="n">StateServiceDefaults</span> <span class="p">=</span> <span class="n">StateServiceDefaults</span><span class="p">()</span>
+    <span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">StateServiceHubDelegate</span><span class="p">(</span><span class="n">serviceHub</span><span class="p">,</span> <span class="n">defaults</span><span class="p">))</span>
+
+    <span class="c1">// Custom business methods...</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2 id="credits">Credits<a class="headerlink" href="#credits" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The following projects where of great help in creating my first DSL: <a href="https://github.com/juanchosaravia/autodsl">AutoDsl</a>, <a href="https://www.baeldung.com/kotlin-dsl">SqlDsl</a> and of course the amazing <a href="https://github.com/square/kotlinpoet">KotlinPoet</a></li>
+</ul>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+        
+          <a href="changelog/" title="Change Log" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Change Log
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2019 Manos Batsis
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.245445c6.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+    
+  </body>
+</html>
