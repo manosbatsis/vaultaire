@@ -349,7 +349,7 @@ from Corda's `ServiceHub` and `CordaRPCOps`.
 ### Generated State Service
 
 Vaultaire will automatically subclass `StateService` to generate an extended sercice per annotated element.
-The generated component
+The generated service name is "${contractStateTypeName}Service":  
 
 
 ```kotlin
