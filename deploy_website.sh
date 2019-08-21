@@ -21,7 +21,7 @@ git clone $REPO $DIR
 cd $DIR
 
 # Generate the API docs
-./gradlew :vaultaire:dokka
+./gradlew :vaultaire:dokkaForGhPages
 
 # Copy in special files that GitHub wants in the project root.
 pwd
