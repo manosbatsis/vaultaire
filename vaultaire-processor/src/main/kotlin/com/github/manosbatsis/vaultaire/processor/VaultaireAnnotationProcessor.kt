@@ -164,9 +164,9 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
     /** Create a StateService subclass builder */
     private fun buildStateServiceSpecBuilder(generatedStateServiceSimpleName: String, contractStateTypeElement: Element, annotatedElement: TypeElement, generatedFieldsClassName: ClassName): TypeSpec.Builder {
         val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedStateServiceSimpleName)
-                .addKdoc("A [%T]-specific [%T]", contractStateTypeElement, StateService::class)
+                .addKdoc("A [%T]-specific [%T]", contractStateTypeElement, ExtendedStateService::class)
                 .addModifiers(KModifier.OPEN)
-                .superclass(StateService::class.asClassName()
+                .superclass(ExtendedStateService::class.asClassName()
                         .parameterizedBy(
                                 contractStateTypeElement.asKotlinTypeName(),
                                 annotatedElement.asKotlinTypeName(),

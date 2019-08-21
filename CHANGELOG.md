@@ -5,6 +5,10 @@ The following sections describe major changes per version
 and can be helpful with version upgrades.
 
 
+## 0.3 
+
+- Refactored `StateService` to an interface
+
 ## 0.2 
 
 - Renamed `VaultQueryDsl` annotation to `VaultaireGenerate`

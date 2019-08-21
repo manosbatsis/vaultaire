@@ -40,9 +40,54 @@ import net.corda.core.schemas.StatePersistable
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
+interface StateService<T : ContractState>: StateServiceDelegate<T> {
+
+    val ofLinearState: Boolean
+    val ofQueryableState: Boolean
+    
+    /** Find the state matching the given [UniqueIdentifier] if any */
+    fun getByLinearId(
+            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
+    ): StateAndRef<T>
+
+    /** Find the state matching the given [UniqueIdentifier] if any */
+    fun findByLinearId(
+            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
+    ): StateAndRef<T>?
+
+    /** Count states stored in the vault and matching any given criteria */
+    fun countBy(criteria: QueryCriteria = defaults.criteria): Long
+
+    /**
+     * Query the vault for states matching the given criteria,
+     * applying the given page number, size and sorting specifications if any
+     */
+    fun queryBy(
+            criteria: QueryCriteria = defaults.criteria,
+            pageNumber: Int = defaults.pageNumber,
+            pageSize: Int = defaults.pageSize,
+            sort: Sort = defaults.sort
+    ): Vault.Page<T>
+
+    /**
+     * Track the vault for events of `T` states matching the given criteria,
+     * applying the given page number, size and sorting specifications if any
+     */
+    fun trackBy(
+            criteria: QueryCriteria = defaults.criteria,
+            pageNumber: Int = defaults.pageNumber,
+            pageSize: Int = defaults.pageSize,
+            sort: Sort = defaults.sort
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>>
+}
+
+/**
+ * Basic [StateService] implementation, used for vault operations on a specific [ContractState] type
+ * @param T the [ContractState] type
+ */
 open class BasicStateService<T: ContractState>(
         private val delegate: StateServiceDelegate<T>
-) : StateServiceDelegate<T> by delegate  {
+) : StateServiceDelegate<T> by delegate, StateService<T> {
 
     /** [CordaRPCOps]-based constructor */
     constructor(
@@ -54,37 +99,37 @@ open class BasicStateService<T: ContractState>(
             serviceHub: ServiceHub, contractStateType: Class<T>, defaults: StateServiceDefaults = StateServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
 
-    val ofLinearState: Boolean = delegate.contractStateType is LinearState
-    val ofQueryableState: Boolean = delegate.contractStateType is QueryableState
+    override val ofLinearState: Boolean = delegate.contractStateType is LinearState
+    override val ofQueryableState: Boolean = delegate.contractStateType is QueryableState
 
     /** Find the state matching the given [UniqueIdentifier] if any */
-    fun getByLinearId(
-            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
+    override fun getByLinearId(
+            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus
     ): StateAndRef<T> =
             findByLinearId(linearId, relevancyStatus) ?: throw IllegalArgumentException("No state found with id $linearId")
 
 
     /** Find the state matching the given [UniqueIdentifier] if any */
-    fun findByLinearId(
-            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
+    override fun findByLinearId(
+            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus
     ): StateAndRef<T>? = if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
             linearId = listOf(linearId),
             relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
     else throw IllegalStateException("Type is not a LinearState: ${delegate.contractStateType.simpleName}")
 
     /** Count states stored in the vault and matching any given criteria */
-    fun countBy(criteria: QueryCriteria = delegate.defaults.criteria): Long =
+    override fun countBy(criteria: QueryCriteria): Long =
             queryBy(criteria, 1, 1).totalStatesAvailable
 
     /**
      * Query the vault for states matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
-    fun queryBy(
-            criteria: QueryCriteria = delegate.defaults.criteria,
-            pageNumber: Int = delegate.defaults.pageNumber,
-            pageSize: Int = delegate.defaults.pageSize,
-            sort: Sort = delegate.defaults.sort
+    override fun queryBy(
+            criteria: QueryCriteria,
+            pageNumber: Int,
+            pageSize: Int,
+            sort: Sort
     ): Vault.Page<T> = queryBy(criteria, PageSpecification(pageNumber, pageSize), sort)
 
 
@@ -92,22 +137,24 @@ open class BasicStateService<T: ContractState>(
      * Track the vault for events of `T` states matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
-    fun trackBy(
-            criteria: QueryCriteria = delegate.defaults.criteria,
-            pageNumber: Int = delegate.defaults.pageNumber,
-            pageSize: Int = delegate.defaults.pageSize,
-            sort: Sort = delegate.defaults.sort
+    override fun trackBy(
+            criteria: QueryCriteria,
+            pageNumber: Int,
+            pageSize: Int,
+            sort: Sort
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
         this.trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
 
 }
 
 /**
- * A [BasicStateService] extended by Vaultaire's annotation processing
- * to create a service type aware of the target [ContractState] type's [StatePersistable] and [Fields]
+ * Extends [BasicStateService] to provide a [StateService] aware of the target
+ * [ContractState] type's [StatePersistable] and [Fields].
+ *
+ * Subclassed by Vaultaire's annotation processing to generate service components.
  */
-abstract class StateService<T: ContractState, P : StatePersistable, out F: Fields<P>>(
-        private val delegate: StateServiceDelegate<T>
+abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out F: Fields<P>>(
+        delegate: StateServiceDelegate<T>
 ) : BasicStateService<T>(delegate) {
 
     /** The type of the target state's [StatePersistable] */
@@ -130,9 +177,9 @@ abstract class StateService<T: ContractState, P : StatePersistable, out F: Field
      * applying the given page number, size and sorting specifications if any
      */
     fun queryBy(
-            criteria: QueryCriteria = delegate.defaults.criteria,
-            pageNumber: Int = delegate.defaults.pageNumber,
-            pageSize: Int = delegate.defaults.pageSize,
+            criteria: QueryCriteria = defaults.criteria,
+            pageNumber: Int = defaults.pageNumber,
+            pageSize: Int = defaults.pageSize,
             vararg sort: Pair<String, Sort.Direction>
     ): Vault.Page<T> = if(sort.isNotEmpty()) queryBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
     else queryBy(criteria, PageSpecification(pageNumber, pageSize))
@@ -142,7 +189,7 @@ abstract class StateService<T: ContractState, P : StatePersistable, out F: Field
      * applying the given page number, size and sorting specifications if any
      */
     fun queryBy(
-            criteria: QueryCriteria = delegate.defaults.criteria,
+            criteria: QueryCriteria = defaults.criteria,
             paging: PageSpecification = defaults.paging,
             vararg sort: Pair<String, Sort.Direction>
     ): Vault.Page<T> = if(sort.isNotEmpty()) queryBy(criteria, paging, toSort(*sort))
@@ -153,9 +200,9 @@ abstract class StateService<T: ContractState, P : StatePersistable, out F: Field
      * applying the given page number, size and sorting specifications if any
      */
     fun trackBy(
-            criteria: QueryCriteria = delegate.defaults.criteria,
-            pageNumber: Int = delegate.defaults.pageNumber,
-            pageSize: Int = delegate.defaults.pageSize,
+            criteria: QueryCriteria = defaults.criteria,
+            pageNumber: Int = defaults.pageNumber,
+            pageSize: Int = defaults.pageSize,
             vararg sort: Pair<String, Sort.Direction>
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
             if(sort.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
@@ -166,7 +213,7 @@ abstract class StateService<T: ContractState, P : StatePersistable, out F: Field
      * applying the given page number, size and sorting specifications if any
      */
     fun trackBy(
-            criteria: QueryCriteria = delegate.defaults.criteria,
+            criteria: QueryCriteria = defaults.criteria,
             paging: PageSpecification = defaults.paging,
             vararg sort: Pair<String, Sort.Direction>
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> =

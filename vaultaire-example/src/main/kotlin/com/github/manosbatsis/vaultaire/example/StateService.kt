@@ -41,3 +41,24 @@ class CustomBasicBookStateService(
 
     // Custom business methods...
 }
+
+/** Extend the generated [BookStateService] */
+class MyExtendedBookStateService(
+        delegate: StateServiceDelegate<BookContract.BookState>
+) : BookStateService(delegate){
+
+    // Add the appropriate constructors
+    // to initialize per delegate type:
+
+    /** [CordaRPCOps]-based constructor */
+    constructor(
+            rpcOps: CordaRPCOps, defaults: StateServiceDefaults = StateServiceDefaults()
+    ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
+
+    /** [ServiceHub]-based constructor */
+    constructor(
+            serviceHub: ServiceHub, defaults: StateServiceDefaults = StateServiceDefaults()
+    ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
+
+    // Custom business methods...
+}

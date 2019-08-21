@@ -343,14 +343,15 @@ val criteria = bookConditions {
 
 ## State Services
 
-Vaultaire's state services provide an interface for querying states and tracking events
+Vaultaire's `StateService` provide an interface for querying states and tracking events
 from the Vault (`queryBy`, `trackBy`), while decoupling data access or business logic code
 from Corda's `ServiceHub` and `CordaRPCOps`.
 
 ### Generated State Service
 
-Vaultaire's annotation processor  will automatically subclass `StateService` to generate
-an extended service per annotated element. The generated service name is "${contractStateTypeName}Service":  
+Vaultaire's annotation processor  will automatically subclass `ExtendedStateService` to generate
+an `Fields` aware state service service per annotated element. The generated service name 
+is "${contractStateTypeName}Service":  
 
 
 ```kotlin
@@ -367,13 +368,14 @@ val searchResults = bookStateService.queryBy(
 
 ### Custom Services
 
-You can also subclass `BasicStateService`, `StateService` or even generated service types  
+You can also subclass `BasicStateService`, `ExtendedStateService` or even generated service types  
 to create custom components.
 
 ```kotlin
+/** Extend the generated [BookStateService] */
 class MyExtendedBookStateService(
         delegate: StateServiceDelegate<BookState>
-) : BookStateService<BookState>(delegate){
+) : BookStateService(delegate){
 
     // Add the appropriate constructors
     // to initialize per delegate type:
@@ -381,12 +383,12 @@ class MyExtendedBookStateService(
     /** [CordaRPCOps]-based constructor */
     constructor(
             rpcOps: CordaRPCOps, defaults: StateServiceDefaults = StateServiceDefaults()
-    ) : this(StateServiceRpcDelegate(rpcOps, defaults))
+    ) : this(StateServiceRpcDelegate(rpcOps, BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
             serviceHub: ServiceHub, defaults: StateServiceDefaults = StateServiceDefaults()
-    ) : this(StateServiceHubDelegate(serviceHub, defaults))
+    ) : this(StateServiceHubDelegate(serviceHub, BookState::class.java, defaults))
 
     // Custom business methods...
 }

@@ -52,7 +52,7 @@ nexusStaging {
 
 allprojects {
     group = 'com.github.manosbatsis.vaultaire'
-    version = '0.3-SNAPSHOT'
+    version = '0.3'
     apply plugin: "kotlin"
 
 
