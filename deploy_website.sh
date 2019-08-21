@@ -24,10 +24,13 @@ cd $DIR
 ./gradlew :vaultaire:dokkaForGhPages
 
 # Copy in special files that GitHub wants in the project root.
-pwd
-cat README.md > docs/index.md
 cp CHANGELOG.md docs/changelog.md
 #cp CONTRIBUTING.md docs/contributing.md
+cat README.md > docs/index.md
+# Remove hardcoded TOC from index page content
+TOC_FIRST=$(grep -n "TOC" docs/index.md | head -n 1 | cut -d: -f1)
+TOC_LAST=$(grep -n "TOC -->" docs/index.md | head -n 1 | cut -d: -f1)
+sed -i "$TOC_FIRST"','"$TOC_LAST"'d' docs/index.md
 
 # Build the site and push the new files up to GitHub
 mkdocs gh-deploy
