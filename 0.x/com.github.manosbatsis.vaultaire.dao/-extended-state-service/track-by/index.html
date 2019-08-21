@@ -40,7 +40,7 @@
     
     
       
-        <title>State persistable type - Vaultaire</title>
+        <title>Track by - Vaultaire</title>
       
     
     
@@ -114,7 +114,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#statepersistabletype" tabindex="1" class="md-skip">
+      <a href="#trackby" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -140,7 +140,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                State persistable type
+                Track by
               
             </span>
           
@@ -308,13 +308,15 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/0.x/com.github.manosbatsis.vaultaire.dao/-state-service/state-persistable-type.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/0.x/com.github.manosbatsis.vaultaire.dao/-extended-state-service/track-by.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <p><a href="../../">com.github.manosbatsis.vaultaire.dao</a> / <a href="../">StateService</a> / <a href="./">statePersistableType</a></p>
-<h1 id="statepersistabletype">statePersistableType<a class="headerlink" href="#statepersistabletype" title="Permanent link">&para;</a></h1>
-<p><code>abstract val statePersistableType:</code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><code>Class</code></a><code>&lt;</code><a href="../#P"><code>P</code></a><code>&gt;</code></p>
-<p>The type of the target state&rsquo;s <a href="#">StatePersistable</a></p>
+                <p><a href="../../">com.github.manosbatsis.vaultaire.dao</a> / <a href="../">ExtendedStateService</a> / <a href="./">trackBy</a></p>
+<h1 id="trackby">trackBy<a class="headerlink" href="#trackby" title="Permanent link">&para;</a></h1>
+<p><code>fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageNumber, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageSize, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../#T"><code>T</code></a><code>&gt;&gt;</code>
+<code>fun trackBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../#T"><code>T</code></a><code>&gt;&gt;</code></p>
+<p>Track the vault for events of <code>T</code> states matching the given criteria,
+applying the given page number, size and sorting specifications if any</p>
                 
                   
                 

@@ -353,11 +353,15 @@
 <tbody>
 <tr>
 <td><a href="-basic-state-service/">BasicStateService</a></td>
-<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="-state-service/"><code>StateService</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Basic <a href="-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+</tr>
+<tr>
+<td><a href="-extended-state-service/">ExtendedStateService</a></td>
+<td><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-extended-state-service/#T"><code>T</code></a><code>&gt;</code><br>Extends <a href="-basic-state-service/">BasicStateService</a> to provide a <a href="-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
 </tr>
 <tr>
 <td><a href="-state-service/">StateService</a></td>
-<td><code>abstract class StateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-state-service/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-state-service/#T"><code>T</code></a><code>&gt;</code><br>A <a href="-basic-state-service/">BasicStateService</a> extended by Vaultaire&rsquo;s annotation processing to create a service type aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a></td>
+<td><code>interface StateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
 <td><a href="-state-service-defaults/">StateServiceDefaults</a></td>

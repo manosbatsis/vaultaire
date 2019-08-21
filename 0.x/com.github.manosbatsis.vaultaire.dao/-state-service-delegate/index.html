@@ -394,7 +394,11 @@
 <tbody>
 <tr>
 <td><a href="../-basic-state-service/">BasicStateService</a></td>
-<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="../-state-service/"><code>StateService</code></a><code>&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Basic <a href="../-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+</tr>
+<tr>
+<td><a href="../-state-service/">StateService</a></td>
+<td><code>interface StateService&lt;T : ContractState&gt; :</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
 <td><a href="../-state-service-hub-delegate/">StateServiceHubDelegate</a></td>

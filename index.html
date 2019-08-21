@@ -898,12 +898,13 @@ non typesafe functions like <code>_equal</code>, <code>_notEqual</code>, <code>_
 </pre></div>
 
 <h2 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h2>
-<p>Vaultaire&rsquo;s state services provide an interface for querying states and tracking events
+<p>Vaultaire&rsquo;s <code>StateService</code> provide an interface for querying states and tracking events
 from the Vault (<code>queryBy</code>, <code>trackBy</code>), while decoupling data access or business logic code
 from Corda&rsquo;s <code>ServiceHub</code> and <code>CordaRPCOps</code>.</p>
 <h3 id="generated-state-service">Generated State Service<a class="headerlink" href="#generated-state-service" title="Permanent link">&para;</a></h3>
-<p>Vaultaire&rsquo;s annotation processor  will automatically subclass <code>StateService</code> to generate
-an extended service per annotated element. The generated service name is &ldquo;${contractStateTypeName}Service&rdquo;:  </p>
+<p>Vaultaire&rsquo;s annotation processor  will automatically subclass <code>ExtendedStateService</code> to generate
+an <code>Fields</code> aware state service service per annotated element. The generated service name 
+is &ldquo;${contractStateTypeName}Service&rdquo;:  </p>
 <div class="codehilite"><pre><span></span><span class="c1">// Create an instance of the generated service type</span>
 <span class="k">val</span> <span class="py">bookStateService</span> <span class="p">=</span> <span class="n">BookStateService</span><span class="p">(</span>
     <span class="n">serviceHub</span><span class="p">,</span>        <span class="c1">// Service hub or RPC ops</span>
@@ -915,11 +916,12 @@ an extended service per annotated element. The generated service name is &ldquo;
 </pre></div>
 
 <h3 id="custom-services">Custom Services<a class="headerlink" href="#custom-services" title="Permanent link">&para;</a></h3>
-<p>You can also subclass <code>BasicStateService</code>, <code>StateService</code> or even generated service types<br />
+<p>You can also subclass <code>BasicStateService</code>, <code>ExtendedStateService</code> or even generated service types<br />
 to create custom components.</p>
-<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MyExtendedBookStateService</span><span class="p">(</span>
+<div class="codehilite"><pre><span></span><span class="cm">/** Extend the generated [BookStateService] */</span>
+<span class="k">class</span> <span class="nc">MyExtendedBookStateService</span><span class="p">(</span>
         <span class="n">delegate</span><span class="p">:</span> <span class="n">StateServiceDelegate</span><span class="p">&lt;</span><span class="n">BookState</span><span class="p">&gt;</span>
-<span class="p">)</span> <span class="p">:</span> <span class="n">BookStateService</span><span class="p">&lt;</span><span class="n">BookState</span><span class="p">&gt;(</span><span class="n">delegate</span><span class="p">){</span>
+<span class="p">)</span> <span class="p">:</span> <span class="n">BookStateService</span><span class="p">(</span><span class="n">delegate</span><span class="p">){</span>
 
     <span class="c1">// Add the appropriate constructors</span>
     <span class="c1">// to initialize per delegate type:</span>
@@ -927,12 +929,12 @@ to create custom components.</p>
     <span class="cm">/** [CordaRPCOps]-based constructor */</span>
     <span class="k">constructor</span><span class="p">(</span>
             <span class="n">rpcOps</span><span class="p">:</span> <span class="n">CordaRPCOps</span><span class="p">,</span> <span class="n">defaults</span><span class="p">:</span> <span class="n">StateServiceDefaults</span> <span class="p">=</span> <span class="n">StateServiceDefaults</span><span class="p">()</span>
-    <span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">StateServiceRpcDelegate</span><span class="p">(</span><span class="n">rpcOps</span><span class="p">,</span> <span class="n">defaults</span><span class="p">))</span>
+    <span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">StateServiceRpcDelegate</span><span class="p">(</span><span class="n">rpcOps</span><span class="p">,</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">,</span> <span class="n">defaults</span><span class="p">))</span>
 
     <span class="cm">/** [ServiceHub]-based constructor */</span>
     <span class="k">constructor</span><span class="p">(</span>
             <span class="n">serviceHub</span><span class="p">:</span> <span class="n">ServiceHub</span><span class="p">,</span> <span class="n">defaults</span><span class="p">:</span> <span class="n">StateServiceDefaults</span> <span class="p">=</span> <span class="n">StateServiceDefaults</span><span class="p">()</span>
-    <span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">StateServiceHubDelegate</span><span class="p">(</span><span class="n">serviceHub</span><span class="p">,</span> <span class="n">defaults</span><span class="p">))</span>
+    <span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span><span class="n">StateServiceHubDelegate</span><span class="p">(</span><span class="n">serviceHub</span><span class="p">,</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">,</span> <span class="n">defaults</span><span class="p">))</span>
 
     <span class="c1">// Custom business methods...</span>
 <span class="p">}</span>
