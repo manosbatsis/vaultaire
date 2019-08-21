@@ -2,7 +2,6 @@
 
 Query DSL and data access utilities for Corda developers.
 
-
 <!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [Installation](#installation)
@@ -16,11 +15,11 @@ Query DSL and data access utilities for Corda developers.
 		- [Accessing Fields](#accessing-fields)
 	- [Functions and Operators](#functions-and-operators)
 	- [Sorting](#sorting)
-- [State Service](#state-service)
-	- [Custom Service](#custom-service)
+- [State Services](#state-services)
+	- [Generated State Service](#generated-state-service)
+	- [Custom Services](#custom-services)
 
 <!-- /TOC -->
-
 
 ## Installation
 
@@ -180,7 +179,7 @@ val query = booksQuery {
     or { // Match at least one
         fields.foo1 `==` someValue
         and { // Match all
-            fields.foo1.isNullValue()
+            fields.foo1.isNull()
             fields.foo2 `==` someOtherValue
             and {
                 // ...
@@ -341,16 +340,16 @@ val criteria = bookConditions {
 ```
 
 
-## State Service
+## State Services
 
-Vaultaire's state services provide an interface for querying states and tracking events 
+Vaultaire's state services provide an interface for querying states and tracking events
 from the Vault (`queryBy`, `trackBy`), while decoupling data access or business logic code
-from Corda's `ServiceHub` and `CordaRPCOps`. 
+from Corda's `ServiceHub` and `CordaRPCOps`.
 
-### Generated State Service 
+### Generated State Service
 
 Vaultaire will automatically subclass `StateService` to generate an extended sercice per annotated element.
-The generated component 
+The generated component
 
 
 ```kotlin
@@ -375,9 +374,9 @@ class MyExtendedBookStateService(
         delegate: StateServiceDelegate<BookState>
 ) : BookStateService<BookState>(delegate){
 
-    // Add the appropriate constructors 
+    // Add the appropriate constructors
     // to initialize per delegate type:
-    
+
     /** [CordaRPCOps]-based constructor */
     constructor(
             rpcOps: CordaRPCOps, defaults: StateServiceDefaults = StateServiceDefaults()
