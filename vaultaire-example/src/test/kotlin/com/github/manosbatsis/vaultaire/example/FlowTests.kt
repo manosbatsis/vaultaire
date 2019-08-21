@@ -121,7 +121,7 @@ class FlowTests {
             testStateService(bookBasicStateService, bookStateQuery, bookState)
 
             // Test generated BookStateService
-            val bookStateService = BookStateService(b.services)
+            val serviceHubBookStateService = BookStateService(b.services)
             testStateService(bookBasicStateService, bookStateQuery, bookState)
 
             // Test manually coded subclass of BookStateService

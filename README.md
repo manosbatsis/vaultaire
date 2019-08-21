@@ -392,7 +392,7 @@ class MyExtendedBookStateService(
 
     // Custom business methods...
 }
-```
+``` 
 
 ## Credits
 
