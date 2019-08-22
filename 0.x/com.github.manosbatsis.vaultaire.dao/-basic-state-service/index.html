@@ -330,6 +330,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#inherited-functions" title="Inherited Functions" class="md-nav__link">
+    Inherited Functions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#inheritors" title="Inheritors" class="md-nav__link">
     Inheritors
   </a>
@@ -423,6 +430,25 @@
 <tr>
 <td><a href="track-by/">trackBy</a></td>
 <td><code>open fun trackBy(criteria: QueryCriteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, sort: Sort): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <code>T</code> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inherited-functions">Inherited Functions<a class="headerlink" href="#inherited-functions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../-state-service/find-by-linear-id/">findByLinearId</a></td>
+<td><code>open fun findByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../-state-service/#T"><code>T</code></a><code>&gt;?</code><br>Find the state matching the given <a href="#">UniqueIdentifier</a> if any</td>
+</tr>
+<tr>
+<td><a href="../-state-service/get-by-linear-id/">getByLinearId</a></td>
+<td><code>open fun getByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../-state-service/#T"><code>T</code></a><code>&gt;</code><br>Find the state matching the given <a href="#">UniqueIdentifier</a> if any</td>
 </tr>
 </tbody>
 </table>

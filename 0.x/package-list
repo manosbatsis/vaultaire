@@ -1,6 +1,6 @@
 $dokka.format:gfm
 $dokka.linkExtension:md
-
+$dokka.location:com.github.manosbatsis.vaultaire.util$asUniqueIdentifier(kotlin.String, kotlin.String)com.github.manosbatsis.vaultaire.util/kotlin.-string/as-unique-identifier.md
 com.github.manosbatsis.vaultaire.annotation
 com.github.manosbatsis.vaultaire.dao
 com.github.manosbatsis.vaultaire.dsl
