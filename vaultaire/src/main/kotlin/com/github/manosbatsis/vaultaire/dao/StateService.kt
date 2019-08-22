@@ -20,6 +20,7 @@
 package com.github.manosbatsis.vaultaire.dao
 
 import com.github.manosbatsis.vaultaire.util.Fields
+import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.LinearState
 import net.corda.core.contracts.StateAndRef
@@ -44,11 +45,21 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
 
     val ofLinearState: Boolean
     val ofQueryableState: Boolean
-    
+
+    /** Find the state matching the given [UniqueIdentifier] if any */
+    fun getByLinearId(
+            linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
+    ): StateAndRef<T> = getByLinearId(linearId.asUniqueIdentifier(linearId))
+
     /** Find the state matching the given [UniqueIdentifier] if any */
     fun getByLinearId(
             linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
     ): StateAndRef<T>
+
+    /** Find the state matching the given [UniqueIdentifier] if any */
+    fun findByLinearId(
+            linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
+    ): StateAndRef<T>? = findByLinearId(linearId.asUniqueIdentifier(linearId))
 
     /** Find the state matching the given [UniqueIdentifier] if any */
     fun findByLinearId(

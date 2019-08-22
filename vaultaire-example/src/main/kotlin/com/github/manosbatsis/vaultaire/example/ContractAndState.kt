@@ -70,19 +70,21 @@ class BookContract : Contract {
 
         object BookSchemaV1 : MappedSchema(BookSchema.javaClass, 1, listOf(PersistentBookState::class.java)) {
 
-            @VaultaireGenerate(/*name = "bookConditions", */constractStateType = BookState::class)
-            @Entity
-            @Table(name = "books")
-            class PersistentBookState(
-                    @Column(name = "publisher")
-                    var publisher: String = "",
-                    @Column(name = "author")
-                    var author: String = "",
-                    @Column(name = "title")
-                    var title: String = "",
-                    @Column(name = "published")
-                    var published: Date = Date()
-            ) : PersistentState()
+@VaultaireGenerate(/*name = "bookConditions", */constractStateType = BookState::class)
+@Entity
+@Table(name = "books")
+class PersistentBookState(
+        @Column(name = "publisher")
+        var publisher: String = "",
+        @Column(name = "author")
+        var author: String = "",
+        @Column(name = "title")
+        var title: String = "",
+        @Column(name = "published")
+        var published: Date = Date(),
+        @Column(name = "description", length = 500)
+        var description: String? = null
+) : PersistentState()
         }
     }
 }

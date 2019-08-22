@@ -24,9 +24,14 @@ Query DSL and data access utilities for Corda developers.
 
 ## Installation
 
+
 Add to your Cordapp's Gradle dependencies:
 
 ```groovy
+// apply the kapt plugin
+apply plugin: 'kotlin-kapt'
+
+dependencies{
     // Core dependency
     cordaCompile "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
     // Annotation processing
@@ -34,6 +39,8 @@ Add to your Cordapp's Gradle dependencies:
 
     // Corda dependencies etc.
     // ...
+    
+}    
 ```
 
 The core module can also be useful outside a cordapp, e.g. in a Spring application

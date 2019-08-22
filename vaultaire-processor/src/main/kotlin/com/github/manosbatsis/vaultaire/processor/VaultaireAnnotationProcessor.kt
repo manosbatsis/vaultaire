@@ -238,7 +238,7 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
 
         processingEnv.noteMessage { "Adding field: $field" }
         return PropertySpec.builder(field.simpleName.toString(), fieldType, KModifier.PUBLIC)
-                .initializer( "FieldWrapper(${annotatedElement.qualifiedName}::${field.simpleName})")
+                .initializer( "%T(${annotatedElement.qualifiedName}::${field.simpleName})", FieldWrapper::class)
                 .addKdoc("Wraps [%T.${field.simpleName}]", annotatedElement)
                 .build()
     }

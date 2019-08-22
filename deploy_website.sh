@@ -37,4 +37,4 @@ mkdocs gh-deploy
 
 # Delete our temp folder
 cd ..
-#rm -rf $DIR
+rm -rf $DIR

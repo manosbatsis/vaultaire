@@ -5,6 +5,11 @@ The following sections describe major changes per version
 and can be helpful with version upgrades.
 
 
+## 0.4 
+
+- Fixed [handling of nullable fields](https://github.com/manosbatsis/vaultaire/issues/8)
+- Added string input signatures for `getByLinearId`, `findByLinearId`
+
 ## 0.3 
 
 - Refactored `StateService` to an interface

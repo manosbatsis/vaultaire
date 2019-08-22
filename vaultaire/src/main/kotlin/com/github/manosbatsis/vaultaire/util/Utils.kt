@@ -19,24 +19,20 @@
  */
 package com.github.manosbatsis.vaultaire.util
 
-import net.corda.core.schemas.StatePersistable
-import kotlin.reflect.KProperty1
+import net.corda.core.contracts.UniqueIdentifier
+import java.util.*
 
-/**
- * Wraps a [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
- * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
- */
-class FieldWrapper<T : StatePersistable, S>(val property: KProperty1<T, S>)
-
-
-/** Extended by Vaultaire's annotation processing to provide easy access to fields of a [StatePersistable] type */
-interface Fields<T : StatePersistable>{
-
-    val fieldsByName: Map<String, FieldWrapper<T, *>>
-
-    fun contains(name: String) = fieldsByName.contains(name)
-
-    @Suppress("UNCHECKED_CAST")
-    operator fun get(name: String): FieldWrapper<T, *> =
-            fieldsByName[name] ?: throw IllegalArgumentException("Field not found: $name")
+fun String.asUniqueIdentifier(source: String): UniqueIdentifier {
+    // Is an external ID included?
+    val separatorIndex = source.lastIndexOf('_')
+    return if (separatorIndex < 0) UniqueIdentifier.fromString(source)
+    else UniqueIdentifier(
+            source.substring(0, separatorIndex),
+            UUID.fromString(source.substring(separatorIndex + 1)))
 }
+
+
+
+
+
+
