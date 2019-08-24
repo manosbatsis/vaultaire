@@ -22,13 +22,13 @@ package com.github.manosbatsis.vaultaire.util
 import net.corda.core.contracts.UniqueIdentifier
 import java.util.*
 
-fun String.asUniqueIdentifier(source: String): UniqueIdentifier {
+fun String.asUniqueIdentifier(): UniqueIdentifier {
     // Is an external ID included?
-    val separatorIndex = source.lastIndexOf('_')
-    return if (separatorIndex < 0) UniqueIdentifier.fromString(source)
+    val separatorIndex = this.lastIndexOf('_')
+    return if (separatorIndex < 0) UniqueIdentifier.fromString(this)
     else UniqueIdentifier(
-            source.substring(0, separatorIndex),
-            UUID.fromString(source.substring(separatorIndex + 1)))
+            this.substring(0, separatorIndex),
+            UUID.fromString(this.substring(separatorIndex + 1)))
 }
 
 

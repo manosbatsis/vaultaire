@@ -49,7 +49,7 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
     /** Find the state matching the given [UniqueIdentifier] if any */
     fun getByLinearId(
             linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
-    ): StateAndRef<T> = getByLinearId(linearId.asUniqueIdentifier(linearId))
+    ): StateAndRef<T> = getByLinearId(linearId.asUniqueIdentifier())
 
     /** Find the state matching the given [UniqueIdentifier] if any */
     fun getByLinearId(
@@ -59,7 +59,7 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
     /** Find the state matching the given [UniqueIdentifier] if any */
     fun findByLinearId(
             linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
-    ): StateAndRef<T>? = findByLinearId(linearId.asUniqueIdentifier(linearId))
+    ): StateAndRef<T>? = findByLinearId(linearId.asUniqueIdentifier())
 
     /** Find the state matching the given [UniqueIdentifier] if any */
     fun findByLinearId(

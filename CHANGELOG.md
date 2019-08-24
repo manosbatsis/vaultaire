@@ -4,6 +4,9 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.5 
+
+- Removed param from `String.asUniqueIdentifier()`
 
 ## 0.4 
 
