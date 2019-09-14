@@ -25,7 +25,9 @@ import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.QueryableState
+import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
+import java.math.BigDecimal
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -51,18 +53,37 @@ class BookContract : Contract {
         //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
     }
 
+
+    @CordaSerializable
+    enum class BookGenre {
+        UNKNOWN,
+        TECHNOLOGY,
+        SCIENCE_FICTION,
+        FANTACY,
+        HISTORICAL
+    }
+
     // State.
     data class BookState(val publisher: Party,
                          val author: Party,
+                         val price: BigDecimal,
+                         val genre: BookGenre,
+                         val editions: Int = 1,
                          val title: String = "Uknown",
-                         val published: Date = Date()) : ContractState, QueryableState {
+                         val published: Date = Date(),
+                         override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
         override val participants get() = listOf(publisher, author)
 
         override fun supportedSchemas() = listOf(BookSchemaV1)
 
         override fun generateMappedObject(schema: MappedSchema) = BookSchemaV1.PersistentBookState(
+                linearId.id.toString(),
+                linearId.externalId,
                 publisher.name.toString(),
                 author.name.toString(),
+                price,
+                genre,
+                editions,
                 title,
                 published)
 
@@ -74,10 +95,20 @@ class BookContract : Contract {
 @Entity
 @Table(name = "books")
 class PersistentBookState(
+        @Column(name = "linearId")
+        var id: String = "",
+        @Column(name = "externalId")
+        var externalId: String? = "",
         @Column(name = "publisher")
         var publisher: String = "",
         @Column(name = "author")
         var author: String = "",
+        @Column(name = "price")
+        var price: BigDecimal = BigDecimal.ZERO,
+        @Column(name = "genre")
+        var genre: BookGenre = BookGenre.UNKNOWN,
+        @Column(name = "edition_count")
+        var editions: Int = 1,
         @Column(name = "title")
         var title: String = "",
         @Column(name = "published")

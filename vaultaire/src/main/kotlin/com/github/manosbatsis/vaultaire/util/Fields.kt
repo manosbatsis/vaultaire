@@ -23,20 +23,37 @@ import net.corda.core.schemas.StatePersistable
 import kotlin.reflect.KProperty1
 
 /**
+ * Wraps a non-nullable [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
+ * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
+ */
+class GenericFieldWrapper<T : StatePersistable, S>(override val property: KProperty1<T, S>): TypedFieldWrapper<T, S>
+
+/**
+ * Wraps a nullable [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
+ * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
+ */
+class NullableGenericFieldWrapper<T : StatePersistable, S>(override val property: KProperty1<T, S?>): TypedFieldWrapper<T, S?>
+
+/**
  * Wraps a [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
-class FieldWrapper<T : StatePersistable, S>(val property: KProperty1<T, S>)
+interface TypedFieldWrapper<T : StatePersistable, S>: FieldWrapper<T>{
+    override val property: KProperty1<T, S>
+}
 
+interface FieldWrapper<T : StatePersistable>{
+    val property: KProperty1<T, *>
+}
 
 /** Extended by Vaultaire's annotation processing to provide easy access to fields of a [StatePersistable] type */
 interface Fields<T : StatePersistable>{
 
-    val fieldsByName: Map<String, FieldWrapper<T, *>>
+    val fieldsByName: Map<String, FieldWrapper<T>>
 
     fun contains(name: String) = fieldsByName.contains(name)
 
     @Suppress("UNCHECKED_CAST")
-    operator fun get(name: String): FieldWrapper<T, *> =
+    operator fun get(name: String): FieldWrapper<T> =
             fieldsByName[name] ?: throw IllegalArgumentException("Field not found: $name")
 }

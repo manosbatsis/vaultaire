@@ -25,6 +25,7 @@ import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 
 class BookContractTests {
@@ -37,7 +38,7 @@ class BookContractTests {
 
     @Test
     fun bookTransactionMustBeWellFormed() {
-        val bookState = BookContract.BookState(alice.party, bob.party)
+        val bookState = BookContract.BookState(alice.party, bob.party, BigDecimal.TEN, BookContract.BookGenre.TECHNOLOGY)
         // Tests.
         ledgerServices.ledger {
             // Input state present.
@@ -61,7 +62,7 @@ class BookContractTests {
             }
             // Sending to yourself is not allowed.
             transaction {
-                output(BOOK_CONTRACT_ID, BookContract.BookState(alice.party, alice.party))
+                output(BOOK_CONTRACT_ID, BookContract.BookState(alice.party, alice.party, BigDecimal.TEN, BookContract.BookGenre.TECHNOLOGY))
                 command(alice.publicKey, BookContract.Send())
                 this.failsWith("Cannot publish your own book!")
             }

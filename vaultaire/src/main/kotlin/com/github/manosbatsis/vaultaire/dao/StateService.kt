@@ -46,31 +46,35 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
     val ofLinearState: Boolean
     val ofQueryableState: Boolean
 
-    /** Find the state matching the given [UniqueIdentifier] if any */
-    fun getByLinearId(
-            linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
-    ): StateAndRef<T> = getByLinearId(linearId.asUniqueIdentifier())
+    /** Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise */
+    fun getByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>
 
-    /** Find the state matching the given [UniqueIdentifier] if any */
-    fun getByLinearId(
-            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
-    ): StateAndRef<T>
+    /** Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise */
+    fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>
 
-    /** Find the state matching the given [UniqueIdentifier] if any */
-    fun findByLinearId(
-            linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
-    ): StateAndRef<T>? = findByLinearId(linearId.asUniqueIdentifier())
+    /** Find the state of type [T] matching the given [UniqueIdentifier] if any */
+    fun findByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>?
 
-    /** Find the state matching the given [UniqueIdentifier] if any */
-    fun findByLinearId(
-            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
-    ): StateAndRef<T>?
+    /** Find the state of type [T] matching the given [UniqueIdentifier] if any */
+    fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>?
 
-    /** Count states stored in the vault and matching any given criteria */
+    /**
+     * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
+     * matching the given [UniqueIdentifier.externalId] if any, throw an error otherwise
+     */
+    fun getByExternalId(externalId: String): StateAndRef<T>
+
+    /**
+     * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
+     * matching the given [UniqueIdentifier.externalId] if any
+     */
+    fun findByExternalId(externalId: String): StateAndRef<T>?
+
+    /** Count states of type [T] matching stored in the vault and matching any given criteria */
     fun countBy(criteria: QueryCriteria = defaults.criteria): Long
 
     /**
-     * Query the vault for states matching the given criteria,
+     * Query the vault for states of type [T] matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
     fun queryBy(
@@ -81,7 +85,7 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
     ): Vault.Page<T>
 
     /**
-     * Track the vault for events of `T` states matching the given criteria,
+     * Track the vault for events of [T] states matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
     fun trackBy(
@@ -113,29 +117,32 @@ open class BasicStateService<T: ContractState>(
     override val ofLinearState: Boolean = delegate.contractStateType is LinearState
     override val ofQueryableState: Boolean = delegate.contractStateType is QueryableState
 
-    /** Find the state matching the given [UniqueIdentifier] if any */
-    override fun getByLinearId(
-            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus
-    ): StateAndRef<T> =
+    override fun getByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T> =
+            getByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
+
+    override fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T> =
             findByLinearId(linearId, relevancyStatus) ?: throw IllegalArgumentException("No state found with id $linearId")
 
+    override fun findByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? =
+            findByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
 
-    /** Find the state matching the given [UniqueIdentifier] if any */
-    override fun findByLinearId(
-            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus
-    ): StateAndRef<T>? = if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
-            linearId = listOf(linearId),
-            relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
+    override fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? =
+            if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
+                    linearId = listOf(linearId),
+                    relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
+            else throw IllegalStateException("Type is not a LinearState: ${delegate.contractStateType.simpleName}")
+
+    override fun getByExternalId(externalId: String): StateAndRef<T> =
+            findByExternalId(externalId) ?: throw IllegalArgumentException("No state found with externalId $externalId")
+
+    override fun findByExternalId(externalId: String): StateAndRef<T>? = if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
+            externalId = listOf(externalId),
+            status = Vault.StateStatus.UNCONSUMED), 1, 1).states.firstOrNull()
     else throw IllegalStateException("Type is not a LinearState: ${delegate.contractStateType.simpleName}")
 
-    /** Count states stored in the vault and matching any given criteria */
     override fun countBy(criteria: QueryCriteria): Long =
             queryBy(criteria, 1, 1).totalStatesAvailable
 
-    /**
-     * Query the vault for states matching the given criteria,
-     * applying the given page number, size and sorting specifications if any
-     */
     override fun queryBy(
             criteria: QueryCriteria,
             pageNumber: Int,
@@ -143,11 +150,6 @@ open class BasicStateService<T: ContractState>(
             sort: Sort
     ): Vault.Page<T> = queryBy(criteria, PageSpecification(pageNumber, pageSize), sort)
 
-
-    /**
-     * Track the vault for events of `T` states matching the given criteria,
-     * applying the given page number, size and sorting specifications if any
-     */
     override fun trackBy(
             criteria: QueryCriteria,
             pageNumber: Int,
@@ -184,7 +186,7 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
         })
 
     /**
-     * Query the vault for states matching the given criteria,
+     * Query the vault for states of type [T] matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
     fun queryBy(
@@ -196,7 +198,7 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
     else queryBy(criteria, PageSpecification(pageNumber, pageSize))
 
     /**
-     * Query the vault for states matching the given criteria,
+     * Query the vault for states of type [T] matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
     fun queryBy(
@@ -207,7 +209,7 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
     else queryBy(criteria, paging)
 
     /**
-     * Track the vault for events of `T` states matching the given criteria,
+     * Track the vault for events of [T] states matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
     fun trackBy(
@@ -220,7 +222,7 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
             else trackBy(criteria, PageSpecification(pageNumber, pageSize))
 
     /**
-     * Track the vault for events of `T` states matching the given criteria,
+     * Track the vault for events of [T] states matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
     fun trackBy(

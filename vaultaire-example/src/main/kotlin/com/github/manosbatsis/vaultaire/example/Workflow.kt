@@ -35,11 +35,15 @@ import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
 import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
+import java.math.BigDecimal
 
 /** Used as flow input, to send a recipient a message */
 data class BookMessage(
         val author: Party,
-        val title: String
+        val title: String,
+        val price: BigDecimal,
+        val genre: BookContract.BookGenre,
+        val editions: Int = 1
 )
 
 class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookMessage> {
@@ -50,6 +54,9 @@ class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookMessa
                     BookContract.BookState(
                             publisher = clientFlow.ourIdentity,
                             author = input.author,
+                            editions = input.editions,
+                            price = input.price,
+                            genre = input.genre,
                             title = input.title),
                     BOOK_CONTRACT_ID)
                 .addCommand(BookContract.Send())

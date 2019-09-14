@@ -24,6 +24,8 @@ import com.github.manosbatsis.vaultaire.dao.*
 import com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
+import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
+import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import net.corda.core.contracts.ContractState
@@ -58,6 +60,7 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
     companion object {
         const val BLOCK_FUN_NAME = "block"
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
+        val TYPE_PARAMETER_STAR = WildcardTypeName.producerOf(Any::class.asTypeName().copy(nullable = true))
         val CONTRACT_STATE_CLASSNAME = ClassName(ContractState::class.packageName, ContractState::class.simpleName!!)
         val STATE_PERSISTABLE_CLASSNAME = ClassName(StatePersistable::class.packageName, StatePersistable::class.simpleName!!)
         val FIELDS_CLASSNAME = ClassName(Fields::class.packageName, Fields::class.simpleName!!)
@@ -220,8 +223,7 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
                 Map::class.asClassName().parameterizedBy(
                         String::class.asTypeName(),
                         FieldWrapper::class.asTypeName().parameterizedBy(
-                                annotatedElement.asKotlinTypeName(),
-                                WildcardTypeName.producerOf(Any::class.asTypeName().copy(nullable = true)))),
+                                annotatedElement.asKotlinTypeName())),
                 KModifier.PUBLIC, KModifier.OVERRIDE)
                 .initializer(
                         fieldsByNameBuilder.build()
@@ -232,13 +234,14 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
 
     /** Create property that wraps a pesistent state field */
     private fun buildPersistentStateFieldWrapperPropertySpec(field: VariableElement, annotatedElement: TypeElement): PropertySpec {
-        val fieldType = FieldWrapper::class.asClassName().parameterizedBy(
+        val fieldWrapperClass = if(field.asKotlinTypeName().isNullable) NullableGenericFieldWrapper::class else GenericFieldWrapper::class
+        val fieldType = fieldWrapperClass.asClassName().parameterizedBy(
                 field.enclosingElement.asKotlinTypeName(),
                 field.asKotlinTypeName())
 
         processingEnv.noteMessage { "Adding field: $field" }
         return PropertySpec.builder(field.simpleName.toString(), fieldType, KModifier.PUBLIC)
-                .initializer( "%T(${annotatedElement.qualifiedName}::${field.simpleName})", FieldWrapper::class)
+                .initializer( "%T(${annotatedElement.qualifiedName}::${field.simpleName})", fieldWrapperClass)
                 .addKdoc("Wraps [%T.${field.simpleName}]", annotatedElement)
                 .build()
     }

@@ -14,6 +14,7 @@ Query DSL and data access utilities for Corda developers.
 	- [Adding Criteria](#adding-criteria)
 		- [Accessing Fields](#accessing-fields)
 	- [Functions and Operators](#functions-and-operators)
+	- [Aggregate Functions](#aggregate-functions)
 	- [Sorting](#sorting)
 - [State Services](#state-services)
 	- [Generated State Service](#generated-state-service)
@@ -39,7 +40,7 @@ dependencies{
 
     // Corda dependencies etc.
     // ...
-    
+
 }    
 ```
 
@@ -202,6 +203,38 @@ val query = booksQuery {
 }
 ```
 
+### Adding Aggregates
+
+Aggregates can be specified within the `and` / `or` functions:
+
+```kotlin
+val query = booksQuery {
+    // settings...
+
+    // criteria
+    or { // Match at least one
+        // .. some criteria here...
+
+				// add some aggregates
+				// ====================
+				fields.author.count()
+				fields.editions.count()
+				fields.editions.avg()
+				fields.editions.sum(listOf(fields.author))
+				fields.price.count()
+				fields.price.avg()
+				fields.price.min()
+				fields.price.max()
+    }
+
+    // sorting...
+}
+```
+
+> **Note**: Corda paged queries can include either query results or "other" results based on the above aggregates.
+For that purpose, the `toCriteria` functions accepts an optional boolean to ignore aggregates, thus allowing
+the reuse of the same query to obtain either paged or aggregate results. 
+
 #### Accessing Fields
 
 Fields can be accessed via the generated DSL's `fields` object within `and`, `or`, or `orderBy`
@@ -330,6 +363,52 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
   </tr>
 </table>
 
+### Aggregate Functions
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Examples</th>
+  </tr>
+  <tr>
+    <td>avg</td>
+    <td>
+        <code>fields.foo.avg()</code><br>
+        <code>fields.foo.avg(groupByColumns)</code><br>
+        <code>fields.foo.avg(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>count</td>
+    <td>
+        <code>fields.foo.count()</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>max</td>
+    <td>
+        <code>fields.foo.max()</code><br>
+        <code>fields.foo.max(groupByColumns)</code><br>
+        <code>fields.foo.max(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>min</td>
+    <td>
+        <code>fields.foo.min()</code><br>
+        <code>fields.foo.min(groupByColumns)</code><br>
+        <code>fields.foo.min(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>sum</td>
+    <td>
+        <code>fields.foo.sum()</code><br>
+        <code>fields.foo.sum(groupByColumns)</code><br>
+        <code>fields.foo.sum(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+</table>
 
 ### Sorting
 
@@ -357,7 +436,7 @@ from Corda's `ServiceHub` and `CordaRPCOps`.
 ### Generated State Service
 
 Vaultaire's annotation processor  will automatically subclass `ExtendedStateService` to generate
-an `Fields` aware state service service per annotated element. The generated service name 
+an `Fields` aware state service service per annotated element. The generated service name
 is "${contractStateTypeName}Service":  
 
 
@@ -399,7 +478,7 @@ class MyExtendedBookStateService(
 
     // Custom business methods...
 }
-``` 
+```
 
 ## Credits
 

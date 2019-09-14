@@ -4,6 +4,12 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.6
+
+- Added support for [aggregate functions](https://github.com/manosbatsis/vaultaire/issues/2). 
+- Added `getByExternalId` and `findByExternalId` methods to `StateService`
+- Added optional `Vault.RelevancyStatus` parameter to `StateService` `getByLinearId` and `findByLinearId` methods
+
 ## 0.5 
 
 - Removed param from `String.asUniqueIdentifier()`
