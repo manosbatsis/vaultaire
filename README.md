@@ -208,32 +208,30 @@ val query = booksQuery {
 Aggregates can be specified within the `and` / `or` functions:
 
 ```kotlin
-val query = booksQuery {
+val bookStateQuery = bookStateQuery {
     // settings...
-
+    
     // criteria
-    or { // Match at least one
-        // .. some criteria here...
-
-				// add some aggregates
-				// ====================
-				fields.author.count()
-				fields.editions.count()
-				fields.editions.avg()
-				fields.editions.sum(listOf(fields.author))
-				fields.price.count()
-				fields.price.avg()
-				fields.price.min()
-				fields.price.max()
+    and {
+        fields.title `like` "%Corda Foundation%"
+        fields.genre `==` BookContract.BookGenre.SCIENCE_FICTION
     }
-
-    // sorting...
+    // aggregates
+    aggregate {
+        // add some aggregates
+        fields.externalId.count()
+        fields.id.count()
+        fields.editions.sum()
+        fields.price.min()
+        fields.price.avg()
+        fields.price.max()
+    }
 }
 ```
 
 > **Note**: Corda paged queries can include either query results or "other" results based on the above aggregates.
 For that purpose, the `toCriteria` functions accepts an optional boolean to ignore aggregates, thus allowing
-the reuse of the same query to obtain either paged or aggregate results. 
+the reuse of the same query to obtain either paged state or aggregate results. 
 
 #### Accessing Fields
 

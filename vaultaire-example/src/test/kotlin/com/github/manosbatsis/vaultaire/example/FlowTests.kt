@@ -66,7 +66,7 @@ class FlowTests {
         network.stopNodes()
     }
 
-    //@Test
+    @Test
     fun `Test DSL conditions`() {
         val bookTitle = "A book on Corda"
         val bookState = BookContract.BookState(
@@ -76,7 +76,6 @@ class FlowTests {
                 genre = BookContract.BookGenre.TECHNOLOGY,
                 editions = 3,
                 title = bookTitle)
-
 
 
         val stx = flowWorksCorrectly(
@@ -151,80 +150,111 @@ class FlowTests {
     }
 
     @Test
-    fun `Test DSL aggregations `() {
+    fun `Test DSL aggregates`() {
+        val bookTitle = "Corda Foundation"
+        val bookState = BookContract.BookState(
+                publisher = a.info.legalIdentities.first(),
+                author = b.info.legalIdentities.first(),
+                price = BigDecimal.valueOf(8),
+                genre = BookContract.BookGenre.SCIENCE_FICTION,
+                editions = 3,
+                title = bookTitle)
+
 
         val stx = flowWorksCorrectly(
                 CreateBookFlow(BookMessage(
-                        author = b.info.legalIdentities.first(),
-                        price = BigDecimal.valueOf(8),
-                        genre = BookContract.BookGenre.FANTACY,
-                        editions = 3,
-                        title = "Lord of Corda")))
+                        author = bookState.author,
+                        price = bookState.price,
+                        genre = bookState.genre,
+                        editions = bookState.editions,
+                        title = bookState.title)))
         flowWorksCorrectly(
                 CreateBookFlow(BookMessage(
-                        author = b.info.legalIdentities.first(),
+                        author = bookState.author,
                         price = BigDecimal.valueOf(10),
-                        genre = BookContract.BookGenre.FANTACY,
+                        genre = BookContract.BookGenre.SCIENCE_FICTION,
                         editions = 2,
-                        title = "Lord of Corda 2")))
+                        title = "Forward the Corda Foundation")))
         flowWorksCorrectly(
                 CreateBookFlow(BookMessage(
-                        author = b.info.legalIdentities.first(),
+                        author = bookState.author,
                         price = BigDecimal.valueOf(12),
-                        genre = BookContract.BookGenre.FANTACY,
+                        genre = BookContract.BookGenre.SCIENCE_FICTION,
                         editions = 2,
-                        title = "Lord of Corda 3")))
+                        title = "Corda Foundation and Earth")))
+
+        // Check book transaction is stored in the storage service.
+        val bTx = b.services.validatedTransactions.getTransaction(stx.id)
+        assertEquals(bTx, stx)
+        print("bTx == $stx\n")
+        // Check book state is stored in the vault.
+        b.transaction {
+            // Simple query.
+            val bYo = b.services.vaultService.queryBy<BookContract.BookState>()
+                    .states.map { it.state.data }.single { it.title == bookTitle }
+
+            // Verify record
+            assertEquals(bYo.publisher, bookState.publisher)
+            assertEquals(bYo.author, bookState.author)
+            assertEquals(bYo.title, bookState.title)
 
 
-        // Use the generated DSL to create query criteria
-        val bookStateQuery = bookStateQuery {
-            status = Vault.StateStatus.UNCONSUMED // the default
-            relevancyStatus = Vault.RelevancyStatus.ALL // the default
-            and {
-                fields.title `like` "Lord of Corda%"
-                fields.genre `==` BookContract.BookGenre.FANTACY
-
-                // add some aggregates
-                fields.externalId.count()
-                fields.id.count()
-                fields.editions.sum()
-                fields.price.min()
-                fields.price.avg()
-                fields.price.max()
+            // Use the generated DSL to create query criteria
+            val bookStateQuery = bookStateQuery {
+                status = Vault.StateStatus.UNCONSUMED // the default
+                relevancyStatus = Vault.RelevancyStatus.ALL // the default
+                and {
+                    fields.title `like` "%Corda Foundation%"
+                    fields.genre `==` BookContract.BookGenre.SCIENCE_FICTION
+                }
+                aggregate {
+                    // add some aggregates
+                    fields.externalId.count()
+                    fields.id.count()
+                    fields.editions.sum()
+                    fields.price.min()
+                    fields.price.avg()
+                    fields.price.max()
+                }
             }
-            orderBy {
-                fields.title sort ASC
+
+            // Test BasicStateService
+            val stateService = BasicStateService(b.services, BookContract.BookState::class.java)
+
+            // Ensure three matching records
+            var bookSearchPage = stateService.queryBy(
+                    bookStateQuery.toCriteria(true), 1, 10, bookStateQuery.toSort()
+            )
+            assertEquals(3, bookSearchPage.totalStatesAvailable)
+
+            // Validate aggregate results
+            bookSearchPage = stateService.queryBy(
+                    bookStateQuery.toCriteria(false), 1, 10, bookStateQuery.toSort()
+            )
+            bookSearchPage.otherResults.forEachIndexed { index, element ->
+                println("testStateServiceAggregates, aggregate $index: $element")
             }
+            // Must be five aggregates
+            assertEquals(6, bookSearchPage.otherResults.size)
+            // Must zero external IDs
+            assertEquals(0.toLong(), bookSearchPage.otherResults[0])
+            // Must three linear IDs
+            assertEquals(3.toLong(), bookSearchPage.otherResults[1])
+            // Must be seven editions
+            assertEquals(7.toLong(), bookSearchPage.otherResults[2])
+            // Minimum price must be eight
+            assertEquals(0, BigDecimal(8).compareTo(bookSearchPage.otherResults[3] as BigDecimal))
+            // Average price must be ten
+            assertEquals(0, BigDecimal.TEN.compareTo(BigDecimal(bookSearchPage.otherResults[4] as Double)))
+            // Minimum price must be 12
+            assertEquals(0, BigDecimal(12).compareTo(bookSearchPage.otherResults[5] as BigDecimal))
+
         }
-
-
-        // Test BasicStateService
-        val stateBasicService = BasicStateService(b.services, BookContract.BookState::class.java)
-
-        val stateService = CustomBasicBookStateService(b.services)
-        val aggregateResults = stateService.queryBy(bookStateQuery.toCriteria())
-        aggregateResults.otherResults.forEachIndexed { index, element ->
-            println("testStateServiceAggregates, aggregate $index: $element")
-        }
-        // Must be five aggregates
-        assertEquals(6, aggregateResults.otherResults.size)
-        // Must zero external IDs
-        assertEquals(0.toLong(), aggregateResults.otherResults[0])
-        // Must three linear IDs
-        assertEquals(3.toLong(), aggregateResults.otherResults[1])
-        // Must be seven editions
-        assertEquals(7.toLong(), aggregateResults.otherResults[2])
-        // Minimum price must be eight
-        assertEquals(0, BigDecimal(8).compareTo(aggregateResults.otherResults[3] as BigDecimal))
-        // Average price must be ten
-        assertEquals(0, BigDecimal.TEN.compareTo(BigDecimal(aggregateResults.otherResults[4] as Double)))
-        // Minimum price must be 12
-        assertEquals(0, BigDecimal(12).compareTo(aggregateResults.otherResults[5] as BigDecimal))
     }
 
     private fun testStateServiceQueryBy(stateService: BasicStateService<BookContract.BookState>, bookStateQuery: PersistentBookStateConditions, bookState: BookContract.BookState) {
         val bookSearchPage = stateService.queryBy(
-                bookStateQuery.toCriteria(true), 1, 10, bookStateQuery.toSort()
+                bookStateQuery.toCriteria(), 1, 10, bookStateQuery.toSort()
         )
         val bookSearchResult = bookSearchPage.states.single().state.data
         assertEquals(bookState.title, bookSearchResult.title)
@@ -233,13 +263,11 @@ class FlowTests {
     }
 
 
-
-
     inline fun <reified OUT> flowWorksCorrectly(flow: PartitureFlow<*, OUT>): OUT {
         val future = a.startFlow(flow)
         // Ask nodes to process any queued up inbound messages
         network.runNetwork()
-        return  future.getOrThrow()
+        return future.getOrThrow()
 
     }
 }

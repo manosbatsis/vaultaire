@@ -57,8 +57,8 @@ import kotlin.Suppress as supress
 /** Condition interface */
 interface Condition {
 
-    /** Implement to expose internal state as criteria */
-    fun toCriteria(ignoreAggregates: Boolean = false): QueryCriteria?
+    /** Obtain the internal state as [QueryCriteria] if any, `null` otherwise */
+    fun toCriteria(): QueryCriteria?
 }
 
 /** A [Condition] that contains other conditions. Allows for nested and/or condition groups */
@@ -67,15 +67,10 @@ abstract class ConditionsCondition<P : StatePersistable, out F: Fields<P>>: Cond
     /** The fields of the target [StatePersistable] type `P` */
     abstract val fields: F
 
-    val conditions: MutableList<Condition> = mutableListOf()
-    val aggregates: MutableList<Condition> = mutableListOf()
+    internal val conditions: MutableList<Condition> = mutableListOf()
 
     fun addCondition(condition: Condition) {
-        conditions += condition
-    }
-
-    fun addAggregate(condition: Condition) {
-        aggregates += condition
+        conditions.add(condition)
     }
 
     fun and(initializer: CompositeCondition<P, F>.() -> Unit) = addCondition(AndCondition(fields).apply(initializer))
@@ -174,7 +169,65 @@ abstract class CompositeCondition<P : StatePersistable, out F: Fields<P>>(
     @supress("UNCHECKED_CAST")
     protected fun FieldWrapper<P>.asStringProperty() = this.property as KProperty1<P, String>
 
-    // aggregates
+}
+
+/** Defines a set of conditions where all items must be matched */
+class AndCondition<P : StatePersistable, out F: Fields<P>>(
+        fields: F
+) : CompositeCondition<P, F>(fields) {
+
+
+    override fun toCriteria(): QueryCriteria? {
+        var criteria: QueryCriteria? = null
+        this.conditions.forEach {
+            val childCriteria = it.toCriteria()
+            if(childCriteria != null) {
+                if(criteria == null ) criteria = childCriteria
+                else criteria = criteria!!.and(childCriteria)
+            }
+        }
+        return criteria
+    }
+}
+
+/** Defines a set of conditions where at least a single item must be matched */
+class OrCondition<P : StatePersistable, out F: Fields<P>>(
+        fields: F
+) : CompositeCondition<P, F>(fields) {
+
+    override fun toCriteria(): QueryCriteria? {
+        var criteria: QueryCriteria? = null
+        this.conditions.forEach {
+            val childCriteria = it.toCriteria()
+            if(childCriteria != null) {
+                if(criteria == null ) criteria = childCriteria
+                else criteria = criteria!!.or(childCriteria)
+            }
+        }
+        return criteria
+    }
+}
+
+/**
+ * A condition that wraps a [VaultCustomQueryCriteria] instance.
+ * Instances of this type are typically created by
+ * [FieldWrapper] extension functions defined by [CompositeCondition]
+ * as shorthands (infix or regular), i.e. expression-only criteria without a contract state type,
+ * vault state status or relevance status of their own.
+ */
+open class VaultCustomQueryCriteriaWrapperCondition(
+        private val criterion: VaultCustomQueryCriteria<*>
+) : Condition {
+    final override fun toCriteria(): QueryCriteria = criterion
+}
+
+/** Used to define aggregation criteria */
+class Aggregates<P : StatePersistable>(val statePersistableType: Class<P>) {
+
+    internal val aggregates: MutableList<Condition> = mutableListOf()
+
+    private fun addAggregate(condition: Condition)  = aggregates.add(condition)
+
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.sum(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
             addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
@@ -198,64 +251,6 @@ abstract class CompositeCondition<P : StatePersistable, out F: Fields<P>>(
     fun FieldWrapper<P>.count() =
             addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
                     this.property.count())))
-}
-
-/** Defines a set of conditions where all items must be matched */
-class AndCondition<P : StatePersistable, out F: Fields<P>>(
-        fields: F
-) : CompositeCondition<P, F>(fields) {
-
-
-    override fun toCriteria(ignoreAggregates: Boolean): QueryCriteria? {
-        var criteria: QueryCriteria? = null
-        val conditionsToProcess = if(ignoreAggregates) this.conditions else this.conditions.plus(this.aggregates)
-        conditionsToProcess.forEach {
-            val childCriteria = it.toCriteria(ignoreAggregates)
-            if(childCriteria != null) {
-                if(criteria == null ) criteria = childCriteria
-                else criteria = criteria!!.and(childCriteria)
-            }
-        }
-        return criteria
-    }
-}
-
-/** Defines a set of conditions where at least a single item must be matched */
-class OrCondition<P : StatePersistable, out F: Fields<P>>(
-        fields: F
-) : CompositeCondition<P, F>(fields) {
-
-    override fun toCriteria(ignoreAggregates: Boolean): QueryCriteria? {
-        var criteria: QueryCriteria? = null
-        this.conditions.forEach {
-            val childCriteria = it.toCriteria(ignoreAggregates)
-            if(childCriteria != null) {
-                if(criteria == null ) criteria = childCriteria
-                else criteria = criteria!!.or(childCriteria)
-            }
-        }
-        if(!ignoreAggregates) aggregates.forEach {
-            val childCriteria = it.toCriteria(ignoreAggregates)
-            if(childCriteria != null) {
-                if(criteria == null ) criteria = childCriteria
-                else criteria = criteria!!.and(childCriteria)
-            }
-        }
-        return criteria
-    }
-}
-
-/**
- * A condition that wraps a [VaultCustomQueryCriteria] instance.
- * Instances of this type are typically created by
- * [FieldWrapper] extension functions defined by [CompositeCondition]
- * as shorthands (infix or regular), i.e. expression-only criteria without a contract state type,
- * vault state status or relevance status of their own.
- */
-open class VaultCustomQueryCriteriaWrapperCondition(
-        private val criterion: VaultCustomQueryCriteria<*>
-) : Condition {
-    final override fun toCriteria(ignoreAggregates: Boolean): QueryCriteria = criterion
 }
 
 /** Used to define [Sort.SortColumn]s */
@@ -293,24 +288,45 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
     /** The target [StatePersistable] type */
     abstract val statePersistableType: Class<P>
 
-    lateinit var sortColumns: SortColumns<P>
+    lateinit private var aggregates: Aggregates<P>
+    lateinit private var sortColumns: SortColumns<P>
+
+    fun aggregate(initializer: Aggregates<P>.() -> Unit) {
+        aggregates = Aggregates(statePersistableType).apply(initializer)
+    }
 
     fun orderBy(initializer: SortColumns<P>.() -> Unit) {
         sortColumns = SortColumns(statePersistableType).apply(initializer)
     }
 
-    fun toSort(): Sort = Sort(sortColumns.entries)
+    fun toSort() = Sort( if(::sortColumns.isInitialized) sortColumns.entries else emptySet() )
 
-    override fun toCriteria(ignoreAggregates: Boolean): QueryCriteria {
+    override fun toCriteria(): QueryCriteria {
         var criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(
                 status, setOf(contractStateType), stateRefs, notary, softLockingCondition, timeCondition,
                 relevancyStatus, constraintTypes, constraints, participants)
 
         this.conditions.forEach {
-            val childCriteria = it.toCriteria(ignoreAggregates)
+            val childCriteria = it.toCriteria()
             if(childCriteria != null) criteria = criteria.and(childCriteria)
         }
 
+        return criteria
+    }
+
+    /**
+     * Obtain the internal state as [QueryCriteria] if any, `null` otherwise
+     * @param ignoreAggregates whether to ignore aggregate functions.
+     * Corda paged queries can have either state or aggregate results, but not both.
+     */
+    fun toCriteria(ignoreAggregates: Boolean): QueryCriteria {
+        var criteria: QueryCriteria = toCriteria()
+        if(!ignoreAggregates && ::aggregates.isInitialized) {
+            aggregates.aggregates.forEach {
+                val childCriteria = it.toCriteria()
+                if(childCriteria != null) criteria = criteria.and(childCriteria)
+            }
+        }
         return criteria
     }
 }
