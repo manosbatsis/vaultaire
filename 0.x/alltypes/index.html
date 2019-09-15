@@ -337,6 +337,10 @@
 </thead>
 <tbody>
 <tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dsl/-aggregates/">com.github.manosbatsis.vaultaire.dsl.Aggregates</a></td>
+<td>Used to define aggregation criteria</td>
+</tr>
+<tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl/-and-condition/">com.github.manosbatsis.vaultaire.dsl.AndCondition</a></td>
 <td>Defines a set of conditions where all items must be matched</td>
 </tr>
@@ -362,11 +366,19 @@
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-field-wrapper/">com.github.manosbatsis.vaultaire.util.FieldWrapper</a></td>
-<td>Wraps a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-fields/">com.github.manosbatsis.vaultaire.util.Fields</a></td>
 <td>Extended by Vaultaire&rsquo;s annotation processing to provide easy access to fields of a <a href="#">StatePersistable</a> type</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.util/-generic-field-wrapper/">com.github.manosbatsis.vaultaire.util.GenericFieldWrapper</a></td>
+<td>Wraps a non-nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/">com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper</a></td>
+<td>Wraps a nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl/-or-condition/">com.github.manosbatsis.vaultaire.dsl.OrCondition</a></td>
@@ -401,8 +413,12 @@
 <td></td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dsl/-vault-custom-query-criteria-condition/">com.github.manosbatsis.vaultaire.dsl.VaultCustomQueryCriteriaCondition</a></td>
-<td>A condition equivalent to a <a href="#">VaultCustomQueryCriteria</a> instance. Created by infix and regular extension functions of <a href="../com.github.manosbatsis.vaultaire.util/-field-wrapper/">FieldWrapper</a> defined by <a href="../com.github.manosbatsis.vaultaire.dsl/-composite-condition/">CompositeCondition</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/">com.github.manosbatsis.vaultaire.util.TypedFieldWrapper</a></td>
+<td>Wraps a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dsl/-vault-custom-query-criteria-wrapper-condition/">com.github.manosbatsis.vaultaire.dsl.VaultCustomQueryCriteriaWrapperCondition</a></td>
+<td>A condition that wraps a <a href="#">VaultCustomQueryCriteria</a> instance. Instances of this type are typically created by <a href="../com.github.manosbatsis.vaultaire.util/-field-wrapper/">FieldWrapper</a> extension functions defined by <a href="../com.github.manosbatsis.vaultaire.dsl/-composite-condition/">CompositeCondition</a> as shorthands (infix or regular), i.e. expression-only criteria without a contract state type, vault state status or relevance status of their own.</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl/-vault-query-criteria-condition/">com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition</a></td>

@@ -338,6 +338,13 @@
     Adding Criteria
   </a>
   
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-aggregates" title="Adding Aggregates" class="md-nav__link">
+    Adding Aggregates
+  </a>
+  
     <nav class="md-nav">
       <ul class="md-nav__list">
         
@@ -356,6 +363,13 @@
           <li class="md-nav__item">
   <a href="#functions-and-operators" title="Functions and Operators" class="md-nav__link">
     Functions and Operators
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-functions" title="Aggregate Functions" class="md-nav__link">
+    Aggregate Functions
   </a>
   
 </li>
@@ -522,6 +536,13 @@
     Adding Criteria
   </a>
   
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-aggregates" title="Adding Aggregates" class="md-nav__link">
+    Adding Aggregates
+  </a>
+  
     <nav class="md-nav">
       <ul class="md-nav__list">
         
@@ -540,6 +561,13 @@
           <li class="md-nav__item">
   <a href="#functions-and-operators" title="Functions and Operators" class="md-nav__link">
     Functions and Operators
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-functions" title="Aggregate Functions" class="md-nav__link">
+    Aggregate Functions
   </a>
   
 </li>
@@ -764,6 +792,34 @@ with criteria like:</p>
 <span class="p">}</span>
 </pre></div>
 
+<h3 id="adding-aggregates">Adding Aggregates<a class="headerlink" href="#adding-aggregates" title="Permanent link">&para;</a></h3>
+<p>Aggregates can be specified within the <code>and</code> / <code>or</code> functions:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">bookStateQuery</span> <span class="p">=</span> <span class="n">bookStateQuery</span> <span class="p">{</span>
+    <span class="c1">// settings...</span>
+
+    <span class="c1">// criteria</span>
+    <span class="n">and</span> <span class="p">{</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">`like`</span> <span class="s">&quot;%Corda Foundation%&quot;</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">genre</span> <span class="err">`</span><span class="p">==</span><span class="err">`</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">BookGenre</span><span class="p">.</span><span class="n">SCIENCE_FICTION</span>
+    <span class="p">}</span>
+    <span class="c1">// aggregates</span>
+    <span class="n">aggregate</span> <span class="p">{</span>
+        <span class="c1">// add some aggregates</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">externalId</span><span class="p">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">editions</span><span class="p">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">price</span><span class="p">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">price</span><span class="p">.</span><span class="n">avg</span><span class="p">()</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">price</span><span class="p">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<blockquote>
+<p><strong>Note</strong>: Corda paged queries can include either query results or &ldquo;other&rdquo; results based on the above aggregates.
+For that purpose, the <code>toCriteria</code> functions accepts an optional boolean to ignore aggregates, thus allowing
+the reuse of the same query to obtain either paged state or aggregate results. </p>
+</blockquote>
 <h4 id="accessing-fields">Accessing Fields<a class="headerlink" href="#accessing-fields" title="Permanent link">&para;</a></h4>
 <p>Fields can be accessed via the generated DSL&rsquo;s <code>fields</code> object within <code>and</code>, <code>or</code>, or <code>orderBy</code>
 functions using dot notation e.g. <code>fields.foo</code>.</p>
@@ -890,6 +946,52 @@ non typesafe functions like <code>_equal</code>, <code>_notEqual</code>, <code>_
   </tr>
 </table>
 
+<h3 id="aggregate-functions">Aggregate Functions<a class="headerlink" href="#aggregate-functions" title="Permanent link">&para;</a></h3>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Examples</th>
+  </tr>
+  <tr>
+    <td>avg</td>
+    <td>
+        <code>fields.foo.avg()</code><br>
+        <code>fields.foo.avg(groupByColumns)</code><br>
+        <code>fields.foo.avg(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>count</td>
+    <td>
+        <code>fields.foo.count()</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>max</td>
+    <td>
+        <code>fields.foo.max()</code><br>
+        <code>fields.foo.max(groupByColumns)</code><br>
+        <code>fields.foo.max(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>min</td>
+    <td>
+        <code>fields.foo.min()</code><br>
+        <code>fields.foo.min(groupByColumns)</code><br>
+        <code>fields.foo.min(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+  <tr>
+    <td>sum</td>
+    <td>
+        <code>fields.foo.sum()</code><br>
+        <code>fields.foo.sum(groupByColumns)</code><br>
+        <code>fields.foo.sum(groupByColumns, sortDirection)</code><br>
+    </td>
+  </tr>
+</table>
+
 <h3 id="sorting">Sorting<a class="headerlink" href="#sorting" title="Permanent link">&para;</a></h3>
 <p>Sorting is defined using the <code>orderBy</code> function:</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">criteria</span> <span class="p">=</span> <span class="n">bookConditions</span> <span class="p">{</span>
@@ -909,7 +1011,7 @@ from the Vault (<code>queryBy</code>, <code>trackBy</code>), while decoupling da
 from Corda&rsquo;s <code>ServiceHub</code> and <code>CordaRPCOps</code>.</p>
 <h3 id="generated-state-service">Generated State Service<a class="headerlink" href="#generated-state-service" title="Permanent link">&para;</a></h3>
 <p>Vaultaire&rsquo;s annotation processor  will automatically subclass <code>ExtendedStateService</code> to generate
-an <code>Fields</code> aware state service service per annotated element. The generated service name 
+an <code>Fields</code> aware state service service per annotated element. The generated service name
 is &ldquo;${contractStateTypeName}Service&rdquo;:  </p>
 <div class="codehilite"><pre><span></span><span class="c1">// Create an instance of the generated service type</span>
 <span class="k">val</span> <span class="py">bookStateService</span> <span class="p">=</span> <span class="n">BookStateService</span><span class="p">(</span>
