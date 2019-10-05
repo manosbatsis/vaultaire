@@ -43,6 +43,7 @@ markdown_extensions:
 
 nav:
   - 'Overview': index.md
+  - 'FAQ': faq.md
   - 'API': /vaultaire/0.x/index.html
 #  - 'Stack Overflow ⏏': https://stackoverflow.com/questions/tagged/kotlinpoet?sort=active
   - 'Change Log': changelog.md
