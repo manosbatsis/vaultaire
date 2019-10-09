@@ -427,7 +427,7 @@ val criteria = bookConditions {
 
 ## State Services
 
-Vaultaire's `StateService` provide an interface for querying states and tracking events
+Vaultaire's `StateService`s provide an interface for querying states and tracking events
 from the Vault (`queryBy`, `trackBy`), while decoupling data access or business logic code
 from Corda's `ServiceHub` and `CordaRPCOps`.
 
