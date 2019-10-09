@@ -293,13 +293,6 @@ class FlowTests {
         }
     }
 
-    @Test
-    fun `Test invalid linear or external id`() {
-        // Test BasicStateService
-        val stateService = BasicStateService(b.services, BookContract.BookState::class.java)
-
-    }
-
     private fun testStateServiceQueryBy(stateService: BasicStateService<BookContract.BookState>, bookStateQuery: PersistentBookStateConditions, bookState: BookContract.BookState) {
         val bookSearchPage = stateService.queryBy(
                 bookStateQuery.toCriteria(), 1, 10, bookStateQuery.toSort()
