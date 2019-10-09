@@ -269,21 +269,24 @@ class FlowTests {
         
         val stateService = BasicStateService(b.services, BookContract.BookState::class.java)
 
+        // Get by linear ID
         assertNotNull(stateService.getByLinearId(identifier))
         assertNotNull(stateService.getByLinearId(identifier.toString()))
         assertNotNull(stateService.getByLinearId(identifier.id))
         assertNotNull(stateService.getByLinearId(identifier.id.toString()))
 
+        // Find by linear ID
         assertNotNull(stateService.findByExternalId(identifier.externalId!!))
         assertNotNull(stateService.findByLinearId(identifier))
         assertNotNull(stateService.findByLinearId(identifier.toString()))
         assertNotNull(stateService.findByLinearId(identifier.id))
         assertNotNull(stateService.findByLinearId(identifier.id.toString()))
 
+        // Get/find by external ID
         assertNotNull(stateService.getByExternalId(identifier.externalId!!))
         assertNotNull(stateService.findByExternalId(identifier.externalId!!))
 
-        // Ensure a StateNotFoundException is thrown
+        // Ensure a StateNotFoundException is thrown when no match is found in getXxxx methods
         val random = UUID.randomUUID().toString()
         assertThrows<StateNotFoundException> {
             stateService.getByLinearId(random)
