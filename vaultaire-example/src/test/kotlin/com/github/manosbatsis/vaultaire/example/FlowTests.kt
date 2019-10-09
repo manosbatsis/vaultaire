@@ -21,6 +21,8 @@ package com.github.manosbatsis.vaultaire.example
 
 import com.github.manosbatsis.partiture.flow.PartitureFlow
 import com.github.manosbatsis.vaultaire.dao.BasicStateService
+import com.github.manosbatsis.vaultaire.dao.StateNotFoundException
+import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.queryBy
 import net.corda.core.utilities.getOrThrow
@@ -30,12 +32,11 @@ import net.corda.testing.node.MockNetworkNotarySpec
 import net.corda.testing.node.MockNetworkParameters
 import net.corda.testing.node.StartedMockNode
 import net.corda.testing.node.TestCordapp.Companion.findCordapp
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import java.math.BigDecimal
+import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 
 @Suppress("DEPRECATION")
@@ -250,6 +251,53 @@ class FlowTests {
             assertEquals(0, BigDecimal(12).compareTo(bookSearchPage.otherResults[5] as BigDecimal))
 
         }
+    }
+
+    @Test
+    fun `Test get or find by id`() {
+
+        val identifier = UniqueIdentifier(id = UUID.randomUUID(), externalId = UUID.randomUUID().toString())
+        
+        flowWorksCorrectly(
+                CreateBookFlow(BookMessage(
+                        author = b.info.legalIdentities.first(),
+                        price = BigDecimal.valueOf(82),
+                        genre = BookContract.BookGenre.HISTORICAL,
+                        editions = 24,
+                        title = "The History of Corda, Volume 29",
+                        linearId = identifier)))
+        
+        val stateService = BasicStateService(b.services, BookContract.BookState::class.java)
+
+        assertNotNull(stateService.getByLinearId(identifier))
+        assertNotNull(stateService.getByLinearId(identifier.toString()))
+        assertNotNull(stateService.getByLinearId(identifier.id))
+        assertNotNull(stateService.getByLinearId(identifier.id.toString()))
+
+        assertNotNull(stateService.findByExternalId(identifier.externalId!!))
+        assertNotNull(stateService.findByLinearId(identifier))
+        assertNotNull(stateService.findByLinearId(identifier.toString()))
+        assertNotNull(stateService.findByLinearId(identifier.id))
+        assertNotNull(stateService.findByLinearId(identifier.id.toString()))
+
+        assertNotNull(stateService.getByExternalId(identifier.externalId!!))
+        assertNotNull(stateService.findByExternalId(identifier.externalId!!))
+
+        // Ensure a StateNotFoundException is thrown
+        val random = UUID.randomUUID().toString()
+        assertThrows<StateNotFoundException> {
+            stateService.getByLinearId(random)
+        }
+        assertThrows<StateNotFoundException> {
+            stateService.getByExternalId(random)
+        }
+    }
+
+    @Test
+    fun `Test invalid linear or external id`() {
+        // Test BasicStateService
+        val stateService = BasicStateService(b.services, BookContract.BookState::class.java)
+
     }
 
     private fun testStateServiceQueryBy(stateService: BasicStateService<BookContract.BookState>, bookStateQuery: PersistentBookStateConditions, bookState: BookContract.BookState) {

@@ -29,6 +29,7 @@ import com.github.manosbatsis.partiture.flow.io.input.InputConverter
 import com.github.manosbatsis.partiture.flow.io.output.SingleFinalizedTxOutputConverter
 import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
+import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatedBy
 import net.corda.core.flows.InitiatingFlow
@@ -43,7 +44,8 @@ data class BookMessage(
         val title: String,
         val price: BigDecimal,
         val genre: BookContract.BookGenre,
-        val editions: Int = 1
+        val editions: Int = 1,
+        val linearId: UniqueIdentifier = UniqueIdentifier()
 )
 
 class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookMessage> {
@@ -52,6 +54,7 @@ class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookMessa
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
                 .addOutputState(
                     BookContract.BookState(
+                            linearId = input.linearId,
                             publisher = clientFlow.ourIdentity,
                             author = input.author,
                             editions = input.editions,

@@ -36,6 +36,7 @@ import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.SortAttribute
 import net.corda.core.schemas.QueryableState
 import net.corda.core.schemas.StatePersistable
+import java.util.*
 
 class StateNotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.javaClass.simpleName} with id ${id}")
 
@@ -48,23 +49,49 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
     val ofLinearState: Boolean
     val ofQueryableState: Boolean
 
-    /** Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise */
-    fun getByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>
+    /**
+     * Find the state of type [T] matching the given [UUID] if any, throw an error otherwise
+     * @throws StateNotFoundException if no match is found
+     */
+    fun getByLinearId(linearId: UUID, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
+            getByLinearId(UniqueIdentifier(id = linearId), relevancyStatus)
 
-    /** Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise */
-    fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>
+    /**
+     * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
+     * @throws StateNotFoundException if no match is found
+     */
+    fun getByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
+            getByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
 
-    /** Find the state of type [T] matching the given [UniqueIdentifier] if any */
-    fun findByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>?
+    /**
+     * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
+     * @throws StateNotFoundException if no match is found
+     */
+    fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
+            findByLinearId(linearId, relevancyStatus) ?: throw StateNotFoundException(linearId.toString(), contractStateType)
 
-    /** Find the state of type [T] matching the given [UniqueIdentifier] if any */
+    /**
+     * Find the state of type [T] matching the given [UUID] if any
+     */
+    fun findByLinearId(linearId: UUID, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? =
+            findByLinearId(UniqueIdentifier(id = linearId), relevancyStatus)
+    /**
+     * Find the state of type [T] matching the given [UniqueIdentifier] if any
+     */
+    fun findByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? =
+            findByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
+    /**
+     * Find the state of type [T] matching the given [UniqueIdentifier] if any
+     */
     fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>?
 
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
      * matching the given [UniqueIdentifier.externalId] if any, throw an error otherwise
+     * @throws StateNotFoundException if no match is found
      */
-    fun getByExternalId(externalId: String): StateAndRef<T>
+    fun getByExternalId(externalId: String): StateAndRef<T> =
+            findByExternalId(externalId) ?: throw StateNotFoundException(externalId, contractStateType)
 
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
@@ -116,26 +143,14 @@ open class BasicStateService<T: ContractState>(
             serviceHub: ServiceHub, contractStateType: Class<T>, defaults: StateServiceDefaults = StateServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
 
-    override val ofLinearState: Boolean = delegate.contractStateType is LinearState
-    override val ofQueryableState: Boolean = delegate.contractStateType is QueryableState
-
-    override fun getByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T> =
-            getByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
-
-    override fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T> =
-            findByLinearId(linearId, relevancyStatus) ?: throw StateNotFoundException(linearId.toString(), contractStateType)
-
-    override fun findByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? =
-            findByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
+    override val ofLinearState: Boolean by lazy { LinearState::class.java.isAssignableFrom(delegate.contractStateType) }
+    override val ofQueryableState: Boolean by lazy { QueryableState::class.java.isAssignableFrom(delegate.contractStateType) }
 
     override fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? =
             if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
                     linearId = listOf(linearId),
                     relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
             else throw IllegalStateException("Type is not a LinearState: ${delegate.contractStateType.simpleName}")
-
-    override fun getByExternalId(externalId: String): StateAndRef<T> =
-            findByExternalId(externalId) ?: throw StateNotFoundException(externalId.toString(), contractStateType)
 
     override fun findByExternalId(externalId: String): StateAndRef<T>? = if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
             externalId = listOf(externalId),
