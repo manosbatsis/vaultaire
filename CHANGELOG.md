@@ -4,6 +4,11 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.7
+
+- Fixed, improved and added tests for `StateService` get/find by id/externalId methods
+- `StateService` get by id/externalId will throw a `StateNotFoundException` when no match is found
+
 ## 0.6
 
 - Added support for [aggregate functions](https://github.com/manosbatsis/vaultaire/issues/2). 
