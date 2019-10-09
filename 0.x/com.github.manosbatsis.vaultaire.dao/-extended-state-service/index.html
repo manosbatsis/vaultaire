@@ -468,15 +468,7 @@
 </tr>
 <tr>
 <td><a href="../-basic-state-service/find-by-linear-id/">findByLinearId</a></td>
-<td><code>open fun findByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;?</code><br><code>open fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;?</code><br>Find the state of type <a href="../-state-service/#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any</td>
-</tr>
-<tr>
-<td><a href="../-basic-state-service/get-by-external-id/">getByExternalId</a></td>
-<td><code>open fun getByExternalId(externalId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Find the <a href="#">Vault.StateStatus.UNCONSUMED</a> state of type <a href="../-state-service/#T">T</a> matching the given <a href="#">UniqueIdentifier.externalId</a> if any, throw an error otherwise</td>
-</tr>
-<tr>
-<td><a href="../-basic-state-service/get-by-linear-id/">getByLinearId</a></td>
-<td><code>open fun getByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br><code>open fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Find the state of type <a href="../-state-service/#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any, throw an error otherwise</td>
+<td><code>open fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;?</code><br>Find the state of type <a href="../-state-service/#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any</td>
 </tr>
 <tr>
 <td><a href="../-basic-state-service/query-by/">queryBy</a></td>

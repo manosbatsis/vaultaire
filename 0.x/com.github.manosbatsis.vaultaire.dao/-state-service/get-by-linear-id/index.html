@@ -310,6 +310,29 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#exceptions" title="Exceptions" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exceptions_1" title="Exceptions" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -325,9 +348,14 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.dao</a> / <a href="../">StateService</a> / <a href="./">getByLinearId</a></p>
 <h1 id="getbylinearid">getByLinearId<a class="headerlink" href="#getbylinearid" title="Permanent link">&para;</a></h1>
-<p><code>abstract fun getByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code>
-<code>abstract fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
+<p><code>open fun getByLinearId(linearId:</code><a href="http://docs.oracle.com/javase/6/docs/api/java/util/UUID.html"><code>UUID</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
+<p>Find the state of type <a href="../#T">T</a> matching the given <a href="http://docs.oracle.com/javase/6/docs/api/java/util/UUID.html">UUID</a> if any, throw an error otherwise</p>
+<h3 id="exceptions">Exceptions<a class="headerlink" href="#exceptions" title="Permanent link">&para;</a></h3>
+<p><code>StateNotFoundException</code> - if no match is found<code>open fun getByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code>
+<code>open fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
 <p>Find the state of type <a href="../#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any, throw an error otherwise</p>
+<h3 id="exceptions_1">Exceptions<a class="headerlink" href="#exceptions_1" title="Permanent link">&para;</a></h3>
+<p><code>StateNotFoundException</code> - if no match is found</p>
                 
                   
                 
