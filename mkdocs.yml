@@ -43,6 +43,7 @@ markdown_extensions:
 
 nav:
   - 'Overview': index.md
+  - 'Overview': installation.md
   - 'Query DSL': query-dsl.md
   - 'State Services': state-servicse.md
   - 'API': /vaultaire/0.x/index.html
