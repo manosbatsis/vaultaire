@@ -280,6 +280,8 @@
     
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
+      
+    
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
         State Services
@@ -293,34 +295,23 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#state-services" class="md-nav__link">
-    State Services
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#generated-state-service" class="md-nav__link">
     Generated State Service
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#custom-services" class="md-nav__link">
     Custom Services
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -397,34 +388,23 @@
 <nav class="md-nav md-nav--secondary">
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#state-services" class="md-nav__link">
-    State Services
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#generated-state-service" class="md-nav__link">
     Generated State Service
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#custom-services" class="md-nav__link">
     Custom Services
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -447,14 +427,12 @@
                   <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/state-servicse.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>State Services</h1>
-                
-                <h2 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h2>
+                <h1 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h1>
 <p>Vaultaire&rsquo;s state services provide a simple API for DAO-style loading, querying<br />
 and event tracking of vault states. State services will help you decouple your<br />
 your components from Corda&rsquo;s <code>ServiceHub</code> and <code>CordaRPCOps</code> and reuse them both 
 inb and or out of a Corda node.</p>
-<h3 id="generated-state-service">Generated State Service<a class="headerlink" href="#generated-state-service" title="Permanent link">&para;</a></h3>
+<h2 id="generated-state-service">Generated State Service<a class="headerlink" href="#generated-state-service" title="Permanent link">&para;</a></h2>
 <p>Vaultaire&rsquo;s annotation processor  will automatically subclass <code>ExtendedStateService</code> to generate
 an <code>Fields</code> aware state service service per annotated element. The generated service name
 is &ldquo;${contractStateTypeName}Service&rdquo;. Usage example:</p>
@@ -475,7 +453,7 @@ is &ldquo;${contractStateTypeName}Service&rdquo;. Usage example:</p>
 
 <p>You can see the <a href="/vaultaire/0.x/com.github.manosbatsis.vaultaire.dao/-basic-state-service/">basic state services API</a> 
 for details. </p>
-<h3 id="custom-services">Custom Services<a class="headerlink" href="#custom-services" title="Permanent link">&para;</a></h3>
+<h2 id="custom-services">Custom Services<a class="headerlink" href="#custom-services" title="Permanent link">&para;</a></h2>
 <p>You can also subclass <code>BasicStateService</code>, <code>ExtendedStateService</code> or even generated service types<br />
 to create custom components.</p>
 <div class="codehilite"><pre><span></span><span class="cm">/** Extend the generated [BookStateService] */</span>
