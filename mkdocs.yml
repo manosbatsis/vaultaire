@@ -47,6 +47,5 @@ nav:
   - 'State Services': state-servicse.md
   - 'API': /vaultaire/0.x/index.html
   - 'FAQ': faq.md
-#  - 'Stack Overflow ⏏': https://stackoverflow.com/questions/tagged/kotlinpoet?sort=active
   - 'Change Log': changelog.md
   - 'Credits': credits.md
