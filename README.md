@@ -26,7 +26,7 @@ al query = booksQuery {
 }.toCriteria()
 ```
 
-### State Services
+## State Services
 
 Vaultaire's annotation processor  will automatically subclass `ExtendedStateService` to generate
 an `Fields` aware state service service per annotated element. The generated service name

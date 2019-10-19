@@ -1,8 +1,8 @@
-## Query DSL
+# Query DSL
 
 Vaultaire uses an annotation processor at build-time to create a query DSL for your contract/persistent states.
 
-### Quick Example
+## Quick Example
 
 Consider the following Contract/Persistent States:
 
@@ -34,7 +34,7 @@ data class PersistentBookState(
 ) : PersistentState()
 ```
 
-#### Before Vaultaire
+## Before Vaultaire
 
 _Before_ Vaultaire, you probably had to create query criteria with something like:
 
@@ -57,7 +57,7 @@ val query = VaultQueryCriteria(
 
 A bit verbose so get's difficult to read as the query becomes more complex. Let's try to simplify things bellow.
 
-#### With Vaultaire DSL
+## With Vaultaire DSL
 
 With Vaultaire's `@VaultaireGenerate` and the generated DSL this becomes:
 
@@ -82,7 +82,7 @@ queryBy(query.toCriteria(), query.toSort())
 
 ```
 
-### Create a DSL
+## Create a DSL
 
 To create a query DSL for your state after [installing](#installation) Vaultaire, annotate the
 corresponding `PersistentState` with `@VaultaireGenerate`:
@@ -101,7 +101,7 @@ data class PersistentBookState(
 ) : PersistentState()
 ```
 
-### Query Settings
+## Query Settings
 
 The generated DSL allows setting `QueryCriteria.VaultQueryCriteria` members. Here's an example
 using the defaults:
@@ -123,7 +123,7 @@ val query = booksQuery {
 }
 ```
 
-### Adding Criteria
+## Adding Criteria
 
 Query riteria are defined within the `and` / `or` functions. Both functions can be nested and mixed
 with criteria like:
@@ -151,7 +151,7 @@ val query = booksQuery {
 }
 ```
 
-### Adding Aggregates
+## Adding Aggregates
 
 Aggregates can be specified within the `and` / `or` functions:
 
@@ -181,7 +181,7 @@ val bookStateQuery = bookStateQuery {
 For that purpose, the `toCriteria` functions accepts an optional boolean to ignore aggregates, thus allowing
 the reuse of the same query to obtain either paged state or aggregate results. 
 
-#### Accessing Fields
+## Accessing Fields
 
 Fields can be accessed via the generated DSL's `fields` object within `and`, `or`, or `orderBy`
 functions using dot notation e.g. `fields.foo`.
@@ -189,7 +189,7 @@ functions using dot notation e.g. `fields.foo`.
 > You can also retrieve fields by name with e.g. `fields["foo"]` or  `fields.get("foo")` and use
 non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this may change in a future release.
 
-### Functions and Operators
+## Functions and Operators
 
 <table>
   <tr>
@@ -309,7 +309,7 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
   </tr>
 </table>
 
-### Aggregate Functions
+## Aggregate Functions
 
 <table>
   <tr>
@@ -356,7 +356,7 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
   </tr>
 </table>
 
-### Sorting
+## Sorting
 
 Sorting is defined using the `orderBy` function:
 

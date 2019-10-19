@@ -1,11 +1,11 @@
-## State Services
+# State Services
 
 Vaultaire's state services provide a simple API for DAO-style loading, querying  
 and event tracking of vault states. State services will help you decouple your  
 your components from Corda's `ServiceHub` and `CordaRPCOps` and reuse them both 
 inb and or out of a Corda node.
 
-### Generated State Service
+## Generated State Service
 
 Vaultaire's annotation processor  will automatically subclass `ExtendedStateService` to generate
 an `Fields` aware state service service per annotated element. The generated service name
@@ -31,7 +31,7 @@ val searchResults = bookStateService.queryBy(
 You can see the [basic state services API](/vaultaire/0.x/com.github.manosbatsis.vaultaire.dao/-basic-state-service/) 
 for details. 
 
-### Custom Services
+## Custom Services
 
 You can also subclass `BasicStateService`, `ExtendedStateService` or even generated service types  
 to create custom components.
