@@ -1,14 +1,20 @@
-apply plugin: 'kotlin-kapt'
+
 apply plugin: 'net.corda.plugins.cordapp'
 apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
 
+sourceSets {
+    main {
+        kotlin.srcDirs += project.file("build/generated/source/kaptKotlin/main")
+    }
+}
+
 cordapp {
     targetPlatformVersion 4
     minimumPlatformVersion 3
-    contract {
+    workflow {
         // TODO: Update with your own
-        name "Vaultaire Example Cordapp Contract"
+        name "Vaultaire Example Cordapp Workflow"
         vendor "Manos Batsis"
         versionId 1
         targetPlatformVersion corda_platform_version.toInteger()
@@ -18,13 +24,7 @@ cordapp {
 
 dependencies {
     implementation project(':vaultaire')
-    kapt project(':vaultaire-processor')
-
-    cordaCompile "com.github.manosbatsis.partiture:partiture:$partiture_version"
-    cordaCompile "$corda_release_group:corda-core:$corda_release_version"
-    cordaCompile "$corda_release_group:corda-jackson:$corda_release_version"
-    cordaCompile "$corda_release_group:corda-rpc:$corda_release_version"
-    cordaRuntime "$corda_release_group:corda:$corda_release_version"
+    cordaCompile project(':vaultaire-example-contract')
 
     testImplementation ("$corda_release_group:corda-node-driver:$corda_release_version")
 

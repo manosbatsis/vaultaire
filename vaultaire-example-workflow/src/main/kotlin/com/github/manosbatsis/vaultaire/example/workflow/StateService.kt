@@ -17,10 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.example
+package com.github.manosbatsis.vaultaire.example.workflow
 
 
 import com.github.manosbatsis.vaultaire.dao.*
+import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.generated.BookStateService
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.node.ServiceHub
 

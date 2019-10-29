@@ -17,11 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.example
+package com.github.manosbatsis.vaultaire.example.workflow
 
 import com.github.manosbatsis.partiture.flow.PartitureFlow
 import com.github.manosbatsis.vaultaire.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.dao.StateNotFoundException
+import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
+
+import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.generated.BookStateService
+import com.github.manosbatsis.vaultaire.example.generated.PersistentBookStateConditions
+import com.github.manosbatsis.vaultaire.example.generated.bookStateQuery
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.queryBy

@@ -54,12 +54,15 @@ import javax.tools.Diagnostic.Kind.NOTE
  */
 @SupportedAnnotationTypes("com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedOptions(VaultaireAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
+@SupportedOptions(
+        VaultaireAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME,
+        VaultaireAnnotationProcessor.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
 class VaultaireAnnotationProcessor : AbstractProcessor() {
 
     companion object {
         const val BLOCK_FUN_NAME = "block"
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
+        const val KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME = "kapt.kotlin.vaultaire.generated"
         val TYPE_PARAMETER_STAR = WildcardTypeName.producerOf(Any::class.asTypeName().copy(nullable = true))
         val CONTRACT_STATE_CLASSNAME = ClassName(ContractState::class.packageName, ContractState::class.simpleName!!)
         val STATE_PERSISTABLE_CLASSNAME = ClassName(StatePersistable::class.packageName, StatePersistable::class.simpleName!!)
@@ -75,12 +78,13 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
             return false
         }
 
-        val generatedSourcesRoot = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME] ?: run {
+        val generatedSourcesRoot = processingEnv.options[KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME]
+                ?: processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
+                ?: run {
             processingEnv.errorMessage { "Can't find the target directory for generated Kotlin files." }
             return false
         }
-
-        processingEnv.noteMessage { "Generating for ${annotatedElements.size} classes in $generatedSourcesRoot" }
+        //processingEnv.errorMessage { "generatedSourcesRoot: $generatedSourcesRoot" }
 
         val sourceRootFile = File(generatedSourcesRoot)
         sourceRootFile.mkdir()
@@ -107,21 +111,31 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
         writeBuilder(constructor.enclosingElement as TypeElement, constructor.parameters, sourceRootFile)
     }
 
+
+
+    fun Class<*>.getParentPackageName(): String = this.canonicalName.getParentPackageName().getParentPackageName()
+
+    private fun String.getParentPackageName(): String{
+        var name = this
+        if(name.contains(".")) name = name.substring(0, name.lastIndexOf("."))
+        return name
+
+    }
     /** Writes the source code to create a [VaultaireGenerate] for [annotatedElement] within the [sourceRoot] directory. */
     private fun writeBuilder(annotatedElement: TypeElement, fields: List<VariableElement>, sourceRoot: File) {
-        val annotatedPackageName = processingEnv.elementUtils.getPackageOf(annotatedElement).toString()
-        val annotatedSimpleName = annotatedElement.simpleName.toString()
-        val generatedConditionsSimpleName = "${annotatedSimpleName}Conditions"
-        val generatedConditionsClassName = ClassName(annotatedPackageName, generatedConditionsSimpleName)
-        val generatedFieldsSimpleName = "${annotatedSimpleName}Fields"
-        val generatedFieldsClassName = ClassName(annotatedPackageName, generatedFieldsSimpleName)
         val annotation = annotatedElement.getAnnotationMirror(VaultaireGenerate::class.java)
         val contractStateTypeAnnotationValue = annotation.getAnnotationValue("constractStateType")
-        val contractStateTypeElement = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
+        val contractStateTypeElement: Element = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
+        val generatedPackageName = contractStateTypeElement.asType()
+                .asTypeElement().asKotlinClassName().topLevelClassName().packageName.getParentPackageName() + ".generated"
+        val annotatedSimpleName = annotatedElement.simpleName.toString()
+        val generatedConditionsSimpleName = "${annotatedSimpleName}Conditions"
+        val generatedConditionsClassName = ClassName(generatedPackageName, generatedConditionsSimpleName)
+        val generatedFieldsSimpleName = "${annotatedSimpleName}Fields"
+        val generatedFieldsClassName = ClassName(generatedPackageName, generatedFieldsSimpleName)
         val generatedStateServiceSimpleName = "${contractStateTypeElement.simpleName}Service"
-        val generatedStateServiceClassName = ClassName(annotatedPackageName, generatedConditionsSimpleName)
 
-        processingEnv.noteMessage { "Writing $annotatedPackageName.$generatedConditionsSimpleName" }
+        processingEnv.noteMessage { "Writing $generatedPackageName.$generatedConditionsSimpleName" }
 
         // The fields interface and object specs for the annotated element being processed
         val fieldsSpec = buildFieldsObjectSpec(generatedFieldsSimpleName, annotatedElement, fields)
@@ -136,7 +150,7 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
 
 
         // Generate the Kotlin file
-        FileSpec.builder(annotatedPackageName, "${contractStateTypeElement.simpleName}VaultaireGenerated")
+        FileSpec.builder(generatedPackageName, "${contractStateTypeElement.simpleName}VaultaireGenerated")
                 .addComment("-------------------- DO NOT EDIT -------------------\n")
                 .addComment(" This file is automatically generated by Vaultaire,\n")
                 .addComment(" see https://manosbatsis.github.io/vaultaire\n")

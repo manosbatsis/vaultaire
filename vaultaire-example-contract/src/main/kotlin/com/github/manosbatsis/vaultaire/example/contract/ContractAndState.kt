@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.example
+package com.github.manosbatsis.vaultaire.example.contract
 
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import net.corda.core.contracts.*
@@ -89,7 +89,7 @@ class BookContract : Contract {
 
         object BookSchema
 
-        object BookSchemaV1 : MappedSchema(BookSchema.javaClass, 1, listOf(PersistentBookState::class.java)) {
+        object BookSchemaV1 : MappedSchema(BookSchema.javaClass, 1, listOf(BookSchemaV1.PersistentBookState::class.java)) {
 
 @VaultaireGenerate(/*name = "bookConditions", */constractStateType = BookState::class)
 @Entity

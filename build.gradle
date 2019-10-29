@@ -11,7 +11,7 @@ buildscript {
         junit_jupiter_version = '5.3.1' // TODO
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
-        kotlinpoet_version = '1.3.0'
+        kotlinpoet_version = '1.4.1'
         partiture_version = '0.5'
     }
     repositories {
@@ -150,7 +150,8 @@ subprojects {
 
     license {
         header rootProject.file("${rootProject.rootDir}/etc/license/header.txt")
-        includes(["**/*.java", "**/*.kt"])
+        includes(["src/**/*.java", "src/**/*.kt"])
+        excludes(["build/**/*.kt"])
         mapping {
             kt='SLASHSTAR_STYLE'
         }

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.example
+package com.github.manosbatsis.vaultaire.example.contract
 
 import net.corda.core.identity.CordaX500Name
 import net.corda.testing.core.DummyCommandData
