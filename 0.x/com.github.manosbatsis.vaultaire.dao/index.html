@@ -13,8 +13,6 @@
         <meta name="description" content="Query DSL and data access utilities for Corda developers.">
       
       
-        <link rel="canonical" href="https://manosbatsis.github.io/vaultaire/0.x/com.github.manosbatsis.vaultaire.dao/">
-      
       
         <meta name="author" content="Manos Batsis">
       
@@ -125,7 +123,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-header-nav__button md-logo">
+        <a href="../.." title="Vaultaire" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -217,7 +215,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-nav__button md-logo">
+    <a href="../.." title="Vaultaire" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
@@ -253,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../index.md" title="Overview" class="md-nav__link">
+    <a href="../.." title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -376,6 +374,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#exceptions" title="Exceptions" class="md-nav__link">
+    Exceptions
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -415,11 +420,15 @@
 <tbody>
 <tr>
 <td><a href="-basic-state-service/">BasicStateService</a></td>
-<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="-state-service/"><code>StateService</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Basic <a href="-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+</tr>
+<tr>
+<td><a href="-extended-state-service/">ExtendedStateService</a></td>
+<td><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-extended-state-service/#T"><code>T</code></a><code>&gt;</code><br>Extends <a href="-basic-state-service/">BasicStateService</a> to provide a <a href="-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
 </tr>
 <tr>
 <td><a href="-state-service/">StateService</a></td>
-<td><code>abstract class StateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-state-service/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-state-service/#T"><code>T</code></a><code>&gt;</code><br>A <a href="-basic-state-service/">BasicStateService</a> extended by Vaultaire&rsquo;s annotation processing to create a service type aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a></td>
+<td><code>interface StateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
 <td><a href="-state-service-defaults/">StateServiceDefaults</a></td>
@@ -436,6 +445,21 @@
 <tr>
 <td><a href="-state-service-rpc-delegate/">StateServiceRpcDelegate</a></td>
 <td><code>class StateServiceRpcDelegate&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-rpc-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">CordaRPCOps</a>-based <a href="-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="exceptions">Exceptions<a class="headerlink" href="#exceptions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="-state-not-found-exception/">StateNotFoundException</a></td>
+<td><code>class StateNotFoundException :</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-runtime-exception/index.html"><code>RuntimeException</code></a></td>
 </tr>
 </tbody>
 </table>

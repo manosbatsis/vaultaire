@@ -13,8 +13,6 @@
         <meta name="description" content="Query DSL and data access utilities for Corda developers.">
       
       
-        <link rel="canonical" href="https://manosbatsis.github.io/vaultaire/0.x/com.github.manosbatsis.vaultaire.dsl/-condition/">
-      
       
         <meta name="author" content="Manos Batsis">
       
@@ -125,7 +123,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-header-nav__button md-logo">
+        <a href="../../.." title="Vaultaire" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -217,7 +215,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-nav__button md-logo">
+    <a href="../../.." title="Vaultaire" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
@@ -253,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../index.md" title="Overview" class="md-nav__link">
+    <a href="../../.." title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -411,7 +409,7 @@
 <tbody>
 <tr>
 <td><a href="to-criteria/">toCriteria</a></td>
-<td><code>abstract fun toCriteria(): QueryCriteria?</code><br>Implement to expose internal state as criteria</td>
+<td><code>abstract fun toCriteria(): QueryCriteria?</code><br>Obtain the internal state as <a href="#">QueryCriteria</a> if any, <code>null</code> otherwise</td>
 </tr>
 </tbody>
 </table>
@@ -429,8 +427,8 @@
 <td><code>abstract class ConditionsCondition&lt;P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="../-conditions-condition/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="./"><code>Condition</code></a><br>A <a href="./">Condition</a> that contains other conditions. Allows for nested and/or condition groups</td>
 </tr>
 <tr>
-<td><a href="../-vault-custom-query-criteria-condition/">VaultCustomQueryCriteriaCondition</a></td>
-<td><code>class VaultCustomQueryCriteriaCondition :</code><a href="./"><code>Condition</code></a><br>A condition equivalent to a <a href="#">VaultCustomQueryCriteria</a> instance. Created by infix and regular extension functions of <a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/">FieldWrapper</a> defined by <a href="../-composite-condition/">CompositeCondition</a></td>
+<td><a href="../-vault-custom-query-criteria-wrapper-condition/">VaultCustomQueryCriteriaWrapperCondition</a></td>
+<td><code>open class VaultCustomQueryCriteriaWrapperCondition :</code><a href="./"><code>Condition</code></a><br>A condition that wraps a <a href="#">VaultCustomQueryCriteria</a> instance. Instances of this type are typically created by <a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/">FieldWrapper</a> extension functions defined by <a href="../-composite-condition/">CompositeCondition</a> as shorthands (infix or regular), i.e. expression-only criteria without a contract state type, vault state status or relevance status of their own.</td>
 </tr>
 </tbody>
 </table>

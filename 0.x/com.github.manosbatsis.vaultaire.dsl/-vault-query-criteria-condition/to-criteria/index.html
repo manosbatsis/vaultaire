@@ -13,8 +13,6 @@
         <meta name="description" content="Query DSL and data access utilities for Corda developers.">
       
       
-        <link rel="canonical" href="https://manosbatsis.github.io/vaultaire/0.x/com.github.manosbatsis.vaultaire.dsl/-vault-query-criteria-condition/to-criteria/">
-      
       
         <meta name="author" content="Manos Batsis">
       
@@ -125,7 +123,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-header-nav__button md-logo">
+        <a href="../../../.." title="Vaultaire" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -217,7 +215,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-nav__button md-logo">
+    <a href="../../../.." title="Vaultaire" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
@@ -253,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../index.md" title="Overview" class="md-nav__link">
+    <a href="../../../.." title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -360,6 +358,22 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#parameters" title="Parameters" class="md-nav__link">
+    Parameters
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -377,7 +391,12 @@
 <h1 id="tocriteria">toCriteria<a class="headerlink" href="#tocriteria" title="Permanent link">&para;</a></h1>
 <p><code>open fun toCriteria(): QueryCriteria</code></p>
 <p>Overrides <a href="../../-condition/to-criteria/">Condition.toCriteria</a></p>
-<p>Implement to expose internal state as criteria</p>
+<p>Obtain the internal state as <a href="#">QueryCriteria</a> if any, <code>null</code> otherwise</p>
+<p><code>fun toCriteria(ignoreAggregates:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><code>Boolean</code></a><code>): QueryCriteria</code></p>
+<p>Obtain the internal state as <a href="#">QueryCriteria</a> if any, <code>null</code> otherwise</p>
+<h3 id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permanent link">&para;</a></h3>
+<p><code>ignoreAggregates</code> - whether to ignore aggregate functions.
+Corda paged queries can have either state or aggregate results, but not both.</p>
                 
                   
                 

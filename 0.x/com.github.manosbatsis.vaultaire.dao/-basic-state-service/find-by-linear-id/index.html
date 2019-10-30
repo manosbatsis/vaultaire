@@ -13,8 +13,6 @@
         <meta name="description" content="Query DSL and data access utilities for Corda developers.">
       
       
-        <link rel="canonical" href="https://manosbatsis.github.io/vaultaire/0.x/com.github.manosbatsis.vaultaire.dao/-basic-state-service/find-by-linear-id/">
-      
       
         <meta name="author" content="Manos Batsis">
       
@@ -125,7 +123,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-header-nav__button md-logo">
+        <a href="../../../.." title="Vaultaire" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -217,7 +215,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-nav__button md-logo">
+    <a href="../../../.." title="Vaultaire" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
@@ -253,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../index.md" title="Overview" class="md-nav__link">
+    <a href="../../../.." title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -375,8 +373,9 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.dao</a> / <a href="../">BasicStateService</a> / <a href="./">findByLinearId</a></p>
 <h1 id="findbylinearid">findByLinearId<a class="headerlink" href="#findbylinearid" title="Permanent link">&para;</a></h1>
-<p><code>fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="../#T"><code>T</code></a><code>&gt;?</code></p>
-<p>Find the state matching the given <a href="#">UniqueIdentifier</a> if any</p>
+<p><code>open fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus): StateAndRef&lt;</code><a href="../#T"><code>T</code></a><code>&gt;?</code></p>
+<p>Overrides <a href="../../-state-service/find-by-linear-id/">StateService.findByLinearId</a></p>
+<p>Find the state of type <a href="../../-state-service/#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any</p>
                 
                   
                 

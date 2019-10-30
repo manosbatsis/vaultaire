@@ -13,8 +13,6 @@
         <meta name="description" content="Query DSL and data access utilities for Corda developers.">
       
       
-        <link rel="canonical" href="https://manosbatsis.github.io/vaultaire/0.x/com.github.manosbatsis.vaultaire.dao/-basic-state-service/query-by/">
-      
       
         <meta name="author" content="Manos Batsis">
       
@@ -125,7 +123,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-header-nav__button md-logo">
+        <a href="../../../.." title="Vaultaire" class="md-header-nav__button md-logo">
           
             <i class="md-icon"></i>
           
@@ -217,7 +215,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="https://manosbatsis.github.io/vaultaire/" title="Vaultaire" class="md-nav__button md-logo">
+    <a href="../../../.." title="Vaultaire" class="md-nav__button md-logo">
       
         <i class="md-icon"></i>
       
@@ -253,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../../../index.md" title="Overview" class="md-nav__link">
+    <a href="../../../.." title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -375,8 +373,9 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.dao</a> / <a href="../">BasicStateService</a> / <a href="./">queryBy</a></p>
 <h1 id="queryby">queryBy<a class="headerlink" href="#queryby" title="Permanent link">&para;</a></h1>
-<p><code>fun queryBy(criteria: QueryCriteria = delegate.defaults.criteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= delegate.defaults.pageNumber, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= delegate.defaults.pageSize, sort: Sort = delegate.defaults.sort): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
-<p>Query the vault for states matching the given criteria,
+<p><code>open fun queryBy(criteria: QueryCriteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, sort: Sort): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
+<p>Overrides <a href="../../-state-service/query-by/">StateService.queryBy</a></p>
+<p>Query the vault for states of type <a href="../../-state-service/#T">T</a> matching the given criteria,
 applying the given page number, size and sorting specifications if any</p>
                 
                   
