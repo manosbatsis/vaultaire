@@ -54,10 +54,26 @@ kapt{
 Then, update your flows module to add the additional source set:
 
 ```groovy
+// Optional: for IntelliJ users, see also the optioanl `idea` section bellow
+apply plugin: "idea"
+//...
 
+// Define an extra sources variable
+def generatedSourcesDir = project.file("build/generated/source/kaptKotlin/main")
+// Tell Gradle about the extra source set
 sourceSets {
     main {
-        kotlin.srcDirs += project.file("build/generated/source/kaptKotlin/main")
+        kotlin.srcDirs += generatedSourcesDir
     }
 }
+
+// Optional: Tell IntelliJ about the extra source set
+idea {
+    module {
+        sourceDirs += generatedSourcesDir
+        generatedSourceDirs += generatedSourcesDir
+    }
+} 
 ```
+
+That's it! The generated classes will now be included in your flows JAR.
