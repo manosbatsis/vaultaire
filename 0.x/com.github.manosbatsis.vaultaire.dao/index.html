@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -251,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Overview" class="md-nav__link">
+    <a href="../../index.md" title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -360,7 +360,7 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#package-comgithubmanosbatsisvaultairedao" class="md-nav__link">
+  <a href="#package-comgithubmanosbatsisvaultairedao" title="Package com.github.manosbatsis.vaultaire.dao" class="md-nav__link">
     Package com.github.manosbatsis.vaultaire.dao
   </a>
   
@@ -368,15 +368,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#types" class="md-nav__link">
+  <a href="#types" title="Types" class="md-nav__link">
     Types
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#exceptions" class="md-nav__link">
-    Exceptions
   </a>
   
 </li>
@@ -420,15 +413,11 @@
 <tbody>
 <tr>
 <td><a href="-basic-state-service/">BasicStateService</a></td>
-<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="-state-service/"><code>StateService</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Basic <a href="-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
-</tr>
-<tr>
-<td><a href="-extended-state-service/">ExtendedStateService</a></td>
-<td><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-extended-state-service/#T"><code>T</code></a><code>&gt;</code><br>Extends <a href="-basic-state-service/">BasicStateService</a> to provide a <a href="-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
+<td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
 <td><a href="-state-service/">StateService</a></td>
-<td><code>interface StateService&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+<td><code>abstract class StateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-state-service/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-state-service/#T"><code>T</code></a><code>&gt;</code><br>A <a href="-basic-state-service/">BasicStateService</a> extended by Vaultaire&rsquo;s annotation processing to create a service type aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a></td>
 </tr>
 <tr>
 <td><a href="-state-service-defaults/">StateServiceDefaults</a></td>
@@ -445,21 +434,6 @@
 <tr>
 <td><a href="-state-service-rpc-delegate/">StateServiceRpcDelegate</a></td>
 <td><code>class StateServiceRpcDelegate&lt;T : ContractState&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-rpc-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">CordaRPCOps</a>-based <a href="-state-service-delegate/">StateServiceDelegate</a> implementation</td>
-</tr>
-</tbody>
-</table>
-<h3 id="exceptions">Exceptions<a class="headerlink" href="#exceptions" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Summary</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="-state-not-found-exception/">StateNotFoundException</a></td>
-<td><code>class StateNotFoundException :</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-runtime-exception/index.html"><code>RuntimeException</code></a></td>
 </tr>
 </tbody>
 </table>
@@ -501,7 +475,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       

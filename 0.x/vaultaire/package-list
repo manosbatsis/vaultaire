@@ -1,0 +1,7 @@
+$dokka.format:gfm
+$dokka.linkExtension:md
+
+com.github.manosbatsis.vaultaire.annotation
+com.github.manosbatsis.vaultaire.dao
+com.github.manosbatsis.vaultaire.dsl
+com.github.manosbatsis.vaultaire.util

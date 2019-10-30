@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -251,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Overview" class="md-nav__link">
+    <a href="../index.md" title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -271,9 +271,38 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Installation
+      </label>
+    
     <a href="./" title="Installation" class="md-nav__link md-nav__link--active">
       Installation
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-output-location" title="Customizing Output Location" class="md-nav__link">
+    Customizing Output Location
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -367,6 +396,22 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-output-location" title="Customizing Output Location" class="md-nav__link">
+    Customizing Output Location
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -405,6 +450,29 @@ interacting with Corda nodes via RPC:</p>
     <span class="c1">// Corda dependencies etc.</span>
     <span class="c1">// ...</span>
 </pre></div>
+
+<h2 id="customizing-output-location">Customizing Output Location<a class="headerlink" href="#customizing-output-location" title="Permanent link">&para;</a></h2>
+<p>In case you&rsquo;d like to keep your contracts JAR light, you can have Vaultaire 
+generate code to another Gradle module, e.g. the flows JAR. Here&rsquo;s a quick eample.</p>
+<p>First, go to your contracts module and tell Vaultaire to generate code in the flows module:</p>
+<div class="codehilite"><pre><span></span><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;kotlin-kapt&#39;</span>
+<span class="c1">// ...</span>
+
+<span class="n">kapt</span><span class="o">{</span>
+    <span class="n">arguments</span> <span class="o">{</span>
+        <span class="n">arg</span><span class="o">(</span><span class="s2">&quot;kapt.kotlin.vaultaire.generated&quot;</span><span class="o">,</span> 
+        <span class="n">rootProject</span><span class="o">.</span><span class="na">file</span><span class="o">(</span><span class="s2">&quot;flows-module/build/generated/source/kaptKotlin/main&quot;</span><span class="o">).</span><span class="na">absolutePath</span><span class="o">)</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>Then, update your flows module to add the additional source set:</p>
+<div class="codehilite"><pre><span></span><span class="n">sourceSets</span> <span class="o">{</span>
+    <span class="n">main</span> <span class="o">{</span>
+        <span class="n">kotlin</span><span class="o">.</span><span class="na">srcDirs</span> <span class="o">+=</span> <span class="n">project</span><span class="o">.</span><span class="na">file</span><span class="o">(</span><span class="s2">&quot;build/generated/source/kaptKotlin/main&quot;</span><span class="o">)</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
                 
                   
                 
@@ -424,20 +492,6 @@ interacting with Corda nodes via RPC:</p>
   
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
-        
-          <a href=".." title="Overview" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
-            </div>
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                Overview
-              </span>
-            </div>
-          </a>
         
         
           <a href="../query-dsl/" title="Query DSL" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
@@ -478,7 +532,7 @@ interacting with Corda nodes via RPC:</p>
       
     </div>
     
-      <script src="../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       

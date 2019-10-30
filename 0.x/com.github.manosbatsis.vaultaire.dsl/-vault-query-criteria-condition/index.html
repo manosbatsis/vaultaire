@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -251,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../.." title="Overview" class="md-nav__link">
+    <a href="../../../index.md" title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -362,35 +362,35 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#constructors" class="md-nav__link">
+  <a href="#constructors" title="Constructors" class="md-nav__link">
     Constructors
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#properties" class="md-nav__link">
+  <a href="#properties" title="Properties" class="md-nav__link">
     Properties
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inherited-properties" class="md-nav__link">
+  <a href="#inherited-properties" title="Inherited Properties" class="md-nav__link">
     Inherited Properties
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#functions" class="md-nav__link">
+  <a href="#functions" title="Functions" class="md-nav__link">
     Functions
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inherited-functions" class="md-nav__link">
+  <a href="#inherited-functions" title="Inherited Functions" class="md-nav__link">
     Inherited Functions
   </a>
   
@@ -473,6 +473,10 @@ Defines a root <a href="#">QueryCriteria.VaultQueryCriteria</a>. Allows for defi
 <td><code>var softLockingCondition: SoftLockingCondition?</code></td>
 </tr>
 <tr>
+<td><a href="sort-columns/">sortColumns</a></td>
+<td><code>lateinit var sortColumns:</code><a href="../-sort-columns/"><code>SortColumns</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;</code></td>
+</tr>
+<tr>
 <td><a href="state-persistable-type/">statePersistableType</a></td>
 <td><code>abstract val statePersistableType:</code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><code>Class</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;</code><br>The target <a href="#">StatePersistable</a> type</td>
 </tr>
@@ -500,6 +504,10 @@ Defines a root <a href="#">QueryCriteria.VaultQueryCriteria</a>. Allows for defi
 </thead>
 <tbody>
 <tr>
+<td><a href="../-conditions-condition/conditions/">conditions</a></td>
+<td><code>val conditions:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><code>MutableList</code></a><code>&lt;</code><a href="../-condition/"><code>Condition</code></a><code>&gt;</code></td>
+</tr>
+<tr>
 <td><a href="../-conditions-condition/fields/">fields</a></td>
 <td><code>abstract val fields:</code><a href="../-conditions-condition/#F"><code>F</code></a><br>The fields of the target <a href="#">StatePersistable</a> type <code>P</code></td>
 </tr>
@@ -515,16 +523,12 @@ Defines a root <a href="#">QueryCriteria.VaultQueryCriteria</a>. Allows for defi
 </thead>
 <tbody>
 <tr>
-<td><a href="aggregate/">aggregate</a></td>
-<td><code>fun aggregate(initializer:</code><a href="../-aggregates/"><code>Aggregates</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;.() -&gt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><code>Unit</code></a><code>):</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><code>Unit</code></a></td>
-</tr>
-<tr>
 <td><a href="order-by/">orderBy</a></td>
 <td><code>fun orderBy(initializer:</code><a href="../-sort-columns/"><code>SortColumns</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;.() -&gt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><code>Unit</code></a><code>):</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><code>Unit</code></a></td>
 </tr>
 <tr>
 <td><a href="to-criteria/">toCriteria</a></td>
-<td><code>open fun toCriteria(): QueryCriteria</code><br><code>fun toCriteria(ignoreAggregates:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><code>Boolean</code></a><code>): QueryCriteria</code><br>Obtain the internal state as <a href="#">QueryCriteria</a> if any, <code>null</code> otherwise</td>
+<td><code>open fun toCriteria(): QueryCriteria</code><br>Implement to expose internal state as criteria</td>
 </tr>
 <tr>
 <td><a href="to-sort/">toSort</a></td>
@@ -593,7 +597,7 @@ Defines a root <a href="#">QueryCriteria.VaultQueryCriteria</a>. Allows for defi
       
     </div>
     
-      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
       

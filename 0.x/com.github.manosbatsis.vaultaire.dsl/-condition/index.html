@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -251,7 +251,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../.." title="Overview" class="md-nav__link">
+    <a href="../../../index.md" title="Overview" class="md-nav__link">
       Overview
     </a>
   </li>
@@ -362,14 +362,14 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#functions" class="md-nav__link">
+  <a href="#functions" title="Functions" class="md-nav__link">
     Functions
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inheritors" class="md-nav__link">
+  <a href="#inheritors" title="Inheritors" class="md-nav__link">
     Inheritors
   </a>
   
@@ -409,7 +409,7 @@
 <tbody>
 <tr>
 <td><a href="to-criteria/">toCriteria</a></td>
-<td><code>abstract fun toCriteria(): QueryCriteria?</code><br>Obtain the internal state as <a href="#">QueryCriteria</a> if any, <code>null</code> otherwise</td>
+<td><code>abstract fun toCriteria(): QueryCriteria?</code><br>Implement to expose internal state as criteria</td>
 </tr>
 </tbody>
 </table>
@@ -427,8 +427,8 @@
 <td><code>abstract class ConditionsCondition&lt;P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="../-conditions-condition/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="./"><code>Condition</code></a><br>A <a href="./">Condition</a> that contains other conditions. Allows for nested and/or condition groups</td>
 </tr>
 <tr>
-<td><a href="../-vault-custom-query-criteria-wrapper-condition/">VaultCustomQueryCriteriaWrapperCondition</a></td>
-<td><code>open class VaultCustomQueryCriteriaWrapperCondition :</code><a href="./"><code>Condition</code></a><br>A condition that wraps a <a href="#">VaultCustomQueryCriteria</a> instance. Instances of this type are typically created by <a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/">FieldWrapper</a> extension functions defined by <a href="../-composite-condition/">CompositeCondition</a> as shorthands (infix or regular), i.e. expression-only criteria without a contract state type, vault state status or relevance status of their own.</td>
+<td><a href="../-vault-custom-query-criteria-condition/">VaultCustomQueryCriteriaCondition</a></td>
+<td><code>class VaultCustomQueryCriteriaCondition :</code><a href="./"><code>Condition</code></a><br>A condition equivalent to a <a href="#">VaultCustomQueryCriteria</a> instance. Created by infix and regular extension functions of <a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/">FieldWrapper</a> defined by <a href="../-composite-condition/">CompositeCondition</a></td>
 </tr>
 </tbody>
 </table>
@@ -470,7 +470,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
       
