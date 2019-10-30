@@ -4,6 +4,11 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.8
+
+- Allow annotation processing to generate code to another Gradle module or location
+using the `kapt.kotlin.vaultaire.generated` kapt argument, see installation docs.
+
 ## 0.7
 
 - Fixed, improved and added tests for `StateService` get/find by id/externalId methods

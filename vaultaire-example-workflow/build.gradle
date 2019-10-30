@@ -1,11 +1,20 @@
-
+apply plugin: "idea"
 apply plugin: 'net.corda.plugins.cordapp'
 apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
 
+
+def generatedSourcesDir = project.file("build/generated/source/kaptKotlin/main")
 sourceSets {
     main {
-        kotlin.srcDirs += project.file("build/generated/source/kaptKotlin/main")
+        kotlin.srcDirs += generatedSourcesDir
+    }
+}
+
+idea {
+    module {
+        sourceDirs += generatedSourcesDir
+        generatedSourceDirs += generatedSourcesDir
     }
 }
 
