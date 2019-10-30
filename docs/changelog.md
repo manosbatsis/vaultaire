@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.9
+
+- 0.8 re-release fix
+
 ## 0.8
 
 - Allow annotation processing to generate code to another Gradle module or location
