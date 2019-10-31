@@ -54,7 +54,7 @@ kapt{
 Then, update your flows module to add the additional source set:
 
 ```groovy
-// Optional: for IntelliJ users, see also the optioanl `idea` section bellow
+// Optional: for IntelliJ users, see also the optional `idea` section bellow
 apply plugin: "idea"
 //...
 
