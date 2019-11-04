@@ -3,7 +3,7 @@
 Vaultaire's state services provide a simple API for DAO-style loading, querying  
 and event tracking of vault states. State services will help you decouple your  
 your components from Corda's `ServiceHub` and `CordaRPCOps` and reuse them both 
-inb and or out of a Corda node.
+in and/or out of a Corda node.
 
 ## Generated State Service
 
