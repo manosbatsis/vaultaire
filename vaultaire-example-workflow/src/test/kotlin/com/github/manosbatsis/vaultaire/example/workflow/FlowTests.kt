@@ -80,7 +80,7 @@ class FlowTests {
                 publisher = a.info.legalIdentities.first(),
                 author = b.info.legalIdentities.first(),
                 price = BigDecimal.valueOf(10),
-                genre = BookContract.BookGenre.TECHNOLOGY,
+                genre = BookContract.Genre.TECHNOLOGY,
                 editions = 3,
                 title = bookTitle)
 
@@ -89,14 +89,14 @@ class FlowTests {
                 CreateBookFlow(BookMessage(
                         author = b.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(10),
-                        genre = BookContract.BookGenre.TECHNOLOGY,
+                        genre = BookContract.Genre.TECHNOLOGY,
                         editions = 3,
                         title = bookTitle)))
         flowWorksCorrectly(
                 CreateBookFlow(BookMessage(
                         author = b.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(20),
-                        genre = BookContract.BookGenre.TECHNOLOGY,
+                        genre = BookContract.Genre.TECHNOLOGY,
                         editions = 1,
                         title = "$bookTitle 2")))
         // Check book transaction is stored in the storage service.
@@ -163,7 +163,7 @@ class FlowTests {
                 publisher = a.info.legalIdentities.first(),
                 author = b.info.legalIdentities.first(),
                 price = BigDecimal.valueOf(8),
-                genre = BookContract.BookGenre.SCIENCE_FICTION,
+                genre = BookContract.Genre.SCIENCE_FICTION,
                 editions = 3,
                 title = bookTitle)
 
@@ -179,14 +179,14 @@ class FlowTests {
                 CreateBookFlow(BookMessage(
                         author = bookState.author,
                         price = BigDecimal.valueOf(10),
-                        genre = BookContract.BookGenre.SCIENCE_FICTION,
+                        genre = BookContract.Genre.SCIENCE_FICTION,
                         editions = 2,
                         title = "Forward the Corda Foundation")))
         flowWorksCorrectly(
                 CreateBookFlow(BookMessage(
                         author = bookState.author,
                         price = BigDecimal.valueOf(12),
-                        genre = BookContract.BookGenre.SCIENCE_FICTION,
+                        genre = BookContract.Genre.SCIENCE_FICTION,
                         editions = 2,
                         title = "Corda Foundation and Earth")))
 
@@ -212,7 +212,7 @@ class FlowTests {
                 relevancyStatus = Vault.RelevancyStatus.ALL // the default
                 and {
                     fields.title `like` "%Corda Foundation%"
-                    fields.genre `==` BookContract.BookGenre.SCIENCE_FICTION
+                    fields.genre `==` BookContract.Genre.SCIENCE_FICTION
                 }
                 aggregate {
                     // add some aggregates
@@ -268,7 +268,7 @@ class FlowTests {
                 CreateBookFlow(BookMessage(
                         author = b.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(82),
-                        genre = BookContract.BookGenre.HISTORICAL,
+                        genre = BookContract.Genre.HISTORICAL,
                         editions = 24,
                         title = "The History of Corda, Volume 29",
                         linearId = identifier)))

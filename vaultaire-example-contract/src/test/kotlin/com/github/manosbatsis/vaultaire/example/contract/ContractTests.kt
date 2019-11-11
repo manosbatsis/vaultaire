@@ -38,7 +38,7 @@ class BookContractTests {
 
     @Test
     fun bookTransactionMustBeWellFormed() {
-        val bookState = BookContract.BookState(alice.party, bob.party, BigDecimal.TEN, BookContract.BookGenre.TECHNOLOGY)
+        val bookState = BookContract.BookState(alice.party, bob.party, BigDecimal.TEN, BookContract.Genre.TECHNOLOGY)
         // Tests.
         ledgerServices.ledger {
             // Input state present.
@@ -62,7 +62,7 @@ class BookContractTests {
             }
             // Sending to yourself is not allowed.
             transaction {
-                output(BOOK_CONTRACT_ID, BookContract.BookState(alice.party, alice.party, BigDecimal.TEN, BookContract.BookGenre.TECHNOLOGY))
+                output(BOOK_CONTRACT_ID, BookContract.BookState(alice.party, alice.party, BigDecimal.TEN, BookContract.Genre.TECHNOLOGY))
                 command(alice.publicKey, BookContract.Send())
                 this.failsWith("Cannot publish your own book!")
             }

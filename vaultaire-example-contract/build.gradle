@@ -16,14 +16,6 @@ cordapp {
     }
 }
 
-kapt{
-    arguments {
-        arg("kapt.kotlin.vaultaire.generated",
-                rootProject.file("vaultaire-example-workflow/build/generated/source/kaptKotlin/main").absolutePath)
-    }
-}
-
-
 dependencies {
     implementation project(':vaultaire')
     kapt project(':vaultaire-processor')

@@ -45,7 +45,7 @@ data class BookMessage(
         val author: Party,
         val title: String,
         val price: BigDecimal,
-        val genre: BookContract.BookGenre,
+        val genre: BookContract.Genre,
         val editions: Int = 1,
         val linearId: UniqueIdentifier = UniqueIdentifier()
 )

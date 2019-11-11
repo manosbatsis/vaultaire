@@ -19,7 +19,7 @@ data class BookState(
 
 
 // Use Vaultaire's code generation!
-@VaultaireGenerate(name = "booksQuery", constractStateType = BookState::class)
+@VaultaireGenerate(name = "booksQuery", contractStateType = BookState::class)
 @Entity
 @Table(name = "books")
 data class PersistentBookState(
@@ -93,7 +93,7 @@ corresponding `PersistentState` with `@VaultaireGenerate`:
   // If you omit the name, the DSL function will be named by appending "Query"
   // to the decapitalized contract state name, e.g. "bookStateQuery"
   name = "booksQuery",
-  constractStateType = BookState::class)
+  contractStateType = BookState::class)
 @Entity
 @Table(name = "books")
 data class PersistentBookState(

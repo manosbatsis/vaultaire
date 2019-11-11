@@ -1,4 +1,5 @@
 apply plugin: "idea"
+apply plugin: 'kotlin-kapt'
 apply plugin: 'net.corda.plugins.cordapp'
 apply plugin: 'net.corda.plugins.cordformation'
 apply plugin: 'net.corda.plugins.quasar-utils'
@@ -34,6 +35,9 @@ cordapp {
 dependencies {
     implementation project(':vaultaire')
     cordaCompile project(':vaultaire-example-contract')
+    cordaCompile "$tokens_release_group:tokens-contracts:$tokens_release_version"
+    //kapt "$tokens_release_group:tokens-contracts:$tokens_release_version"
+    kapt project(':vaultaire-processor')
 
     testImplementation ("$corda_release_group:corda-node-driver:$corda_release_version")
 

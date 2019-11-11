@@ -6,7 +6,9 @@ buildscript {
         corda_release_version = '4.1'
         corda_gradle_plugins_version = '4.0.45'
         corda_platform_version = '4'
-        dokka_version = '0.9.17'
+        tokens_release_version = '1.0'
+        tokens_release_group = 'com.r3.corda.lib.tokens'
+        dokka_version = '0.9.18'
         junitVersion = '5.1.1'
         junit_jupiter_version = '5.3.1' // TODO
         kotlin_version = '1.2.71'
@@ -68,6 +70,9 @@ allprojects {
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         // For Gradle Tooling API
         maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
+        // For Tokens SDK
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
     }
 
     configurations {
