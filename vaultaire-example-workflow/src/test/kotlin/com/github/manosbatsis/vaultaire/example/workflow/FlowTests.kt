@@ -256,6 +256,17 @@ class FlowTests {
             // Minimum price must be 12
             assertEquals(0, BigDecimal(12).compareTo(bookSearchPage.otherResults[5] as BigDecimal))
 
+            val extendedService = BookStateService(b.services)
+            val querySpec = extendedService.buildQuery {
+                status = Vault.StateStatus.UNCONSUMED // the default
+                relevancyStatus = Vault.RelevancyStatus.ALL // the default
+                and {
+                    fields.title `like` "%Corda Foundation%"
+                    fields.genre `==` BookContract.Genre.SCIENCE_FICTION
+                }
+            }
+            extendedService.queryBy(querySpec, 1, 1)
+
         }
     }
 

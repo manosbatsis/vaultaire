@@ -85,7 +85,7 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
         val conditionsSpec = buildVaultQueryCriteriaConditionsBuilder(stateInfo, generatedConditionsClassName, generatedFieldsClassName)
 
         // The state service
-        val stateServiceSpecBuilder = buildStateServiceSpecBuilder(stateInfo, generatedFieldsClassName)
+        val stateServiceSpecBuilder = buildStateServiceSpecBuilder(stateInfo, generatedConditionsClassName, generatedFieldsClassName)
 
 
         // Generate the Kotlin file
@@ -97,30 +97,39 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
                 .addType(fieldsSpec.build())
                 .addType(conditionsSpec.build())
                 .addType(stateServiceSpecBuilder.build())
-                .addFunction(buildDslFunSpec(generatedConditionsClassName, stateInfo.persistentStateTypeElement, stateInfo.contractStateTypeElement))
+                .addFunction(buildTopLevelDslFunSpec(generatedConditionsClassName, stateInfo.persistentStateTypeElement, stateInfo.contractStateTypeElement))
                 .build()
                 .writeTo(sourceRootFile)
     }
 
     /** Create the DSL entry point for the given [annotatedElement] */
-    fun buildDslFunSpec(
-            generatedClassName: ClassName, annotatedElement: TypeElement, contractStateTypeElement: Element
+    fun buildTopLevelDslFunSpec(
+            generatedConditionsClassName: ClassName, annotatedElement: TypeElement, contractStateTypeElement: Element
     ): FunSpec {
-        val extensionFunParams = ParameterSpec.builder(BaseProcessor.BLOCK_FUN_NAME, LambdaTypeName.get(
-                receiver = generatedClassName,
-                returnType = Unit::class.asTypeName())).build()
 
         var extFunName: String = annotatedElement.findAnnotationMirror(VaultaireGenerate::class.java)?.findAnnotationValue("name").toString()
         if(extFunName == null || extFunName.isNotBlank()) extFunName =
                 annotatedElement.findAnnotationMirror(VaultaireGenerateForDependency::class.java)?.findAnnotationValue("name").toString()
         if(extFunName == null || extFunName.isNotBlank()) extFunName = contractStateTypeElement.simpleName.toString().decapitalize() + "Query"
 
-        return FunSpec.builder(extFunName.toString())
+        return buildDslFunSpec(extFunName, generatedConditionsClassName)
+    }
+
+    /** Create the DSL entry point for the given [annotatedElement] */
+    fun buildDslFunSpec(
+            funcName: String, generatedConditionsClassName: ClassName, vararg modifiers: KModifier
+    ): FunSpec {
+        val extensionFunParams = ParameterSpec.builder(BaseProcessor.BLOCK_FUN_NAME, LambdaTypeName.get(
+                receiver = generatedConditionsClassName,
+                returnType = Unit::class.asTypeName())).build()
+
+        val funSpec =  FunSpec.builder(funcName)
                 .addParameter(extensionFunParams)
-                .returns(generatedClassName)
-                .addStatement("return ${generatedClassName.simpleName}().apply(${BaseProcessor.BLOCK_FUN_NAME})")
-                .addKdoc("DSL entry point function for [%T]", generatedClassName)
-                .build()
+                .returns(generatedConditionsClassName)
+                .addStatement("return ${generatedConditionsClassName.simpleName}().apply(${BaseProcessor.BLOCK_FUN_NAME})")
+                .addKdoc("DSL entry point function for [%T]", generatedConditionsClassName)
+        if(modifiers.isNotEmpty())funSpec.addModifiers(*modifiers)
+        return funSpec.build()
     }
 
     /** Create a VaultQueryCriteriaConditions subclass builder */
@@ -129,6 +138,11 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
                 .superclass(VaultQueryCriteriaCondition::class.asClassName()
                         .parameterizedBy(stateInfo.persistentStateTypeElement.asKotlinTypeName(), generatedFieldsClassName))
         conditionsSpec.addKdoc("Generated helper for creating [%T] query conditions/criteria", stateInfo.contractStateTypeElement)
+        // Register
+        conditionsSpec.addType(TypeSpec.companionObjectBuilder().addInitializerBlock(
+                        CodeBlock.of("%T.registerQueryDsl(%T::class, %M::class)",
+                                Registry::class, stateInfo.persistentStateTypeElement,  MemberName("", generatedConditionsName.simpleName))
+                ).build())
         // Specify the contractStateType property
         conditionsSpec.addProperty(buildContractStateTypePropertySpec(stateInfo.contractStateTypeElement))
         // Specify the statePersistableType property
@@ -139,8 +153,9 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
     }
 
     /** Create a StateService subclass builder */
-    fun buildStateServiceSpecBuilder(stateInfo: StateInfo, generatedFieldsClassName: ClassName): TypeSpec.Builder {
+    fun buildStateServiceSpecBuilder(stateInfo: StateInfo, conditionsClassName: ClassName, generatedFieldsClassName: ClassName): TypeSpec.Builder {
         val generatedStateServiceSimpleName = "${stateInfo.contractStateSimpleName}Service"
+        //val conditionsLambda = LambdaTypeName.get(returnType = processingEnv.typeUtils.a.getTypeElement(conditionsSimpleName).asKotlinTypeName())
         val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedStateServiceSimpleName)
                 .addKdoc("A [%T]-specific [%T]", stateInfo.contractStateTypeElement, ExtendedStateService::class)
                 .addModifiers(KModifier.OPEN)
@@ -148,7 +163,8 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
                         .parameterizedBy(
                                 stateInfo.contractStateTypeElement.asKotlinTypeName(),
                                 stateInfo.persistentStateTypeElement.asKotlinTypeName(),
-                                generatedFieldsClassName))
+                                generatedFieldsClassName,
+                                conditionsClassName))
                 .primaryConstructor(FunSpec.constructorBuilder()
                         .addParameter("delegate", StateServiceDelegate::class.asClassName()
                                 .parameterizedBy(stateInfo.contractStateTypeElement.asKotlinTypeName()))
@@ -160,6 +176,7 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
                         ).build())
                 .addProperty(buildFieldsPropertySpec(stateInfo.persistentStateTypeElement, generatedFieldsClassName))
                 .addProperty(buildStatePersistableTypePropertySpec(stateInfo.persistentStateTypeElement))
+                .addInitializerBlock(CodeBlock.of("criteriaConditionsType =  %N::class.java", "${stateInfo.persistentStateSimpleName}Conditions"))
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("rpcOps", CordaRPCOps::class)
                         .addParameter(ParameterSpec.builder("defaults", StateServiceDefaults::class)
@@ -169,6 +186,7 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
                                 .add("%T(%N, %T::class.java, %N)", StateServiceRpcDelegate::class, "rpcOps",
                                         stateInfo.contractStateTypeElement, "defaults").build()
                         ).build())
+                .addFunction(buildDslFunSpec("buildQuery", conditionsClassName, KModifier.OVERRIDE))
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("serviceHub", ServiceHub::class)
                         .addParameter(ParameterSpec.builder("defaults", StateServiceDefaults::class)
@@ -178,6 +196,8 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
                                 .add("%T(%N, %T::class.java, %N)", StateServiceHubDelegate::class, "serviceHub",
                                         stateInfo.contractStateTypeElement, "defaults").build()
                         ).build())
+
+
         return stateServiceSpecBuilder
     }
 

@@ -6,7 +6,9 @@ and can be helpful with version upgrades.
 
 ## 0.10
 
-- Support generation for states in project dependencies using `@VaultaireGenerateForDependency`
+- Added `@VaultaireGenerateForDependency` to support generation (of DSL, Services etc.) for states contributed to the 
+classpath by project dependencies 
+- Enhanced generated subclasses of `ExtendedStateService` with DSL-aware `buildQuery`, `queryBy` and `trackBy`
 - Fixed typo from `VaultaireGenerate.constractStateType` to  `VaultaireGenerate.contractStateType`
 
 ## 0.9
