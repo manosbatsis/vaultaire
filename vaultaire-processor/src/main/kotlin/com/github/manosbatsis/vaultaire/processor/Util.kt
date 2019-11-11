@@ -20,6 +20,11 @@
 package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
+import com.thinkinglogic.builder.annotation.Builder
+import java.io.File
+import javax.lang.model.element.Element
+import javax.lang.model.element.TypeElement
+import javax.lang.model.element.VariableElement
 
 internal fun VaultaireGenerate?.getDslNameOrDefault(defaultString: String): String {
     return if (this == null || name.isEmpty()) {
@@ -27,4 +32,16 @@ internal fun VaultaireGenerate?.getDslNameOrDefault(defaultString: String): Stri
     } else {
         name
     }
+}
+
+@Builder
+data class StateInfo(
+        val contractStateTypeElement: Element,
+        val persistentStateTypeElement: TypeElement,
+        val fields: List<VariableElement>,
+        val generatedPackageName: String,
+        val sourceRoot: File
+){
+    val persistentStateSimpleName =  persistentStateTypeElement.simpleName.toString()
+    val contractStateSimpleName =  contractStateTypeElement.simpleName.toString()
 }

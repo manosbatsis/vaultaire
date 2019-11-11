@@ -54,8 +54,7 @@ nexusStaging {
 
 allprojects {
     group = 'com.github.manosbatsis.vaultaire'
-    version = '0.10'
-
+    version = '0.10-SNAPSHOT'
     apply plugin: "kotlin"
 
 
@@ -96,7 +95,6 @@ allprojects {
             }
         }
     }
-
 }
 subprojects {
     apply plugin: 'license'
