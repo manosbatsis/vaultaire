@@ -55,7 +55,7 @@ class BookContract : Contract {
 
 
     @CordaSerializable
-    enum class BookGenre {
+    enum class Genre {
         UNKNOWN,
         TECHNOLOGY,
         SCIENCE_FICTION,
@@ -67,7 +67,7 @@ class BookContract : Contract {
     data class BookState(val publisher: Party,
                          val author: Party,
                          val price: BigDecimal,
-                         val genre: BookGenre,
+                         val genre: Genre,
                          val editions: Int = 1,
                          val title: String = "Uknown",
                          val published: Date = Date(),
@@ -91,31 +91,86 @@ class BookContract : Contract {
 
         object BookSchemaV1 : MappedSchema(BookSchema.javaClass, 1, listOf(BookSchemaV1.PersistentBookState::class.java)) {
 
-@VaultaireGenerate(/*name = "bookConditions", */constractStateType = BookState::class)
-@Entity
-@Table(name = "books")
-class PersistentBookState(
-        @Column(name = "linearId")
-        var id: String = "",
-        @Column(name = "externalId")
-        var externalId: String? = "",
-        @Column(name = "publisher")
-        var publisher: String = "",
-        @Column(name = "author")
-        var author: String = "",
-        @Column(name = "price")
-        var price: BigDecimal = BigDecimal.ZERO,
-        @Column(name = "genre")
-        var genre: BookGenre = BookGenre.UNKNOWN,
-        @Column(name = "edition_count")
-        var editions: Int = 1,
-        @Column(name = "title")
-        var title: String = "",
-        @Column(name = "published")
-        var published: Date = Date(),
-        @Column(name = "description", length = 500)
-        var description: String? = null
-) : PersistentState()
+            @VaultaireGenerate(/*name = "bookConditions", */contractStateType = BookState::class)
+            @Entity
+            @Table(name = "books")
+            class PersistentBookState(
+                    @Column(name = "linearId")
+                    var id: String = "",
+                    @Column(name = "externalId")
+                    var externalId: String? = "",
+                    @Column(name = "publisher")
+                    var publisher: String = "",
+                    @Column(name = "author")
+                    var author: String = "",
+                    @Column(name = "price")
+                    var price: BigDecimal = BigDecimal.ZERO,
+                    @Column(name = "GENRE")
+                    var genre: Genre = Genre.UNKNOWN,
+                    @Column(name = "edition_count")
+                    var editions: Int = 1,
+                    @Column(name = "title")
+                    var title: String = "",
+                    @Column(name = "published")
+                    var published: Date = Date(),
+                    @Column(name = "description", length = 500)
+                    var description: String? = null
+            ) : PersistentState()
+        }
+    }
+
+    // State.
+    data class MagazineState(val publisher: Party,
+                             val author: Party,
+                             val price: BigDecimal,
+                             val genre: Genre,
+                             val issues: Int = 1,
+                             val title: String = "Uknown",
+                             val published: Date = Date(),
+                             override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
+        override val participants get() = listOf(publisher, author)
+
+        override fun supportedSchemas() = listOf(MagazineSchemaV1)
+
+        override fun generateMappedObject(schema: MappedSchema) = MagazineSchemaV1.PersistentMagazineState(
+                linearId.id.toString(),
+                linearId.externalId,
+                publisher.name.toString(),
+                author.name.toString(),
+                price,
+                genre,
+                issues,
+                title,
+                published)
+
+        object MagazineSchema
+
+        object MagazineSchemaV1 : MappedSchema(MagazineSchema.javaClass, 1, listOf(MagazineSchemaV1.PersistentMagazineState::class.java)) {
+
+            @Entity
+            @Table(name = "magazines")
+            class PersistentMagazineState(
+                    @Column(name = "linearId")
+                    var id: String = "",
+                    @Column(name = "externalId")
+                    var externalId: String? = "",
+                    @Column(name = "publisher")
+                    var publisher: String = "",
+                    @Column(name = "author")
+                    var author: String = "",
+                    @Column(name = "price")
+                    var price: BigDecimal = BigDecimal.ZERO,
+                    @Column(name = "GENRE")
+                    var genre: Genre = Genre.UNKNOWN,
+                    @Column(name = "edition_count")
+                    var issues: Int = 1,
+                    @Column(name = "title")
+                    var title: String = "",
+                    @Column(name = "published")
+                    var published: Date = Date(),
+                    @Column(name = "description", length = 500)
+                    var description: String? = null
+            ) : PersistentState()
         }
     }
 }

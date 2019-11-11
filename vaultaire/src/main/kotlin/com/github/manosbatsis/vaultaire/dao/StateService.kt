@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.dao
 
+import com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
@@ -183,7 +184,7 @@ open class BasicStateService<T: ContractState>(
  *
  * Subclassed by Vaultaire's annotation processing to generate service components.
  */
-abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out F: Fields<P>>(
+abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out F: Fields<P>, Q: VaultQueryCriteriaCondition<P, F>>(
         delegate: StateServiceDelegate<T>
 ) : BasicStateService<T>(delegate) {
 
@@ -193,14 +194,35 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
     /** The fields of the target [StatePersistable] type `P` */
     abstract val fields: F
 
+    /** The fields of the target [StatePersistable] type `P` */
+    lateinit var criteriaConditionsType: Class<Q>
+
+    /**
+     * DSL entry point function for a [VaultQueryCriteriaCondition] of type [Q]
+     */
+    abstract fun buildQuery(block: Q.() -> Unit): Q
+
     /** Build a sort from the given string/direction pairs */
     fun toSort(vararg sort: Pair<String, Sort.Direction>): Sort =
-        Sort(sort.map {
-            if(!fields.contains(it.first))
+            Sort(sort.map {
+                if (!fields.contains(it.first))
                     throw java.lang.IllegalArgumentException("Canot sort on invalid field name: ${it.first}")
-            Sort.SortColumn(
-                    SortAttribute.Custom(statePersistableType, it.first), it.second)
-        })
+                Sort.SortColumn(
+                        SortAttribute.Custom(statePersistableType, it.first), it.second)
+            })
+
+    /**
+     * Query the vault for states of type [T] matching the given DSL query,
+     * applying the given page number, size and aggregates flag
+     */
+    fun queryBy(
+            condition: Q, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, ignoreAggregates: Boolean = false
+    ): Vault.Page<T> {
+        val criteria = condition.toCriteria(ignoreAggregates)
+        val sort = condition.toSort()
+        return if (sort.columns.isNotEmpty()) queryBy(criteria, PageSpecification(pageNumber, pageSize), sort)
+        else queryBy(criteria, PageSpecification(pageNumber, pageSize))
+    }
 
     /**
      * Query the vault for states of type [T] matching the given criteria,
@@ -211,7 +233,7 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
             pageNumber: Int = defaults.pageNumber,
             pageSize: Int = defaults.pageSize,
             vararg sort: Pair<String, Sort.Direction>
-    ): Vault.Page<T> = if(sort.isNotEmpty()) queryBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
+    ): Vault.Page<T> = if (sort.isNotEmpty()) queryBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
     else queryBy(criteria, PageSpecification(pageNumber, pageSize))
 
     /**
@@ -222,8 +244,21 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
             criteria: QueryCriteria = defaults.criteria,
             paging: PageSpecification = defaults.paging,
             vararg sort: Pair<String, Sort.Direction>
-    ): Vault.Page<T> = if(sort.isNotEmpty()) queryBy(criteria, paging, toSort(*sort))
+    ): Vault.Page<T> = if (sort.isNotEmpty()) queryBy(criteria, paging, toSort(*sort))
     else queryBy(criteria, paging)
+
+    /**
+     * Track the vault for states of type [T] matching the given DSL query,
+     * applying the given page number and size, ignoring any aggregates.
+     */
+    fun trackBy(
+            condition: Q, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        val criteria = condition.toCriteria(true)
+        val sort = condition.toSort()
+        return if(sort.columns.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
+        else trackBy(criteria, PageSpecification(pageNumber, pageSize))
+    }
 
     /**
      * Track the vault for events of [T] states matching the given criteria,

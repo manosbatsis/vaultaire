@@ -20,6 +20,7 @@
 package com.github.manosbatsis.vaultaire.annotation
 
 import net.corda.core.contracts.ContractState
+import net.corda.core.schemas.PersistentState
 import kotlin.reflect.KClass
 
 /**
@@ -30,5 +31,17 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
 annotation class VaultaireGenerate(
         val name: String = "",
-        val constractStateType: KClass<out ContractState>
+        val contractStateType: KClass<out ContractState>
+)
+
+/**
+ * Generate a conditions DSL and a state-specific [FieldsAwareStateService]
+ * for the [PersistentState] and  [ContractState] of a project dependency.
+ */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FILE, AnnotationTarget.EXPRESSION)
+annotation class VaultaireGenerateForDependency(
+        val name: String = "",
+        val contractStateType: KClass<out ContractState>,
+        val persistentStateType: KClass<out PersistentState>
 )

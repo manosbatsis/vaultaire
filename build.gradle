@@ -6,7 +6,9 @@ buildscript {
         corda_release_version = '4.1'
         corda_gradle_plugins_version = '4.0.45'
         corda_platform_version = '4'
-        dokka_version = '0.9.17'
+        tokens_release_version = '1.0'
+        tokens_release_group = 'com.r3.corda.lib.tokens'
+        dokka_version = '0.9.18'
         junitVersion = '5.1.1'
         junit_jupiter_version = '5.3.1' // TODO
         kotlin_version = '1.2.71'
@@ -52,7 +54,7 @@ nexusStaging {
 
 allprojects {
     group = 'com.github.manosbatsis.vaultaire'
-    version = '0.9'
+    version = '0.10-SNAPSHOT'
     apply plugin: "kotlin"
 
 
@@ -68,6 +70,9 @@ allprojects {
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         // For Gradle Tooling API
         maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
+        // For Tokens SDK
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
     }
 
     configurations {
@@ -104,6 +109,14 @@ subprojects {
             javaParameters = true   // Useful for reflection.
         }
     }
+
+    tasks.withType(org.jetbrains.dokka.gradle.DokkaTask) {
+        skipDeprecated = true
+        // Disable linking to online JDK documentation
+        noJdkLink = true
+        noStdlibLink=true
+    }
+    
     test {
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
@@ -166,7 +179,6 @@ configure([project(':vaultaire'), project(':vaultaire-processor')]) {
     apply plugin: 'org.jetbrains.dokka'
 
     task dokkaForGhPages(type: org.jetbrains.dokka.gradle.DokkaTask) {
-        skipDeprecated = true
         outputDirectory = "$rootDir/docs/0.x"
         outputFormat = "gfm"
         inputs.dir 'src/main/kotlin'
@@ -176,10 +188,9 @@ configure([project(':vaultaire'), project(':vaultaire-processor')]) {
     dokka {
         outputFormat = 'javadoc'
         outputDirectory = javadoc.destinationDir
-        //inputs.dir 'src/main/kotlin'
         linkMapping {
             dir = "src/main/kotlin"
-            url = "https://github.com/manosbatsis/vaultaire/tree/master/${project.name}/src/main/kotlin"
+            url = "https://github.com/manosbatsis/vaultaire/tree/master/${project.name}/src/main/kotlin/"
             suffix = "#L"
         }
     }
