@@ -10,8 +10,7 @@ object Registry {
     private val services: MutableMap<KClass<*>, KClass<*>> = ConcurrentHashMap()
     private val queryDsls: MutableMap<KClass<*>, KClass<*>> = ConcurrentHashMap()
 
-    fun <T : ContractState, S: StateService<T>> registerService(keyType: KClass<T>, serviceType: KClass<S>){
-        val result = services.put(keyType, serviceType)
-    }
+    fun <T : ContractState, S: StateService<T>> registerService(keyType: KClass<T>, serviceType: KClass<S>) =
+            services.put(keyType, serviceType)
 
 }
