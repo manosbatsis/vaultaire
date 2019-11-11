@@ -4,6 +4,11 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.10
+
+- Support generation for states in project dependencies using `@VaultaireGenerateForDependency`
+- Fixed typo from `VaultaireGenerate.constractStateType` to  `VaultaireGenerate.contractStateType`
+
 ## 0.9
 
 - 0.8 re-release fix

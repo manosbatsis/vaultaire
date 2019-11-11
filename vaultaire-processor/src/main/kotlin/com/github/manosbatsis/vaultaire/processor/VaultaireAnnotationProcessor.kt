@@ -20,7 +20,7 @@
 package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateFor
+import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
 import com.github.manosbatsis.vaultaire.dao.*
 import com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
@@ -57,7 +57,7 @@ import javax.tools.Diagnostic.Kind.NOTE
  */
 @SupportedAnnotationTypes(
         "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate",
-        "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateFor")
+        "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(
         VaultaireAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME,
@@ -81,7 +81,7 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
         val annotatedSourceElements = roundEnv.getElementsAnnotatedWith(VaultaireGenerate::class.java)
-        val annotatedForElements = roundEnv.getElementsAnnotatedWith(VaultaireGenerateFor::class.java)
+        val annotatedForElements = roundEnv.getElementsAnnotatedWith(VaultaireGenerateForDependency::class.java)
         if (annotatedSourceElements.isEmpty() && annotatedForElements.isEmpty()) {
             processingEnv.noteMessage { "No classes annotated with Vaultaire annotations in this round ($roundEnv)" }
             return false
@@ -132,7 +132,7 @@ class VaultaireAnnotationProcessor : AbstractProcessor() {
 
     /** Invokes [writeBuilderForAnnotatedPersistentState] to create a builder for the given [persistentStateTypeElement]. */
     fun writeBuilderForDependency(annotatedElement: Element, sourceRootFile: File) {
-        val annotation = annotatedElement.getAnnotationMirror(VaultaireGenerateFor::class.java)
+        val annotation = annotatedElement.getAnnotationMirror(VaultaireGenerateForDependency::class.java)
         val persistentStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_PERSISTENT_STATE)
         val persistentStateTypeElement: TypeElement = processingEnv.typeUtils
                 .asElement(persistentStateTypeAnnotationValue.value as TypeMirror).asType().asTypeElement()

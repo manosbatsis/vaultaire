@@ -40,7 +40,7 @@ annotation class VaultaireGenerate(
  */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FILE, AnnotationTarget.EXPRESSION)
-annotation class VaultaireGenerateFor(
+annotation class VaultaireGenerateForDependency(
         val name: String = "",
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>

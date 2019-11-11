@@ -54,7 +54,8 @@ nexusStaging {
 
 allprojects {
     group = 'com.github.manosbatsis.vaultaire'
-    version = '0.9'
+    version = '0.10'
+
     apply plugin: "kotlin"
 
 
@@ -95,6 +96,7 @@ allprojects {
             }
         }
     }
+
 }
 subprojects {
     apply plugin: 'license'
@@ -109,6 +111,14 @@ subprojects {
             javaParameters = true   // Useful for reflection.
         }
     }
+
+    tasks.withType(org.jetbrains.dokka.gradle.DokkaTask) {
+        skipDeprecated = true
+        // Disable linking to online JDK documentation
+        noJdkLink = true
+        noStdlibLink=true
+    }
+    
     test {
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
@@ -171,7 +181,6 @@ configure([project(':vaultaire'), project(':vaultaire-processor')]) {
     apply plugin: 'org.jetbrains.dokka'
 
     task dokkaForGhPages(type: org.jetbrains.dokka.gradle.DokkaTask) {
-        skipDeprecated = true
         outputDirectory = "$rootDir/docs/0.x"
         outputFormat = "gfm"
         inputs.dir 'src/main/kotlin'
@@ -181,10 +190,9 @@ configure([project(':vaultaire'), project(':vaultaire-processor')]) {
     dokka {
         outputFormat = 'javadoc'
         outputDirectory = javadoc.destinationDir
-        //inputs.dir 'src/main/kotlin'
         linkMapping {
             dir = "src/main/kotlin"
-            url = "https://github.com/manosbatsis/vaultaire/tree/master/${project.name}/src/main/kotlin"
+            url = "https://github.com/manosbatsis/vaultaire/tree/master/${project.name}/src/main/kotlin/"
             suffix = "#L"
         }
     }
