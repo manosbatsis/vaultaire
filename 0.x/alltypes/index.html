@@ -425,24 +425,28 @@
 <td>Extends <a href="../com.github.manosbatsis.vaultaire.dao/-basic-state-service/">BasicStateService</a> to provide a <a href="../com.github.manosbatsis.vaultaire.dao/-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.util/-field-wrapper/">com.github.manosbatsis.vaultaire.util.FieldWrapper</a></td>
-<td></td>
-</tr>
-<tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-fields/">com.github.manosbatsis.vaultaire.util.Fields</a></td>
 <td>Extended by Vaultaire&rsquo;s annotation processing to provide easy access to fields of a <a href="#">StatePersistable</a> type</td>
 </tr>
 <tr>
+<td><a href="../com.github.manosbatsis.vaultaire.util/-field-wrapper/">com.github.manosbatsis.vaultaire.util.FieldWrapper</a></td>
+<td></td>
+</tr>
+<tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-generic-field-wrapper/">com.github.manosbatsis.vaultaire.util.GenericFieldWrapper</a></td>
-<td>Wraps a non-nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td>Wraps a non-nullable <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/">com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper</a></td>
-<td>Wraps a nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td>Wraps a nullable <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl/-or-condition/">com.github.manosbatsis.vaultaire.dsl.OrCondition</a></td>
 <td>Defines a set of conditions where at least a single item must be matched</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.registry/-registry/">com.github.manosbatsis.vaultaire.registry.Registry</a></td>
+<td></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl/-sort-columns/">com.github.manosbatsis.vaultaire.dsl.SortColumns</a></td>
@@ -478,7 +482,15 @@
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/">com.github.manosbatsis.vaultaire.util.TypedFieldWrapper</a></td>
-<td>Wraps a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td>Wraps a <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-generate/">com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate</a></td>
+<td>Generate a conditions DSL and a state-specific <a href="#">FieldsAwareStateService</a> for the annotated <a href="#">PersistentState</a> class or constructor.</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-generate-for-dependency/">com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency</a></td>
+<td>Generate a conditions DSL and a state-specific <a href="#">FieldsAwareStateService</a> for the <a href="#">PersistentState</a> and  <a href="#">ContractState</a> of a project dependency.</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl/-vault-custom-query-criteria-wrapper-condition/">com.github.manosbatsis.vaultaire.dsl.VaultCustomQueryCriteriaWrapperCondition</a></td>
@@ -487,10 +499,6 @@
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl/-vault-query-criteria-condition/">com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition</a></td>
 <td>A <a href="../com.github.manosbatsis.vaultaire.dsl/-conditions-condition/">ConditionsCondition</a> extended by Vaultaire&rsquo;s annotation processing to create a condition DSL specific to a <a href="#">ContractState</a> type. Defines a root <a href="#">QueryCriteria.VaultQueryCriteria</a>. Allows for defining <code>and</code>/<code>or</code> condition groups, as well as a <a href="#">Sort</a></td>
-</tr>
-<tr>
-<td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-generate/">com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate</a></td>
-<td>Generate a conditions DSL and a state-specific <a href="#">FieldsAwareStateService</a> for the annotated <a href="#">PersistentState</a> class or constructor.</td>
 </tr>
 </tbody>
 </table>

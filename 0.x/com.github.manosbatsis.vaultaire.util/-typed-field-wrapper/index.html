@@ -397,7 +397,7 @@
                 <p><a href="../">com.github.manosbatsis.vaultaire.util</a> / <a href="./">TypedFieldWrapper</a></p>
 <h1 id="typedfieldwrapper">TypedFieldWrapper<a class="headerlink" href="#typedfieldwrapper" title="Permanent link">&para;</a></h1>
 <p><code>interface TypedFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="../-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
-<p>Wraps a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators,
+<p>Wraps a <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators,
 i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></p>
 <h3 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h3>
 <table>
@@ -410,7 +410,7 @@ i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder<
 <tbody>
 <tr>
 <td><a href="property/">property</a></td>
-<td><code>abstract val property:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html"><code>KProperty1</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>,</code><a href="./#S"><code>S</code></a><code>&gt;</code></td>
+<td><code>abstract val property: KProperty1&lt;</code><a href="./#T"><code>T</code></a><code>,</code><a href="./#S"><code>S</code></a><code>&gt;</code></td>
 </tr>
 </tbody>
 </table>
@@ -425,11 +425,11 @@ i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder<
 <tbody>
 <tr>
 <td><a href="../-generic-field-wrapper/">GenericFieldWrapper</a></td>
-<td><code>class GenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="./"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="../-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="../-generic-field-wrapper/#S"><code>S</code></a><code>&gt;</code><br>Wraps a non-nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td><code>class GenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="./"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="../-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="../-generic-field-wrapper/#S"><code>S</code></a><code>&gt;</code><br>Wraps a non-nullable <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 <tr>
 <td><a href="../-nullable-generic-field-wrapper/">NullableGenericFieldWrapper</a></td>
-<td><code>class NullableGenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="./"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="../-nullable-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="../-nullable-generic-field-wrapper/#S"><code>S</code></a><code>?&gt;</code><br>Wraps a nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td><code>class NullableGenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="./"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="../-nullable-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="../-nullable-generic-field-wrapper/#S"><code>S</code></a><code>?&gt;</code><br>Wraps a nullable <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 </tbody>
 </table>

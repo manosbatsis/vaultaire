@@ -424,7 +424,7 @@
 </tr>
 <tr>
 <td><a href="-extended-state-service/">ExtendedStateService</a></td>
-<td><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-extended-state-service/#T"><code>T</code></a><code>&gt;</code><br>Extends <a href="-basic-state-service/">BasicStateService</a> to provide a <a href="-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
+<td><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>&gt;, Q :</code><a href="../com.github.manosbatsis.vaultaire.dsl/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>,</code><a href="-extended-state-service/#F"><code>F</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-extended-state-service/#T"><code>T</code></a><code>&gt;</code><br>Extends <a href="-basic-state-service/">BasicStateService</a> to provide a <a href="-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
 </tr>
 <tr>
 <td><a href="-state-service/">StateService</a></td>
@@ -459,7 +459,7 @@
 <tbody>
 <tr>
 <td><a href="-state-not-found-exception/">StateNotFoundException</a></td>
-<td><code>class StateNotFoundException :</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-runtime-exception/index.html"><code>RuntimeException</code></a></td>
+<td><code>class StateNotFoundException : RuntimeException</code></td>
 </tr>
 </tbody>
 </table>

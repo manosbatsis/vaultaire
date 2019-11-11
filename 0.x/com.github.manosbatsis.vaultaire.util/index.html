@@ -419,24 +419,24 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="-field-wrapper/">FieldWrapper</a></td>
-<td><code>interface FieldWrapper&lt;T : StatePersistable&gt;</code></td>
-</tr>
-<tr>
 <td><a href="-fields/">Fields</a></td>
 <td><code>interface Fields&lt;T : StatePersistable&gt;</code><br>Extended by Vaultaire&rsquo;s annotation processing to provide easy access to fields of a <a href="#">StatePersistable</a> type</td>
 </tr>
 <tr>
+<td><a href="-field-wrapper/">FieldWrapper</a></td>
+<td><code>interface FieldWrapper&lt;T : StatePersistable&gt;</code></td>
+</tr>
+<tr>
 <td><a href="-generic-field-wrapper/">GenericFieldWrapper</a></td>
-<td><code>class GenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="-generic-field-wrapper/#S"><code>S</code></a><code>&gt;</code><br>Wraps a non-nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td><code>class GenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="-generic-field-wrapper/#S"><code>S</code></a><code>&gt;</code><br>Wraps a non-nullable <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 <tr>
 <td><a href="-nullable-generic-field-wrapper/">NullableGenericFieldWrapper</a></td>
-<td><code>class NullableGenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="-nullable-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="-nullable-generic-field-wrapper/#S"><code>S</code></a><code>?&gt;</code><br>Wraps a nullable <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td><code>class NullableGenericFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="-nullable-generic-field-wrapper/#T"><code>T</code></a><code>,</code><a href="-nullable-generic-field-wrapper/#S"><code>S</code></a><code>?&gt;</code><br>Wraps a nullable <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 <tr>
 <td><a href="-typed-field-wrapper/">TypedFieldWrapper</a></td>
-<td><code>interface TypedFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="-typed-field-wrapper/#T"><code>T</code></a><code>&gt;</code><br>Wraps a <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-property1/index.html">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+<td><code>interface TypedFieldWrapper&lt;T : StatePersistable, S&gt; :</code><a href="-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="-typed-field-wrapper/#T"><code>T</code></a><code>&gt;</code><br>Wraps a <a href="#">KProperty1</a> belonging to a <a href="#">StatePersistable</a> to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 </tbody>
 </table>

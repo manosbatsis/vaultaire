@@ -327,6 +327,26 @@
     Create a DSL
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-module-states" title="Project Module States" class="md-nav__link">
+    Project Module States
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-dependency-states" title="Project Dependency States" class="md-nav__link">
+    Project Dependency States
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -495,6 +515,26 @@
     Create a DSL
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#project-module-states" title="Project Module States" class="md-nav__link">
+    Project Module States
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-dependency-states" title="Project Dependency States" class="md-nav__link">
+    Project Dependency States
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -581,7 +621,7 @@
 
 
 <span class="c1">// Use Vaultaire&#39;s code generation!</span>
-<span class="n">@VaultaireGenerate</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;booksQuery&quot;</span><span class="p">,</span> <span class="n">constractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="n">@VaultaireGenerate</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;booksQuery&quot;</span><span class="p">,</span> <span class="n">contractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
 <span class="n">@Entity</span>
 <span class="n">@Table</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;books&quot;</span><span class="p">)</span>
 <span class="k">data</span> <span class="k">class</span> <span class="nc">PersistentBookState</span><span class="p">(</span>
@@ -637,19 +677,30 @@
 </pre></div>
 
 <h2 id="create-a-dsl">Create a DSL<a class="headerlink" href="#create-a-dsl" title="Permanent link">&para;</a></h2>
-<p>To create a query DSL for your state after <a href="#installation">installing</a> Vaultaire, annotate the
-corresponding <code>PersistentState</code> with <code>@VaultaireGenerate</code>:</p>
+<h3 id="project-module-states">Project Module States<a class="headerlink" href="#project-module-states" title="Permanent link">&para;</a></h3>
+<p>To create a query DSL for your state after <a href="#installation">installing</a> Vaultaire, 
+annotate the corresponding <code>PersistentState</code> with <code>@VaultaireGenerate</code>:</p>
 <div class="codehilite"><pre><span></span><span class="c1">// Use Vaultaire&#39;s DSL generation!</span>
 <span class="n">@VaultaireGenerate</span><span class="p">(</span>
   <span class="c1">// If you omit the name, the DSL function will be named by appending &quot;Query&quot;</span>
   <span class="c1">// to the decapitalized contract state name, e.g. &quot;bookStateQuery&quot;</span>
   <span class="n">name</span> <span class="p">=</span> <span class="s">&quot;booksQuery&quot;</span><span class="p">,</span>
-  <span class="n">constractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+  <span class="n">contractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
 <span class="n">@Entity</span>
 <span class="n">@Table</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;books&quot;</span><span class="p">)</span>
 <span class="k">data</span> <span class="k">class</span> <span class="nc">PersistentBookState</span><span class="p">(</span>
     <span class="c1">// state properties...</span>
 <span class="p">)</span> <span class="p">:</span> <span class="n">PersistentState</span><span class="p">()</span>
+</pre></div>
+
+<h3 id="project-dependency-states">Project Dependency States<a class="headerlink" href="#project-dependency-states" title="Permanent link">&para;</a></h3>
+<p>To create a query DSL for a state from your project dependencies, annotate the
+any class in your project using the special <code>@VaultaireGenerateFor</code> annotation, 
+providing the state&rsquo;s  <code>ContractState</code> and <code>PersistentState</code>:</p>
+<div class="codehilite"><pre><span></span><span class="n">@VaultaireGenerateForDependency</span><span class="p">(</span><span class="n">name</span> <span class="p">=</span> <span class="s">&quot;fungibleTokenConditions&quot;</span><span class="p">,</span>
+        <span class="n">persistentStateType</span> <span class="p">=</span> <span class="n">PersistentFungibleToken</span><span class="o">::</span><span class="k">class</span><span class="p">,</span>
+        <span class="n">contractStateType</span> <span class="p">=</span> <span class="n">FungibleToken</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Fungible</span>
 </pre></div>
 
 <h2 id="query-settings">Query Settings<a class="headerlink" href="#query-settings" title="Permanent link">&para;</a></h2>

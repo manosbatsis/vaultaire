@@ -373,8 +373,11 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.dao</a> / <a href="../">ExtendedStateService</a> / <a href="./">queryBy</a></p>
 <h1 id="queryby">queryBy<a class="headerlink" href="#queryby" title="Permanent link">&para;</a></h1>
-<p><code>fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageNumber, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageSize, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code>
-<code>fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
+<p><code>fun queryBy(condition:</code><a href="../#Q"><code>Q</code></a><code>, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, ignoreAggregates: Boolean = false): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
+<p>Query the vault for states of type <a href="../#T">T</a> matching the given DSL query,
+applying the given page number, size and aggregates flag</p>
+<p><code>fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code>
+<code>fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
 <p>Query the vault for states of type <a href="../#T">T</a> matching the given criteria,
 applying the given page number, size and sorting specifications if any</p>
                 

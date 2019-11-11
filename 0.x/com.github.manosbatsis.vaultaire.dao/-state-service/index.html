@@ -439,11 +439,11 @@
 <tbody>
 <tr>
 <td><a href="of-linear-state/">ofLinearState</a></td>
-<td><code>abstract val ofLinearState:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><code>Boolean</code></a></td>
+<td><code>abstract val ofLinearState: Boolean</code></td>
 </tr>
 <tr>
 <td><a href="of-queryable-state/">ofQueryableState</a></td>
-<td><code>abstract val ofQueryableState:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><code>Boolean</code></a></td>
+<td><code>abstract val ofQueryableState: Boolean</code></td>
 </tr>
 </tbody>
 </table>
@@ -458,7 +458,7 @@
 <tbody>
 <tr>
 <td><a href="../-state-service-delegate/contract-state-type/">contractStateType</a></td>
-<td><code>abstract val contractStateType:</code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><code>Class</code></a><code>&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;</code></td>
+<td><code>abstract val contractStateType: Class&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;</code></td>
 </tr>
 <tr>
 <td><a href="../-state-service-delegate/defaults/">defaults</a></td>
@@ -477,31 +477,31 @@
 <tbody>
 <tr>
 <td><a href="count-by/">countBy</a></td>
-<td><code>abstract fun countBy(criteria: QueryCriteria = defaults.criteria):</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><code>Long</code></a><br>Count states of type <a href="./#T">T</a> matching stored in the vault and matching any given criteria</td>
+<td><code>abstract fun countBy(criteria: QueryCriteria = defaults.criteria): Long</code><br>Count states of type <a href="./#T">T</a> matching stored in the vault and matching any given criteria</td>
 </tr>
 <tr>
 <td><a href="find-by-external-id/">findByExternalId</a></td>
-<td><code>abstract fun findByExternalId(externalId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br>Find the <a href="#">Vault.StateStatus.UNCONSUMED</a> state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier.externalId</a> if any</td>
+<td><code>abstract fun findByExternalId(externalId: String): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br>Find the <a href="#">Vault.StateStatus.UNCONSUMED</a> state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier.externalId</a> if any</td>
 </tr>
 <tr>
 <td><a href="find-by-linear-id/">findByLinearId</a></td>
-<td><code>open fun findByLinearId(linearId:</code><a href="http://docs.oracle.com/javase/6/docs/api/java/util/UUID.html"><code>UUID</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="http://docs.oracle.com/javase/6/docs/api/java/util/UUID.html">UUID</a> if any<code>open fun findByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br><code>abstract fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any</td>
+<td><code>open fun findByLinearId(linearId: UUID, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="#">UUID</a> if any<code>open fun findByLinearId(linearId: String, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br><code>abstract fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;?</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any</td>
 </tr>
 <tr>
 <td><a href="get-by-external-id/">getByExternalId</a></td>
-<td><code>open fun getByExternalId(externalId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Find the <a href="#">Vault.StateStatus.UNCONSUMED</a> state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier.externalId</a> if any, throw an error otherwise</td>
+<td><code>open fun getByExternalId(externalId: String): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Find the <a href="#">Vault.StateStatus.UNCONSUMED</a> state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier.externalId</a> if any, throw an error otherwise</td>
 </tr>
 <tr>
 <td><a href="get-by-linear-id/">getByLinearId</a></td>
-<td><code>open fun getByLinearId(linearId:</code><a href="http://docs.oracle.com/javase/6/docs/api/java/util/UUID.html"><code>UUID</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="http://docs.oracle.com/javase/6/docs/api/java/util/UUID.html">UUID</a> if any, throw an error otherwise<code>open fun getByLinearId(linearId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br><code>open fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any, throw an error otherwise</td>
+<td><code>open fun getByLinearId(linearId: UUID, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="#">UUID</a> if any, throw an error otherwise<code>open fun getByLinearId(linearId: String, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br><code>open fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Find the state of type <a href="./#T">T</a> matching the given <a href="#">UniqueIdentifier</a> if any, throw an error otherwise</td>
 </tr>
 <tr>
 <td><a href="query-by/">queryBy</a></td>
-<td><code>abstract fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageNumber, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageSize, sort: Sort = defaults.sort): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>abstract fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="track-by/">trackBy</a></td>
-<td><code>abstract fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageNumber, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageSize, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>abstract fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 </tbody>
 </table>

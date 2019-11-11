@@ -417,7 +417,7 @@
                 
                 <p><a href="../">com.github.manosbatsis.vaultaire.dao</a> / <a href="./">ExtendedStateService</a></p>
 <h1 id="extendedstateservice">ExtendedStateService<a class="headerlink" href="#extendedstateservice" title="Permanent link">&para;</a></h1>
-<p><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;&gt; :</code><a href="../-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
+<p><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;, Q :</code><a href="../../com.github.manosbatsis.vaultaire.dsl/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="./#F"><code>F</code></a><code>&gt;&gt; :</code><a href="../-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
 <p>Extends <a href="../-basic-state-service/">BasicStateService</a> to provide a <a href="../-state-service/">StateService</a> aware of the target
 <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</p>
 <p>Subclassed by Vaultaire&rsquo;s annotation processing to generate service components.</p>
@@ -446,12 +446,16 @@
 </thead>
 <tbody>
 <tr>
+<td><a href="criteria-conditions-type/">criteriaConditionsType</a></td>
+<td><code>lateinit var criteriaConditionsType: Class&lt;</code><a href="./#Q"><code>Q</code></a><code>&gt;</code><br>The fields of the target <a href="#">StatePersistable</a> type <code>P</code></td>
+</tr>
+<tr>
 <td><a href="fields/">fields</a></td>
 <td><code>abstract val fields:</code><a href="./#F"><code>F</code></a><br>The fields of the target <a href="#">StatePersistable</a> type <code>P</code></td>
 </tr>
 <tr>
 <td><a href="state-persistable-type/">statePersistableType</a></td>
-<td><code>abstract val statePersistableType:</code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><code>Class</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;</code><br>The type of the target state&rsquo;s <a href="#">StatePersistable</a></td>
+<td><code>abstract val statePersistableType: Class&lt;</code><a href="./#P"><code>P</code></a><code>&gt;</code><br>The type of the target state&rsquo;s <a href="#">StatePersistable</a></td>
 </tr>
 </tbody>
 </table>
@@ -466,11 +470,11 @@
 <tbody>
 <tr>
 <td><a href="../-basic-state-service/of-linear-state/">ofLinearState</a></td>
-<td><code>open val ofLinearState:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><code>Boolean</code></a></td>
+<td><code>open val ofLinearState: Boolean</code></td>
 </tr>
 <tr>
 <td><a href="../-basic-state-service/of-queryable-state/">ofQueryableState</a></td>
-<td><code>open val ofQueryableState:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><code>Boolean</code></a></td>
+<td><code>open val ofQueryableState: Boolean</code></td>
 </tr>
 </tbody>
 </table>
@@ -484,16 +488,20 @@
 </thead>
 <tbody>
 <tr>
+<td><a href="build-query/">buildQuery</a></td>
+<td><code>abstract fun buildQuery(block:</code><a href="./#Q"><code>Q</code></a><code>.() -&gt; Unit):</code><a href="./#Q"><code>Q</code></a><br>DSL entry point function for a <a href="../../com.github.manosbatsis.vaultaire.dsl/-vault-query-criteria-condition/">VaultQueryCriteriaCondition</a> of type <a href="./#Q">Q</a></td>
+</tr>
+<tr>
 <td><a href="query-by/">queryBy</a></td>
-<td><code>fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageNumber, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageSize, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br><code>fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>fun queryBy(condition:</code><a href="./#Q"><code>Q</code></a><code>, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, ignoreAggregates: Boolean = false): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given DSL query, applying the given page number, size and aggregates flag<code>fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br><code>fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="to-sort/">toSort</a></td>
-<td><code>fun toSort(vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): Sort</code><br>Build a sort from the given string/direction pairs</td>
+<td><code>fun toSort(vararg sort: Pair&lt;String, Direction&gt;): Sort</code><br>Build a sort from the given string/direction pairs</td>
 </tr>
 <tr>
 <td><a href="track-by/">trackBy</a></td>
-<td><code>fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageNumber, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>= defaults.pageSize, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br><code>fun trackBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><code>Pair</code></a><code>&lt;</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>fun trackBy(condition:</code><a href="./#Q"><code>Q</code></a><code>, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for states of type <a href="./#T">T</a> matching the given DSL query, applying the given page number and size, ignoring any aggregates.<code>fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, vararg sort: Pair&lt;String, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br><code>fun trackBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort: Pair&lt;String, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 </tbody>
 </table>
@@ -508,11 +516,11 @@
 <tbody>
 <tr>
 <td><a href="../-basic-state-service/count-by/">countBy</a></td>
-<td><code>open fun countBy(criteria: QueryCriteria):</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><code>Long</code></a><br>Count states of type <a href="../-state-service/#T">T</a> matching stored in the vault and matching any given criteria</td>
+<td><code>open fun countBy(criteria: QueryCriteria): Long</code><br>Count states of type <a href="../-state-service/#T">T</a> matching stored in the vault and matching any given criteria</td>
 </tr>
 <tr>
 <td><a href="../-basic-state-service/find-by-external-id/">findByExternalId</a></td>
-<td><code>open fun findByExternalId(externalId:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><code>String</code></a><code>): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;?</code><br>Find the <a href="#">Vault.StateStatus.UNCONSUMED</a> state of type <a href="../-state-service/#T">T</a> matching the given <a href="#">UniqueIdentifier.externalId</a> if any</td>
+<td><code>open fun findByExternalId(externalId: String): StateAndRef&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;?</code><br>Find the <a href="#">Vault.StateStatus.UNCONSUMED</a> state of type <a href="../-state-service/#T">T</a> matching the given <a href="#">UniqueIdentifier.externalId</a> if any</td>
 </tr>
 <tr>
 <td><a href="../-basic-state-service/find-by-linear-id/">findByLinearId</a></td>
@@ -520,11 +528,11 @@
 </tr>
 <tr>
 <td><a href="../-basic-state-service/query-by/">queryBy</a></td>
-<td><code>open fun queryBy(criteria: QueryCriteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, sort: Sort): Page&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="../-state-service/#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>open fun queryBy(criteria: QueryCriteria, pageNumber: Int, pageSize: Int, sort: Sort): Page&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="../-state-service/#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="../-basic-state-service/track-by/">trackBy</a></td>
-<td><code>open fun trackBy(criteria: QueryCriteria, pageNumber:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, pageSize:</code><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><code>Int</code></a><code>, sort: Sort): DataFeed&lt;Page&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-state-service/#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>open fun trackBy(criteria: QueryCriteria, pageNumber: Int, pageSize: Int, sort: Sort): DataFeed&lt;Page&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-state-service/#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 </tbody>
 </table>

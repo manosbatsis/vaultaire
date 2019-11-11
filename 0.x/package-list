@@ -4,4 +4,5 @@ $dokka.location:com.github.manosbatsis.vaultaire.util$asUniqueIdentifier(kotlin.
 com.github.manosbatsis.vaultaire.annotation
 com.github.manosbatsis.vaultaire.dao
 com.github.manosbatsis.vaultaire.dsl
+com.github.manosbatsis.vaultaire.registry
 com.github.manosbatsis.vaultaire.util
