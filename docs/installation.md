@@ -5,7 +5,13 @@
 Add to your Cordapp's Gradle dependencies:
 
 ```groovy
-// apply the kapt plugin
+
+repositories {
+    // For SNAPSHOT versions if needed
+    maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+// Apply the kapt plugin
 apply plugin: 'kotlin-kapt'
 
 dependencies{
