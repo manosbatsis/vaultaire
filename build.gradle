@@ -73,6 +73,8 @@ allprojects {
         // For Tokens SDK
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
+        // Auto DSL
+        maven { url "https://dl.bintray.com/juanchosaravia/autodsl" }
     }
 
     configurations {

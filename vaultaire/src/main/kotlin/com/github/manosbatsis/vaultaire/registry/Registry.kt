@@ -1,7 +1,7 @@
 package com.github.manosbatsis.vaultaire.registry
 
 import com.github.manosbatsis.vaultaire.dao.ExtendedStateService
-import com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.util.Fields
 import net.corda.core.contracts.ContractState
 import net.corda.core.schemas.StatePersistable

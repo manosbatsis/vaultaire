@@ -29,8 +29,9 @@ import javax.lang.model.element.VariableElement
 @Builder
 data class StateInfo(
         val contractStateTypeElement: Element,
+        val contractStateFields: List<VariableElement>,
         val persistentStateTypeElement: TypeElement,
-        val fields: List<VariableElement>,
+        val persistentStateFields: List<VariableElement>,
         val generatedPackageName: String,
         val sourceRoot: File
 ){

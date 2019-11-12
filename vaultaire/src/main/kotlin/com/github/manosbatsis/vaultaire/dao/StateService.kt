@@ -19,7 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.dao
 
-import com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState

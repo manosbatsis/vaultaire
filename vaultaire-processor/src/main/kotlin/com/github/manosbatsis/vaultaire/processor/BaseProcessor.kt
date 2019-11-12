@@ -19,7 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
-import com.github.manosbatsis.vaultaire.dsl.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
 import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper
@@ -116,19 +116,21 @@ abstract class BaseProcessor : AbstractProcessor() {
         val persistentStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_PERSISTENT_STATE)
         val persistentStateTypeElement: TypeElement = processingEnv.typeUtils
                 .asElement(persistentStateTypeAnnotationValue.value as TypeMirror).asType().asTypeElement()
+        val persistentStateFields = fieldsIn(processingEnv.elementUtils.getAllMembers(persistentStateTypeElement))
+
         val contractStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_CONTRACT_STATE)
         val contractStateTypeElement: Element = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
-        val allMembers = processingEnv.elementUtils.getAllMembers(persistentStateTypeElement)
-        val fields = fieldsIn(allMembers)
-        return stateInfo(persistentStateTypeElement, contractStateTypeElement, fields)
+        return stateInfo(persistentStateTypeElement, contractStateTypeElement, persistentStateFields)
     }
 
 
     fun stateInfo(persistentStateTypeElement: TypeElement, contractStateTypeElement: Element, fields: List<VariableElement>): StateInfo {
+        val contractStateFields = fieldsIn(processingEnv.elementUtils.getAllMembers(contractStateTypeElement.asType().asTypeElement()))
         return StateInfoBuilder()
                 .contractStateTypeElement(contractStateTypeElement)
+                .contractStateFields(contractStateFields)
                 .persistentStateTypeElement(persistentStateTypeElement)
-                .fields(fields)
+                .persistentStateFields(fields)
                 .generatedPackageName(contractStateTypeElement.asType()
                         .asTypeElement().asKotlinClassName().topLevelClassName().packageName.getParentPackageName() + ".generated")
                 .sourceRoot(sourceRootFile).build()

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.dsl
+package com.github.manosbatsis.vaultaire.dsl.query
 
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
@@ -231,22 +231,22 @@ class Aggregates<P : StatePersistable>(val statePersistableType: Class<P>) {
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.sum(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
             addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    this.property.sum(if(groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+                    this.property.sum(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.avg(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
             addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    this.property.avg(if(groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+                    this.property.avg(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.min(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
             addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    this.property.min(if(groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+                    this.property.min(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.max(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
             addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    this.property.max(if(groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+                    this.property.max(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
 
     fun FieldWrapper<P>.count() =
             addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(

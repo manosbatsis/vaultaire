@@ -23,31 +23,31 @@ import net.corda.core.schemas.StatePersistable
 import kotlin.reflect.KProperty1
 
 /**
- * Wraps a non-nullable [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
+ * Wraps a non-nullable [KProperty1] of a class to provide for cleaner operators,
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
-class GenericFieldWrapper<T : StatePersistable, S>(override val property: KProperty1<T, S>): TypedFieldWrapper<T, S>
+class GenericFieldWrapper<T, S>(override val property: KProperty1<T, S>): TypedFieldWrapper<T, S>
 
 /**
- * Wraps a nullable [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
+ * Wraps a nullable [KProperty1] of a class to provide for cleaner operators,
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
-class NullableGenericFieldWrapper<T : StatePersistable, S>(override val property: KProperty1<T, S?>): TypedFieldWrapper<T, S?>
+class NullableGenericFieldWrapper<T, S>(override val property: KProperty1<T, S?>): TypedFieldWrapper<T, S?>
 
 /**
- * Wraps a [KProperty1] belonging to a [StatePersistable] to provide for cleaner operators,
+ * Wraps a [KProperty1] of a class to provide for cleaner operators,
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
-interface TypedFieldWrapper<T : StatePersistable, S>: FieldWrapper<T>{
+interface TypedFieldWrapper<T, S>: FieldWrapper<T>{
     override val property: KProperty1<T, S>
 }
 
-interface FieldWrapper<T : StatePersistable>{
+interface FieldWrapper<T>{
     val property: KProperty1<T, *>
 }
 
 /** Extended by Vaultaire's annotation processing to provide easy access to fields of a [StatePersistable] type */
-interface Fields<T : StatePersistable>{
+interface Fields<T>{
 
     val fieldsByName: Map<String, FieldWrapper<T>>
 
