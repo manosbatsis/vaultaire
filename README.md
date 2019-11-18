@@ -2,6 +2,8 @@
 
 Query DSL and data access utilities for Corda developers.   
 
+See complete documentation at https://manosbatsis.github.io/vaultaire
+
 ## Query DSL
 
 Use DSL will make your queries much easier to read and maintain. 
@@ -24,6 +26,8 @@ al query = booksQuery {
     }
 }.toCriteria()
 ```
+
+For more info on query DSL, checkout https://manosbatsis.github.io/vaultaire/query-dsl/
 
 ## State Services
 
@@ -48,3 +52,5 @@ val searchResults = bookStateService.queryBy(
     criteria, paging, Pair("published", DESC), Pair("title", DESC))
 ```
 
+
+For more info on state services, checkout https://manosbatsis.github.io/vaultaire/state-servicse/
