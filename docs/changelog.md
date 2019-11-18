@@ -4,7 +4,7 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
-## 0.10-SNAPSHOT
+## 0.10
 
 - Added `@VaultaireGenerateForDependency` to support generation (of DSL, Services etc.) for states contributed to the 
 classpath by project dependencies 
