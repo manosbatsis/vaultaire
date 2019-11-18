@@ -3,6 +3,7 @@ $dokka.linkExtension:md
 $dokka.location:com.github.manosbatsis.vaultaire.util$asUniqueIdentifier(kotlin.String)com.github.manosbatsis.vaultaire.util/kotlin.-string/as-unique-identifier.md
 com.github.manosbatsis.vaultaire.annotation
 com.github.manosbatsis.vaultaire.dao
-com.github.manosbatsis.vaultaire.dsl
+com.github.manosbatsis.vaultaire.dsl.contract
+com.github.manosbatsis.vaultaire.dsl.query
 com.github.manosbatsis.vaultaire.registry
 com.github.manosbatsis.vaultaire.util

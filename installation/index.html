@@ -271,9 +271,45 @@
       
     
     
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Installation
+      </label>
+    
     <a href="./" title="Installation" class="md-nav__link md-nav__link--active">
       Installation
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#for-cordapps" title="For Cordapps" class="md-nav__link">
+    For Cordapps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-client-apps" title="For Client Apps" class="md-nav__link">
+    For Client Apps
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
     
   </li>
 
@@ -367,6 +403,29 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#for-cordapps" title="For Cordapps" class="md-nav__link">
+    For Cordapps
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-client-apps" title="For Client Apps" class="md-nav__link">
+    For Client Apps
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -381,14 +440,12 @@
                 
                 
                 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
+<h3 id="for-cordapps">For Cordapps<a class="headerlink" href="#for-cordapps" title="Permanent link">&para;</a></h3>
 <p>Add to your Cordapp&rsquo;s Gradle dependencies:</p>
-<div class="codehilite"><pre><span></span><span class="n">repositories</span> <span class="o">{</span>
-    <span class="c1">// For SNAPSHOT versions if needed</span>
-    <span class="n">maven</span> <span class="o">{</span> <span class="n">url</span> <span class="s2">&quot;http://oss.sonatype.org/content/repositories/snapshots/&quot;</span> <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="c1">// Apply the kapt plugin</span>
+<div class="codehilite"><pre><span></span><span class="c1">// apply the kapt plugin</span>
 <span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;kotlin-kapt&#39;</span>
+<span class="c1">// Optional: for IntelliJ users, see also sourceSets bellow</span>
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s2">&quot;idea&quot;</span>
 
 <span class="n">dependencies</span><span class="o">{</span>
     <span class="c1">// Core dependency</span>
@@ -402,6 +459,26 @@
 <span class="o">}</span>    
 </pre></div>
 
+<p>You may also want to add the generated sources to your build&rsquo;s <code>sourceSets</code> </p>
+<div class="codehilite"><pre><span></span><span class="c1">// Define an extra sources variable</span>
+<span class="kt">def</span> <span class="n">generatedSourcesDir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="na">file</span><span class="o">(</span><span class="s2">&quot;build/generated/source/kaptKotlin/main&quot;</span><span class="o">)</span>
+<span class="c1">// Tell Gradle about the extra source set</span>
+<span class="n">sourceSets</span> <span class="o">{</span>
+    <span class="n">main</span> <span class="o">{</span>
+        <span class="n">kotlin</span><span class="o">.</span><span class="na">srcDirs</span> <span class="o">+=</span> <span class="n">generatedSourcesDir</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Optional: Tell IntelliJ about the extra source set</span>
+<span class="n">idea</span> <span class="o">{</span>
+    <span class="n">module</span> <span class="o">{</span>
+        <span class="n">sourceDirs</span> <span class="o">+=</span> <span class="n">generatedSourcesDir</span>
+        <span class="n">generatedSourceDirs</span> <span class="o">+=</span> <span class="n">generatedSourcesDir</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+<h2 id="for-client-apps">For Client Apps<a class="headerlink" href="#for-client-apps" title="Permanent link">&para;</a></h2>
 <p>The core module can also be useful outside a cordapp, e.g. in a Spring application
 interacting with Corda nodes via RPC:</p>
 <div class="codehilite"><pre><span></span>    <span class="c1">// Core dependency</span>
