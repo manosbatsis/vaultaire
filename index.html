@@ -441,6 +441,7 @@
                 
                 <h1 id="vaultaire">Vaultaire <a href="http://central.maven.org/maven2/com/github/manosbatsis/vaultaire/"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg" /></a> <a href="https://travis-ci.org/manosbatsis/vaultaire"><img alt="Build Status" src="https://travis-ci.org/manosbatsis/vaultaire.svg?branch=master" /></a><a class="headerlink" href="#vaultaire" title="Permanent link">&para;</a></h1>
 <p>Query DSL and data access utilities for Corda developers.   </p>
+<p>See complete documentation at <a href="https://manosbatsis.github.io/vaultaire">https://manosbatsis.github.io/vaultaire</a></p>
 <h2 id="query-dsl">Query DSL<a class="headerlink" href="#query-dsl" title="Permanent link">&para;</a></h2>
 <p>Use DSL will make your queries much easier to read and maintain. 
 Each query DSL is automatically generated and maintaind for you 
@@ -460,6 +461,7 @@ based on your states.</p>
 <span class="p">}.</span><span class="n">toCriteria</span><span class="p">()</span>
 </pre></div>
 
+<p>For more info on query DSL, checkout <a href="https://manosbatsis.github.io/vaultaire/query-dsl/">https://manosbatsis.github.io/vaultaire/query-dsl/</a></p>
 <h2 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h2>
 <p>Vaultaire&rsquo;s annotation processor  will automatically subclass <code>ExtendedStateService</code> to generate
 an <code>Fields</code> aware state service service per annotated element. The generated service name
@@ -478,6 +480,8 @@ is &ldquo;${contractStateTypeName}Service&rdquo;. Usage example:</p>
 <span class="k">val</span> <span class="py">searchResults</span> <span class="p">=</span> <span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span>
     <span class="n">criteria</span><span class="p">,</span> <span class="n">paging</span><span class="p">,</span> <span class="n">Pair</span><span class="p">(</span><span class="s">&quot;published&quot;</span><span class="p">,</span> <span class="n">DESC</span><span class="p">),</span> <span class="n">Pair</span><span class="p">(</span><span class="s">&quot;title&quot;</span><span class="p">,</span> <span class="n">DESC</span><span class="p">))</span>
 </pre></div>
+
+<p>For more info on state services, checkout <a href="https://manosbatsis.github.io/vaultaire/state-servicse/">https://manosbatsis.github.io/vaultaire/state-servicse/</a></p>
                 
                   
                 
