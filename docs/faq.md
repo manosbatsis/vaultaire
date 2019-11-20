@@ -3,6 +3,12 @@
 
 Answers to common questions.
 
+## License
+
+Vaultaire is distributed under the GNU __Lesser__ General Public License or LGPL. This is the same 
+license adopted by Corda dependencies like Hibernate. It allows Vaultaire to be used as a library 
+with no effect to your project.
+
 ## Use with Corda Enterprise
 
 To use Vaultaire with Corda Enterprise, you will have to update your build to 
