@@ -21,13 +21,29 @@ package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
-import com.github.manosbatsis.vaultaire.dao.*
+import com.github.manosbatsis.vaultaire.dao.ExtendedStateService
+import com.github.manosbatsis.vaultaire.dao.StateServiceDefaults
+import com.github.manosbatsis.vaultaire.dao.StateServiceDelegate
+import com.github.manosbatsis.vaultaire.dao.StateServiceHubDelegate
+import com.github.manosbatsis.vaultaire.dao.StateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.registry.Registry
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.LambdaTypeName
+import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.WildcardTypeName
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.contracts.ContractState
 import net.corda.core.internal.packageName
 import net.corda.core.messaging.CordaRPCOps
@@ -53,7 +69,7 @@ import javax.lang.model.element.VariableElement
 @SupportedOptions(
         VaultaireAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME,
         VaultaireAnnotationProcessor.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
-class VaultaireAnnotationProcessor : BaseProcessor() {
+class VaultaireAnnotationProcessor : BaseAnnotationProcessor() {
 
     companion object {
         const val ANN_ATTR_CONTRACT_STATE = "contractStateType"
@@ -125,14 +141,14 @@ class VaultaireAnnotationProcessor : BaseProcessor() {
     fun buildDslFunSpec(
             funcName: String, generatedConditionsClassName: ClassName, vararg modifiers: KModifier
     ): FunSpec {
-        val extensionFunParams = ParameterSpec.builder(BaseProcessor.BLOCK_FUN_NAME, LambdaTypeName.get(
+        val extensionFunParams = ParameterSpec.builder(BaseAnnotationProcessor.BLOCK_FUN_NAME, LambdaTypeName.get(
                 receiver = generatedConditionsClassName,
                 returnType = Unit::class.asTypeName())).build()
 
         val funSpec =  FunSpec.builder(funcName)
                 .addParameter(extensionFunParams)
                 .returns(generatedConditionsClassName)
-                .addStatement("return ${generatedConditionsClassName.simpleName}().apply(${BaseProcessor.BLOCK_FUN_NAME})")
+                .addStatement("return ${generatedConditionsClassName.simpleName}().apply(${BaseAnnotationProcessor.BLOCK_FUN_NAME})")
                 .addKdoc("DSL entry point function for [%T]", generatedConditionsClassName)
         if(modifiers.isNotEmpty())funSpec.addModifiers(*modifiers)
         return funSpec.build()
