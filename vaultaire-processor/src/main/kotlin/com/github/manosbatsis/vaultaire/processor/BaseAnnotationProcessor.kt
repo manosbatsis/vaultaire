@@ -33,19 +33,13 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.contracts.ContractState
 import net.corda.core.internal.packageName
-import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.StatePersistable
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
-import javax.lang.model.type.TypeMirror
-import javax.lang.model.util.ElementFilter.fieldsIn
 
 /**
  * Baee processor implementation.
@@ -67,8 +61,6 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
 
     }
 
-    abstract val sourcesAnnotation: Class<out Annotation>
-    abstract val dependenciesAnnotation: Class<out Annotation>
 
 
     val generatedSourcesRoot: String by lazy {
@@ -88,84 +80,6 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
         processingEnv
     }
 
-    abstract fun process(stateInfo: StateInfo)
-
-    override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        val annotatedSourceElements = roundEnv.getElementsAnnotatedWith(sourcesAnnotation)
-        val annotatedForElements = roundEnv.getElementsAnnotatedWith(dependenciesAnnotation)
-        if (annotatedSourceElements.isEmpty() && annotatedForElements.isEmpty()) {
-            processingEnv.noteMessage { "No classes annotated with Vaultaire annotations in this round ($roundEnv)" }
-            return false
-        }
-
-        // Process own targets
-        annotatedSourceElements.forEach { annotatedElement ->
-            when (annotatedElement.kind) {
-                ElementKind.CLASS -> process(stateInfoForAnnotatedPersistentStateSourceClass(annotatedElement as TypeElement))
-                ElementKind.CONSTRUCTOR -> process(stateInfoForAnnotatedPersistentStateSourceConstructor(annotatedElement as ExecutableElement))
-                else -> annotatedElement.errorMessage { "Invalid element type, expected a class or constructor" }
-            }
-        }
-        // Process targets for dependencies
-        annotatedForElements.forEach { annotated -> process(stateInfoForDependency(annotated)) }
-
-        return false
-    }
-
-    /** Construct a [StateInfo] from an annotated [PersistentState] source */
-    fun stateInfoForAnnotatedPersistentStateSource(element: Element): StateInfo {
-        return when (element.kind) {
-            ElementKind.CLASS -> stateInfoForAnnotatedPersistentStateSourceClass(element as TypeElement)
-            ElementKind.CONSTRUCTOR -> stateInfoForAnnotatedPersistentStateSourceConstructor(element as ExecutableElement)
-            else -> throw IllegalArgumentException("Invalid element type, expected a class or constructor")
-        }
-    }
-
-    /** Construct a [StateInfo] from an annotated [PersistentState] class source */
-    fun stateInfoForAnnotatedPersistentStateSourceClass(classElement: TypeElement): StateInfo {
-        // TODO: use declared/accessible fields instead of constructor params?
-        return stateInfoForAnnotatedPersistentState(classElement, classElement.accessibleConstructorParameterFields())
-    }
-
-    /** Construct a [StateInfo] [PersistentState] constructor source */
-    fun stateInfoForAnnotatedPersistentStateSourceConstructor(constructor: ExecutableElement): StateInfo {
-        return stateInfoForAnnotatedPersistentState(constructor.enclosingElement as TypeElement, constructor.parameters)
-    }
-
-
-    /** Handle an annotated [PersistentState] source */
-    fun stateInfoForAnnotatedPersistentState(persistentStateTypeElement: TypeElement, fields: List<VariableElement>): StateInfo {
-        val annotation = persistentStateTypeElement.getAnnotationMirror(sourcesAnnotation)
-        val contractStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_CONTRACT_STATE)
-        val contractStateTypeElement: Element = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
-        return stateInfo(persistentStateTypeElement, contractStateTypeElement, fields)
-    }
-
-    /** Invokes [writeBuilderForAnnotatedPersistentState] to create a builder for the given [persistentStateTypeElement]. */
-    fun stateInfoForDependency(annotatedElement: Element): StateInfo {
-        val annotation = annotatedElement.getAnnotationMirror(dependenciesAnnotation)
-        val persistentStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_PERSISTENT_STATE)
-        val persistentStateTypeElement: TypeElement = processingEnv.typeUtils
-                .asElement(persistentStateTypeAnnotationValue.value as TypeMirror).asType().asTypeElement()
-        val persistentStateFields = fieldsIn(processingEnv.elementUtils.getAllMembers(persistentStateTypeElement))
-
-        val contractStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_CONTRACT_STATE)
-        val contractStateTypeElement: Element = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
-        return stateInfo(persistentStateTypeElement, contractStateTypeElement, persistentStateFields)
-    }
-
-
-    fun stateInfo(persistentStateTypeElement: TypeElement, contractStateTypeElement: Element, fields: List<VariableElement>): StateInfo {
-        val contractStateFields = fieldsIn(processingEnv.elementUtils.getAllMembers(contractStateTypeElement.asType().asTypeElement()))
-        return StateInfoBuilder()
-                .contractStateTypeElement(contractStateTypeElement)
-                .contractStateFields(contractStateFields)
-                .persistentStateTypeElement(persistentStateTypeElement)
-                .persistentStateFields(fields)
-                .generatedPackageName(contractStateTypeElement.asType()
-                        .asTypeElement().asKotlinClassName().topLevelClassName().packageName.getParentPackageName() + ".generated")
-                .sourceRoot(sourceRootFile).build()
-    }
 
     fun TypeElement.findAnnotationValue(attribute: String, default: AnnotationValue, vararg annotations: Class<out Annotation>): AnnotationValue? {
         var value: AnnotationValue? = default

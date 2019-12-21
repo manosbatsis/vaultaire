@@ -29,11 +29,11 @@ import com.github.manosbatsis.partiture.flow.io.input.InputConverter
 import com.github.manosbatsis.partiture.flow.io.output.SingleFinalizedTxOutputConverter
 import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
+import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_ID
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
-import net.corda.core.flows.InitiatedBy
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
 import net.corda.core.identity.Party
@@ -81,12 +81,11 @@ open class BaseBookFlowResponder(
 /** Create/publish a bookstate  */
 @InitiatingFlow
 @StartableByRPC
+@VaultaireGenerateResponder(
+    value = BaseBookFlowResponder::class,
+    comment = "A basic responder for countersigning and listening for finality"
+)
 class CreateBookFlow(input: BookMessage) : PartitureFlow<BookMessage, SignedTransaction>(
         input = input, // Input can be anything
         inputConverter = BookInputConverter(),// Our custom IN converter
         outputConverter = SingleFinalizedTxOutputConverter()) // OUT build-in converter
-
-
-/** A basic responder for countersigning and listening for finality */
-@InitiatedBy(CreateBookFlow::class)
-class CreateBookFlowResponder(otherPartySession: FlowSession) : BaseBookFlowResponder(otherPartySession)

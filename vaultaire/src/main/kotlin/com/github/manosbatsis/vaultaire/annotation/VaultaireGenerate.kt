@@ -20,6 +20,7 @@
 package com.github.manosbatsis.vaultaire.annotation
 
 import net.corda.core.contracts.ContractState
+import net.corda.core.flows.FlowLogic
 import net.corda.core.schemas.PersistentState
 import kotlin.reflect.KClass
 
@@ -44,4 +45,14 @@ annotation class VaultaireGenerateForDependency(
         val name: String = "",
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>
+)
+
+/**
+ * Generate a responser flow that extends the given type.
+ */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FILE, AnnotationTarget.EXPRESSION)
+annotation class VaultaireGenerateResponder(
+        val value: KClass<out FlowLogic<*>>,
+        val comment: String = ""
 )

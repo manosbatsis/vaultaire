@@ -53,4 +53,4 @@ val searchResults = bookStateService.queryBy(
 ```
 
 
-For more info on state services, checkout https://manosbatsis.github.io/vaultaire/state-servicse/
+For more info on state services, checkout https://manosbatsis.github.io/vaultaire/state-services/

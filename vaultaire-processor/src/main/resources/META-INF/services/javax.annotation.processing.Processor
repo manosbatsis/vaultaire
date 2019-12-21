@@ -1,1 +1,2 @@
-com.github.manosbatsis.vaultaire.processor.VaultaireAnnotationProcessor
+com.github.manosbatsis.vaultaire.processor.VaultaireStatePersistableAnnotationProcessor
+com.github.manosbatsis.vaultaire.processor.VaultaireInitiatingFlowAnnotationProcessor

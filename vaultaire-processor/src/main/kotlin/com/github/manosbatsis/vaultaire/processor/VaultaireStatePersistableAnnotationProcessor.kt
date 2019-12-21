@@ -50,11 +50,14 @@ import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.node.ServiceHub
 import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.StatePersistable
+import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 
@@ -67,9 +70,9 @@ import javax.lang.model.element.VariableElement
         "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(
-        VaultaireAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME,
-        VaultaireAnnotationProcessor.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
-class VaultaireAnnotationProcessor : BaseAnnotationProcessor() {
+        VaultaireStatePersistableAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME,
+        VaultaireStatePersistableAnnotationProcessor.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
+class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
 
     companion object {
         const val ANN_ATTR_CONTRACT_STATE = "contractStateType"
@@ -87,6 +90,29 @@ class VaultaireAnnotationProcessor : BaseAnnotationProcessor() {
 
     override val sourcesAnnotation = VaultaireGenerate::class.java
     override val dependenciesAnnotation = VaultaireGenerateForDependency::class.java
+
+
+    override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
+        val annotatedSourceElements = roundEnv.getElementsAnnotatedWith(sourcesAnnotation)
+        val annotatedForElements = roundEnv.getElementsAnnotatedWith(dependenciesAnnotation)
+        if (annotatedSourceElements.isEmpty() && annotatedForElements.isEmpty()) {
+            processingEnv.noteMessage { "No classes annotated with Vaultaire annotations in this round ($roundEnv)" }
+            return false
+        }
+
+        // Process own targets
+        annotatedSourceElements.forEach { annotatedElement ->
+            when (annotatedElement.kind) {
+                ElementKind.CLASS -> process(stateInfoForAnnotatedPersistentStateSourceClass(annotatedElement as TypeElement))
+                ElementKind.CONSTRUCTOR -> process(stateInfoForAnnotatedPersistentStateSourceConstructor(annotatedElement as ExecutableElement))
+                else -> annotatedElement.errorMessage { "Invalid element type, expected a class or constructor" }
+            }
+        }
+        // Process targets for dependencies
+        annotatedForElements.forEach { annotated -> process(stateInfoForDependency(annotated)) }
+
+        return false
+    }
 
     /** Write a builder and services for the given [PersistentState] and [ContractState] . */
     override fun process(stateInfo: StateInfo) {
@@ -124,15 +150,25 @@ class VaultaireAnnotationProcessor : BaseAnnotationProcessor() {
                 .writeTo(sourceRootFile)
     }
 
+    /** Construct a [StateInfo] from an annotated [PersistentState] source */
+    fun stateInfoForAnnotatedPersistentStateSource(element: Element): StateInfo {
+        return when (element.kind) {
+            ElementKind.CLASS -> stateInfoForAnnotatedPersistentStateSourceClass(element as TypeElement)
+            ElementKind.CONSTRUCTOR -> stateInfoForAnnotatedPersistentStateSourceConstructor(element as ExecutableElement)
+            else -> throw IllegalArgumentException("Invalid element type, expected a class or constructor")
+        }
+    }
+
+
     /** Create the DSL entry point for the given [annotatedElement] */
     fun buildTopLevelDslFunSpec(
             generatedConditionsClassName: ClassName, annotatedElement: TypeElement, contractStateTypeElement: Element
     ): FunSpec {
 
         var extFunName: String = annotatedElement.findAnnotationMirror(VaultaireGenerate::class.java)?.findAnnotationValue("name").toString()
-        if(extFunName == null || extFunName.isNotBlank()) extFunName =
+        if(extFunName.isNotBlank()) extFunName =
                 annotatedElement.findAnnotationMirror(VaultaireGenerateForDependency::class.java)?.findAnnotationValue("name").toString()
-        if(extFunName == null || extFunName.isNotBlank()) extFunName = contractStateTypeElement.simpleName.toString().decapitalize() + "Query"
+        if(extFunName.isNotBlank()) extFunName = contractStateTypeElement.simpleName.toString().decapitalize() + "Query"
 
         return buildDslFunSpec(extFunName, generatedConditionsClassName)
     }

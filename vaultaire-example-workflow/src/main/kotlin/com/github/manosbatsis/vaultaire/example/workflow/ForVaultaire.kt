@@ -9,10 +9,10 @@ import com.r3.corda.lib.tokens.contracts.states.FungibleToken
 @VaultaireGenerateForDependency(name = "fungibleTokenConditions",
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class)
-class Fungible
+class Dummy1
 
 @VaultaireGenerateForDependency(name = "magazineConditions",
         persistentStateType = BookContract.MagazineState.MagazineSchemaV1.PersistentMagazineState::class,
         contractStateType = BookContract.MagazineState::class)
-class Magazine
+class Dummy2
 
