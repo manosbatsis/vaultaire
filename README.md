@@ -54,3 +54,10 @@ val searchResults = bookStateService.queryBy(
 
 
 For more info on state services, checkout https://manosbatsis.github.io/vaultaire/state-services/
+
+## Other Utils
+
+Vaultaire includes a few other utilities like annotations to generate Data Transfer Objects for 
+your contract states and responding flows from commonly used supertypes.
+
+For more info on these utilities, checkout https://manosbatsis.github.io/vaultaire/other-utils/
