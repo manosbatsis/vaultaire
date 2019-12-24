@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.13
+
+- Add support for `final` responder flow supertypes in `VaultaireGenerateResponder` 
+
 ## 0.12
 
 - Fixed dependency scope for kotlinpoet-utils
