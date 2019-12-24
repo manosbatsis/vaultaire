@@ -287,8 +287,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../state-servicse/" title="State Services" class="md-nav__link">
+    <a href="../state-services/" title="State Services" class="md-nav__link">
       State Services
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../other-utils/" title="Other Utilities" class="md-nav__link">
+      Other Utilities
     </a>
   </li>
 
@@ -348,6 +360,13 @@
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#011" title="0.11" class="md-nav__link">
+    0.11
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#010" title="0.10" class="md-nav__link">
@@ -463,6 +482,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#011" title="0.11" class="md-nav__link">
+    0.11
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#010" title="0.10" class="md-nav__link">
     0.10
   </a>
@@ -554,6 +580,12 @@
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <p>The following sections describe major changes per version 
 and can be helpful with version upgrades.</p>
+<h2 id="011">0.11<a class="headerlink" href="#011" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <code>VaultaireGenerateDto</code>, <code>VaultaireGenerateDtoForDependency</code> annotations for generating DTOs for contract states</li>
+<li>Added <code>VaultaireGenerateResponder</code> annotation for generating responder flows extending common supertypes </li>
+<li>Refactored to extract <a href="https://github.com/manosbatsis/kotlinpoet-utils">kotlinpoet-utils</a></li>
+</ul>
 <h2 id="010">0.10<a class="headerlink" href="#010" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Added <code>@VaultaireGenerateForDependency</code> to support generation (of DSL, Services etc.) for states contributed to the 
