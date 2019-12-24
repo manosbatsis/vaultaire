@@ -479,6 +479,19 @@ maintaning such responders manually. Usage example:</p>
 <span class="p">)</span> <span class="p">:</span> <span class="n">BaseBookFlowResponder</span><span class="p">(</span><span class="n">otherPartySession</span><span class="p">)</span>
 </pre></div>
 
+<p><strong>Note</strong>: if the base responder flow is a final type, the generated responder will attempt to call it as a 
+subflow instead of extending it:</p>
+<div class="codehilite"><pre><span></span><span class="n">@InitiatedBy</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="n">CreateBookFlow</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">CreateBookFlowResponder</span><span class="p">(</span>
+  <span class="k">val</span> <span class="py">otherPartySession</span><span class="p">:</span> <span class="n">FlowSession</span>
+<span class="p">)</span> <span class="p">:</span> <span class="n">FlowLogic</span><span class="p">&lt;</span><span class="n">Unit</span><span class="p">&gt;()</span> <span class="p">{</span>
+  <span class="n">@Suspendable</span>
+  <span class="k">override</span> <span class="k">fun</span> <span class="nf">call</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">subFlow</span><span class="p">(</span><span class="n">BaseBookFlowResponder</span><span class="p">(</span><span class="n">otherPartySession</span><span class="p">))</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
 <h2 id="generated-dtos">Generated DTOs<a class="headerlink" href="#generated-dtos" title="Permanent link">&para;</a></h2>
 <p>Maintaining Data Transfer Objects (e.g. for REST) of your contract states can be a very mundane task.
 You can have Vaultaire generate those for you either using <code>@VaultaireGenerateDto</code> 
