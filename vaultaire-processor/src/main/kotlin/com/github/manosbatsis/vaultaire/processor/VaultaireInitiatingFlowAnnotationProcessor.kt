@@ -19,14 +19,20 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
+import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier.OVERRIDE
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
+import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatedBy
 import javax.annotation.processing.RoundEnvironment
@@ -34,6 +40,7 @@ import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
+import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.TypeElement
 
 /**
@@ -84,13 +91,27 @@ class VaultaireInitiatingFlowAnnotationProcessor : BaseAnnotationProcessor() {
         val responderClassName = ClassName(packageName, "${annotatedElement.simpleName}Responder")
         // Create responder type
         val responderSpec = TypeSpec.classBuilder(responderClassName)
-                .superclass(baseFlowTypeElement.asKotlinTypeName())
                 .addAnnotation(AnnotationSpec.builder(InitiatedBy::class)
                         .addMember("value = %T::class", annotatedElement.asType()).build())
                 .primaryConstructor(FunSpec.constructorBuilder()
                         .addParameter("otherPartySession", FlowSession::class.asClassName())
                         .build())
-                .addSuperclassConstructorParameter("otherPartySession")
+        // extend or inline based on open/final base responder
+        if(baseFlowTypeElement.modifiers.contains(FINAL)){
+            responderSpec.superclass(FlowLogic::class.asClassName().parameterizedBy(Unit::class.asTypeName()))
+                    .addProperty(PropertySpec.builder("otherPartySession", FlowSession::class)
+                            .initializer("otherPartySession")
+                            .build())
+                    .addFunction(FunSpec.builder("call")
+                            .addAnnotation(Suspendable::class)
+                            .addModifiers(OVERRIDE)
+                            .addStatement("subFlow(%T(otherPartySession))", baseFlowTypeElement)
+                            .build())
+        }
+        else {
+            responderSpec.superclass(baseFlowTypeElement.asKotlinTypeName())
+                    .addSuperclassConstructorParameter("otherPartySession")
+        }
         if(comment != null) responderSpec.addKdoc(comment.value.toString())
 
         return responderSpec.build()

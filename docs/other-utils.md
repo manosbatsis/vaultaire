@@ -37,6 +37,22 @@ class CreateBookFlowResponder(
 
 ```
 
+__Note__: if the base responder flow is a final type, the generated responder will attempt to call it as a 
+subflow instead of extending it:
+
+```kotlin
+@InitiatedBy(value = CreateBookFlow::class)
+class CreateBookFlowResponder(
+  val otherPartySession: FlowSession
+) : FlowLogic<Unit>() {
+  @Suspendable
+  override fun call() {
+    subFlow(BaseBookFlowResponder(otherPartySession))
+  }
+}
+```
+ 
+
 ## Generated DTOs
 
 Maintaining Data Transfer Objects (e.g. for REST) of your contract states can be a very mundane task.
