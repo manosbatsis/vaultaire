@@ -6,6 +6,8 @@ and can be helpful with version upgrades.
 
 ## 0.11
 
+- Added `VaultaireGenerateDto`, `VaultaireGenerateDtoForDependency` annotations for generating DTOs for contract states
+- Added `VaultaireGenerateResponder` annotation for generating responder flows extending common supertypes 
 - Refactored to extract [kotlinpoet-utils](https://github.com/manosbatsis/kotlinpoet-utils)
 
 ## 0.10
