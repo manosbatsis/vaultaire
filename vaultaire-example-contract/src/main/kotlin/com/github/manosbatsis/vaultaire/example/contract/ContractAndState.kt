@@ -20,7 +20,13 @@
 package com.github.manosbatsis.vaultaire.example.contract
 
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
-import net.corda.core.contracts.*
+import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
+import net.corda.core.contracts.Contract
+import net.corda.core.contracts.LinearState
+import net.corda.core.contracts.TypeOnlyCommandData
+import net.corda.core.contracts.UniqueIdentifier
+import net.corda.core.contracts.requireSingleCommand
+import net.corda.core.contracts.requireThat
 import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
@@ -28,7 +34,7 @@ import net.corda.core.schemas.QueryableState
 import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
@@ -64,14 +70,17 @@ class BookContract : Contract {
     }
 
     // State.
-    data class BookState(val publisher: Party,
-                         val author: Party,
-                         val price: BigDecimal,
-                         val genre: Genre,
-                         val editions: Int = 1,
-                         val title: String = "Uknown",
-                         val published: Date = Date(),
-                         override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
+    @VaultaireGenerateDto
+    data class BookState(
+            val publisher: Party,
+            val author: Party,
+            val price: BigDecimal,
+            val genre: Genre,
+            val editions: Int = 1,
+            val title: String = "Uknown",
+            val published: Date = Date(),
+            val alternativeTitle: String? = null,
+            override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
         override val participants get() = listOf(publisher, author)
 
         override fun supportedSchemas() = listOf(BookSchemaV1)
@@ -85,6 +94,7 @@ class BookContract : Contract {
                 genre,
                 editions,
                 title,
+                alternativeTitle,
                 published)
 
         object BookSchema
@@ -111,6 +121,8 @@ class BookContract : Contract {
                     var editions: Int = 1,
                     @Column(name = "title")
                     var title: String = "",
+                    @Column(name = "alt__title")
+                    var alternativeTitle: String? = null,
                     @Column(name = "published")
                     var published: Date = Date(),
                     @Column(name = "description", length = 500)

@@ -23,8 +23,9 @@ import com.github.manosbatsis.partiture.flow.PartitureFlow
 import com.github.manosbatsis.vaultaire.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.dao.StateNotFoundException
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
-
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Genre.TECHNOLOGY
+import com.github.manosbatsis.vaultaire.example.generated.BookStateDto
 import com.github.manosbatsis.vaultaire.example.generated.BookStateService
 import com.github.manosbatsis.vaultaire.example.generated.PersistentBookStateConditions
 import com.github.manosbatsis.vaultaire.example.generated.bookStateQuery
@@ -38,9 +39,13 @@ import net.corda.testing.node.MockNetworkNotarySpec
 import net.corda.testing.node.MockNetworkParameters
 import net.corda.testing.node.StartedMockNode
 import net.corda.testing.node.TestCordapp.Companion.findCordapp
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -86,14 +91,14 @@ class FlowTests {
 
 
         val stx = flowWorksCorrectly(
-                CreateBookFlow(BookMessage(
+                CreateBookFlow(BookStateDto(
                         author = b.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(10),
-                        genre = BookContract.Genre.TECHNOLOGY,
+                        genre = TECHNOLOGY,
                         editions = 3,
                         title = bookTitle)))
         flowWorksCorrectly(
-                CreateBookFlow(BookMessage(
+                CreateBookFlow(BookStateDto(
                         author = b.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(20),
                         genre = BookContract.Genre.TECHNOLOGY,
@@ -169,21 +174,21 @@ class FlowTests {
 
 
         val stx = flowWorksCorrectly(
-                CreateBookFlow(BookMessage(
+                CreateBookFlow(BookStateDto(
                         author = bookState.author,
                         price = bookState.price,
                         genre = bookState.genre,
                         editions = bookState.editions,
                         title = bookState.title)))
         flowWorksCorrectly(
-                CreateBookFlow(BookMessage(
+                CreateBookFlow(BookStateDto(
                         author = bookState.author,
                         price = BigDecimal.valueOf(10),
                         genre = BookContract.Genre.SCIENCE_FICTION,
                         editions = 2,
                         title = "Forward the Corda Foundation")))
         flowWorksCorrectly(
-                CreateBookFlow(BookMessage(
+                CreateBookFlow(BookStateDto(
                         author = bookState.author,
                         price = BigDecimal.valueOf(12),
                         genre = BookContract.Genre.SCIENCE_FICTION,
@@ -276,7 +281,7 @@ class FlowTests {
         val identifier = UniqueIdentifier(id = UUID.randomUUID(), externalId = UUID.randomUUID().toString())
         
         flowWorksCorrectly(
-                CreateBookFlow(BookMessage(
+                CreateBookFlow(BookStateDto(
                         author = b.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(82),
                         genre = BookContract.Genre.HISTORICAL,

@@ -21,6 +21,7 @@ package com.github.manosbatsis.vaultaire.processor
 
 import com.thinkinglogic.builder.annotation.Builder
 import java.io.File
+import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -28,13 +29,14 @@ import javax.lang.model.element.VariableElement
 
 @Builder
 data class StateInfo(
+        val annotation: AnnotationMirror,
         val contractStateTypeElement: Element,
         val contractStateFields: List<VariableElement>,
-        val persistentStateTypeElement: TypeElement,
-        val persistentStateFields: List<VariableElement>,
+        val persistentStateTypeElement: TypeElement?,
+        val persistentStateFields: List<VariableElement>?,
         val generatedPackageName: String,
         val sourceRoot: File
 ){
-    val persistentStateSimpleName =  persistentStateTypeElement.simpleName.toString()
+    val persistentStateSimpleName =  persistentStateTypeElement?.simpleName.toString()
     val contractStateSimpleName =  contractStateTypeElement.simpleName.toString()
 }

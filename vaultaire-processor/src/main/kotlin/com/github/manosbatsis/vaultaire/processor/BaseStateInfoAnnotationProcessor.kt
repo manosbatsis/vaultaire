@@ -19,8 +19,13 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
+import net.corda.core.contracts.ContractState
 import net.corda.core.schemas.PersistentState
+import net.corda.core.schemas.StatePersistable
+import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -29,41 +34,69 @@ import javax.lang.model.util.ElementFilter
 import javax.lang.model.util.ElementFilter.fieldsIn
 
 /**
- * Baee processor implementation.
+ * Base [StateInfo]-based processor implementation. Utilizes both annotates sources and, optionally,
+ * annotations targeting states coming from project dependencies
  */
 abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
-
-    companion object {
-
-    }
 
     abstract val sourcesAnnotation: Class<out Annotation>
     abstract val dependenciesAnnotation: Class<out Annotation>
     abstract fun process(stateInfo: StateInfo)
 
+    override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
+        // Get the annotated and dependency targets
+        val annotatedSourceElements = roundEnv.getElementsAnnotatedWith(sourcesAnnotation)
+        val annotatedForElements = roundEnv.getElementsAnnotatedWith(dependenciesAnnotation)
+        // Return if there's nothing to process
+        if (nothingToProcess(annotatedSourceElements, annotatedForElements)) return false
+
+        // Process own targets
+        annotatedSourceElements.forEach { annotatedElement ->
+            when (annotatedElement.kind) {
+                ElementKind.CLASS -> process(stateInfoForAnnotatedStateSourceClass(annotatedElement as TypeElement))
+                ElementKind.CONSTRUCTOR -> process(stateInfoForAnnotatedStateSourceConstructor(annotatedElement as ExecutableElement))
+                else -> annotatedElement.errorMessage { "Invalid element type, expected a class or constructor" }
+            }
+        }
+        // Process targets for dependencies
+        annotatedForElements.forEach { annotated ->
+            process(stateInfoForDependency(annotated.getAnnotationMirror(dependenciesAnnotation)))
+        }
+        return false
+    }
+
+    /** Returns `true` if there's nothing to process, `false` otherwise */
+    protected fun nothingToProcess(
+            annotatedSourceElements: Set<out Element>,
+            annotatedForElements: Set<out Element>? = null
+    ): Boolean {
+        return if (annotatedSourceElements.isEmpty() && (annotatedForElements == null || annotatedForElements.isEmpty())) true
+        else false
+    }
+
     /** Construct a [StateInfo] from an annotated [PersistentState] class source */
-    fun stateInfoForAnnotatedPersistentStateSourceClass(classElement: TypeElement): StateInfo {
+    fun stateInfoForAnnotatedStateSourceClass(classElement: TypeElement): StateInfo {
         // TODO: use declared/accessible fields instead of constructor params?
-        return stateInfoForAnnotatedPersistentState(classElement, classElement.accessibleConstructorParameterFields())
+        return stateInfoForAnnotatedState(classElement, classElement.accessibleConstructorParameterFields())
     }
 
     /** Construct a [StateInfo] [PersistentState] constructor source */
-    fun stateInfoForAnnotatedPersistentStateSourceConstructor(constructor: ExecutableElement): StateInfo {
-        return stateInfoForAnnotatedPersistentState(constructor.enclosingElement as TypeElement, constructor.parameters)
+    fun stateInfoForAnnotatedStateSourceConstructor(constructor: ExecutableElement): StateInfo {
+        return stateInfoForAnnotatedState(constructor.enclosingElement as TypeElement, constructor.parameters)
     }
 
 
     /** Handle an annotated [PersistentState] source */
-    fun stateInfoForAnnotatedPersistentState(persistentStateTypeElement: TypeElement, fields: List<VariableElement>): StateInfo {
-        val annotation = persistentStateTypeElement.getAnnotationMirror(sourcesAnnotation)
-        val contractStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_CONTRACT_STATE)
-        val contractStateTypeElement: Element = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
-        return stateInfo(persistentStateTypeElement, contractStateTypeElement, fields)
+    fun stateInfoForAnnotatedState(typeElement: TypeElement, fields: List<VariableElement>): StateInfo {
+        val persistableStateTypeElement = if(typeElement.isAssignableTo(StatePersistable::class.java)) typeElement
+        else typeElement.findAnnotationValueAsTypeElement(sourcesAnnotation, ANN_ATTR_PERSISTENT_STATE)
+        val contractStateTypeElement = if(typeElement.isAssignableTo(ContractState::class.java)) typeElement
+        else typeElement.getAnnotationValueAsTypeElement(sourcesAnnotation, ANN_ATTR_CONTRACT_STATE)!!
+        return stateInfo(typeElement.getAnnotationMirror(sourcesAnnotation), persistableStateTypeElement, contractStateTypeElement, fields)
     }
 
-    /** Invokes [writeBuilderForAnnotatedPersistentState] to create a builder for the given [persistentStateTypeElement]. */
-    fun stateInfoForDependency(annotatedElement: Element): StateInfo {
-        val annotation = annotatedElement.getAnnotationMirror(dependenciesAnnotation)
+    /** Get a [StateInfo] for the given annotation. */
+    fun stateInfoForDependency(annotation: AnnotationMirror): StateInfo {
         val persistentStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_PERSISTENT_STATE)
         val persistentStateTypeElement: TypeElement = processingEnv.typeUtils
                 .asElement(persistentStateTypeAnnotationValue.value as TypeMirror).asType().asTypeElement()
@@ -71,12 +104,13 @@ abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
 
         val contractStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_CONTRACT_STATE)
         val contractStateTypeElement: Element = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
-        return stateInfo(persistentStateTypeElement, contractStateTypeElement, persistentStateFields)
+        return stateInfo(annotation, persistentStateTypeElement, contractStateTypeElement, persistentStateFields)
     }
 
-    fun stateInfo(persistentStateTypeElement: TypeElement, contractStateTypeElement: Element, fields: List<VariableElement>): StateInfo {
+    fun stateInfo(annotation: AnnotationMirror, persistentStateTypeElement: TypeElement?, contractStateTypeElement: Element, fields: List<VariableElement>): StateInfo {
         val contractStateFields = ElementFilter.fieldsIn(processingEnv.elementUtils.getAllMembers(contractStateTypeElement.asType().asTypeElement()))
-        return StateInfoBuilder()
+        val stateInfo = StateInfoBuilder()
+                .annotation(annotation)
                 .contractStateTypeElement(contractStateTypeElement)
                 .contractStateFields(contractStateFields)
                 .persistentStateTypeElement(persistentStateTypeElement)
@@ -84,5 +118,6 @@ abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
                 .generatedPackageName(contractStateTypeElement.asType()
                         .asTypeElement().asKotlinClassName().topLevelClassName().packageName.getParentPackageName() + ".generated")
                 .sourceRoot(sourceRootFile).build()
+        return stateInfo
     }
 }

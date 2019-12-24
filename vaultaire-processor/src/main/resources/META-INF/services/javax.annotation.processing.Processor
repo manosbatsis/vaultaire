@@ -1,2 +1,4 @@
-com.github.manosbatsis.vaultaire.processor.VaultaireStatePersistableAnnotationProcessor
+com.github.manosbatsis.vaultaire.processor.VaultaireQueryDslAndDaoServiceAnnotationProcessor
 com.github.manosbatsis.vaultaire.processor.VaultaireInitiatingFlowAnnotationProcessor
+com.github.manosbatsis.vaultaire.processor.VaultaireDtoAnnotationProcessor
+

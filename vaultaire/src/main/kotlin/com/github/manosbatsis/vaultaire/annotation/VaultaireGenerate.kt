@@ -24,6 +24,13 @@ import net.corda.core.flows.FlowLogic
 import net.corda.core.schemas.PersistentState
 import kotlin.reflect.KClass
 
+
+
+interface VaultaireDependencyAnnotationConvention {
+    val contractStateType: KClass<out ContractState>
+    val persistentStateType: KClass<out PersistentState>
+}
+
 /**
  * Generate a conditions DSL and a state-specific [FieldsAwareStateService]
  * for the annotated [PersistentState] class or constructor.
@@ -40,9 +47,25 @@ annotation class VaultaireGenerate(
  * for the [PersistentState] and  [ContractState] of a project dependency.
  */
 @Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FILE, AnnotationTarget.EXPRESSION)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 annotation class VaultaireGenerateForDependency(
         val name: String = "",
+        val contractStateType: KClass<out ContractState>,
+        val persistentStateType: KClass<out PersistentState>
+)
+
+/** Generate a DTO for the annotated [ContractState] class or constructor. */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
+annotation class VaultaireGenerateDto(
+)
+
+/**
+ * Generate a DTO for the [ContractState] of a project dependency.
+ */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+annotation class VaultaireGenerateDtoForDependency(
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>
 )
@@ -51,7 +74,7 @@ annotation class VaultaireGenerateForDependency(
  * Generate a responser flow that extends the given type.
  */
 @Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS, AnnotationTarget.FILE, AnnotationTarget.EXPRESSION)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 annotation class VaultaireGenerateResponder(
         val value: KClass<out FlowLogic<*>>,
         val comment: String = ""

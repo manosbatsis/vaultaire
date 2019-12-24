@@ -27,12 +27,13 @@ import com.github.manosbatsis.vaultaire.dao.StateServiceDelegate
 import com.github.manosbatsis.vaultaire.dao.StateServiceHubDelegate
 import com.github.manosbatsis.vaultaire.dao.StateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
+import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.registry.Registry
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.LambdaTypeName
@@ -41,7 +42,6 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.WildcardTypeName
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.contracts.ContractState
@@ -49,15 +49,11 @@ import net.corda.core.internal.packageName
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.node.ServiceHub
 import net.corda.core.schemas.PersistentState
-import net.corda.core.schemas.StatePersistable
-import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 
@@ -70,20 +66,11 @@ import javax.lang.model.element.VariableElement
         "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(
-        VaultaireStatePersistableAnnotationProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME,
-        VaultaireStatePersistableAnnotationProcessor.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
-class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
+        KAPT_KOTLIN_GENERATED_OPTION_NAME,
+        KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
+class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
 
     companion object {
-        const val ANN_ATTR_CONTRACT_STATE = "contractStateType"
-        const val ANN_ATTR_PERSISTENT_STATE = "persistentStateType"
-        
-        const val BLOCK_FUN_NAME = "block"
-        const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
-        const val KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME = "kapt.kotlin.vaultaire.generated"
-        val TYPE_PARAMETER_STAR = WildcardTypeName.producerOf(Any::class.asTypeName().copy(nullable = true))
-        val CONTRACT_STATE_CLASSNAME = ClassName(ContractState::class.packageName, ContractState::class.simpleName!!)
-        val STATE_PERSISTABLE_CLASSNAME = ClassName(StatePersistable::class.packageName, StatePersistable::class.simpleName!!)
         val FIELDS_CLASSNAME = ClassName(Fields::class.packageName, Fields::class.simpleName!!)
 
     }
@@ -91,28 +78,6 @@ class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProc
     override val sourcesAnnotation = VaultaireGenerate::class.java
     override val dependenciesAnnotation = VaultaireGenerateForDependency::class.java
 
-
-    override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
-        val annotatedSourceElements = roundEnv.getElementsAnnotatedWith(sourcesAnnotation)
-        val annotatedForElements = roundEnv.getElementsAnnotatedWith(dependenciesAnnotation)
-        if (annotatedSourceElements.isEmpty() && annotatedForElements.isEmpty()) {
-            processingEnv.noteMessage { "No classes annotated with Vaultaire annotations in this round ($roundEnv)" }
-            return false
-        }
-
-        // Process own targets
-        annotatedSourceElements.forEach { annotatedElement ->
-            when (annotatedElement.kind) {
-                ElementKind.CLASS -> process(stateInfoForAnnotatedPersistentStateSourceClass(annotatedElement as TypeElement))
-                ElementKind.CONSTRUCTOR -> process(stateInfoForAnnotatedPersistentStateSourceConstructor(annotatedElement as ExecutableElement))
-                else -> annotatedElement.errorMessage { "Invalid element type, expected a class or constructor" }
-            }
-        }
-        // Process targets for dependencies
-        annotatedForElements.forEach { annotated -> process(stateInfoForDependency(annotated)) }
-
-        return false
-    }
 
     /** Write a builder and services for the given [PersistentState] and [ContractState] . */
     override fun process(stateInfo: StateInfo) {
@@ -123,8 +88,8 @@ class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProc
         processingEnv.noteMessage { "Writing $generatedConditionsClassName" }
 
         // The fields interface and object specs for the contract/persistent state pair being processed
-        val persistentStateFieldsSpec = buildFieldsObjectSpec(stateInfo.persistentStateTypeElement,
-                stateInfo.persistentStateFields, persistentStateFieldsClassName)
+        val persistentStateFieldsSpec = buildFieldsObjectSpec(stateInfo.persistentStateTypeElement!!,
+                stateInfo.persistentStateFields!!, persistentStateFieldsClassName)
         val contractStateFieldsSpec = buildFieldsObjectSpec(stateInfo.contractStateTypeElement.asType().asTypeElement(),
                 stateInfo.contractStateFields, contractStateFieldsClassName)
 
@@ -136,11 +101,7 @@ class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProc
 
 
         // Generate the Kotlin file
-        FileSpec.builder(stateInfo.generatedPackageName, "${stateInfo.contractStateTypeElement.simpleName}VaultaireGenerated")
-                .addComment("-------------------- DO NOT EDIT -------------------\n")
-                .addComment(" This file is automatically generated by Vaultaire,\n")
-                .addComment(" see https://manosbatsis.github.io/vaultaire\n")
-                .addComment("----------------------------------------------------")
+        getFileSpecBuilder(stateInfo.generatedPackageName, "${stateInfo.contractStateTypeElement.simpleName}VaultaireGenerated")
                 .addType(persistentStateFieldsSpec.build())
                 .addType(contractStateFieldsSpec.build())
                 .addType(conditionsSpec.build())
@@ -149,16 +110,6 @@ class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProc
                 .build()
                 .writeTo(sourceRootFile)
     }
-
-    /** Construct a [StateInfo] from an annotated [PersistentState] source */
-    fun stateInfoForAnnotatedPersistentStateSource(element: Element): StateInfo {
-        return when (element.kind) {
-            ElementKind.CLASS -> stateInfoForAnnotatedPersistentStateSourceClass(element as TypeElement)
-            ElementKind.CONSTRUCTOR -> stateInfoForAnnotatedPersistentStateSourceConstructor(element as ExecutableElement)
-            else -> throw IllegalArgumentException("Invalid element type, expected a class or constructor")
-        }
-    }
-
 
     /** Create the DSL entry point for the given [annotatedElement] */
     fun buildTopLevelDslFunSpec(
@@ -194,7 +145,7 @@ class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProc
     fun buildVaultQueryCriteriaConditionsBuilder(stateInfo: StateInfo, generatedConditionsName: ClassName, generatedFieldsClassName: ClassName): TypeSpec.Builder {
         val conditionsSpec = TypeSpec.classBuilder(generatedConditionsName)
                 .superclass(VaultQueryCriteriaCondition::class.asClassName()
-                        .parameterizedBy(stateInfo.persistentStateTypeElement.asKotlinTypeName(), generatedFieldsClassName))
+                        .parameterizedBy(stateInfo.persistentStateTypeElement!!.asKotlinTypeName(), generatedFieldsClassName))
         conditionsSpec.addKdoc("Generated helper for creating [%T] query conditions/criteria", stateInfo.contractStateTypeElement)
         // Register
         conditionsSpec.addType(TypeSpec.companionObjectBuilder().addInitializerBlock(
@@ -220,7 +171,7 @@ class VaultaireStatePersistableAnnotationProcessor : BaseStateInfoAnnotationProc
                 .superclass(ExtendedStateService::class.asClassName()
                         .parameterizedBy(
                                 stateInfo.contractStateTypeElement.asKotlinTypeName(),
-                                stateInfo.persistentStateTypeElement.asKotlinTypeName(),
+                                stateInfo.persistentStateTypeElement!!.asKotlinTypeName(),
                                 generatedFieldsClassName,
                                 conditionsClassName))
                 .primaryConstructor(FunSpec.constructorBuilder()

@@ -32,38 +32,26 @@ import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResp
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_ID
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.generated.BookStateDto
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
-import net.corda.core.identity.Party
 import net.corda.core.transactions.SignedTransaction
-import java.math.BigDecimal
+import java.util.Date
 
-/** Used as flow input, to send a recipient a message */
-data class BookMessage(
-        val author: Party,
-        val title: String,
-        val price: BigDecimal,
-        val genre: BookContract.Genre,
-        val editions: Int = 1,
-        val linearId: UniqueIdentifier = UniqueIdentifier()
-)
 
-class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookMessage> {
-    override fun convert(input: BookMessage): CallContext {
+class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
+    override fun convert(input: BookStateDto): CallContext {
         // Prepare a TX builder
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
-                .addOutputState(
-                    BookContract.BookState(
-                            linearId = input.linearId,
-                            publisher = clientFlow.ourIdentity,
-                            author = input.author,
-                            editions = input.editions,
-                            price = input.price,
-                            genre = input.genre,
-                            title = input.title),
-                        BOOK_CONTRACT_ID)
+                .addOutputState(input
+                        .copy(
+                                publisher = input.publisher ?: clientFlow.ourIdentity,
+                                published = input.published ?: Date(),
+                                linearId = input.linearId ?: UniqueIdentifier()
+                        )
+                        .toState(), BOOK_CONTRACT_ID)
                 .addCommand(BookContract.Send())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
@@ -85,7 +73,7 @@ open class BaseBookFlowResponder(
     value = BaseBookFlowResponder::class,
     comment = "A basic responder for countersigning and listening for finality"
 )
-class CreateBookFlow(input: BookMessage) : PartitureFlow<BookMessage, SignedTransaction>(
+class CreateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, SignedTransaction>(
         input = input, // Input can be anything
         inputConverter = BookInputConverter(),// Our custom IN converter
         outputConverter = SingleFinalizedTxOutputConverter()) // OUT build-in converter
