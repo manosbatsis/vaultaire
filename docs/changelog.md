@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.12
+
+- Fixed dependency scope for kotlinpoet-utils
+
 ## 0.11
 
 - Added `VaultaireGenerateDto`, `VaultaireGenerateDtoForDependency` annotations for generating DTOs for contract states
