@@ -60,7 +60,7 @@ abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
         }
         // Process targets for dependencies
         annotatedForElements.forEach { annotated ->
-            process(stateInfoForDependency(annotated.getAnnotationMirror(dependenciesAnnotation)))
+            process(stateInfoForDependency(annotated))
         }
         return false
     }
@@ -96,7 +96,8 @@ abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
     }
 
     /** Get a [StateInfo] for the given annotation. */
-    fun stateInfoForDependency(annotation: AnnotationMirror): StateInfo {
+    fun stateInfoForDependency(annotated: Element): StateInfo {
+        val annotation = annotated.getAnnotationMirror(dependenciesAnnotation)
         val persistentStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_PERSISTENT_STATE)
         val persistentStateTypeElement: TypeElement = processingEnv.typeUtils
                 .asElement(persistentStateTypeAnnotationValue.value as TypeMirror).asType().asTypeElement()
@@ -104,10 +105,18 @@ abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
 
         val contractStateTypeAnnotationValue = annotation.getAnnotationValue(ANN_ATTR_CONTRACT_STATE)
         val contractStateTypeElement: Element = processingEnv.typeUtils.asElement(contractStateTypeAnnotationValue.value as TypeMirror)
-        return stateInfo(annotation, persistentStateTypeElement, contractStateTypeElement, persistentStateFields)
+        return stateInfo(annotation, persistentStateTypeElement, contractStateTypeElement, persistentStateFields,
+                processingEnv.elementUtils.getPackageOf(annotated).toString())
     }
 
-    fun stateInfo(annotation: AnnotationMirror, persistentStateTypeElement: TypeElement?, contractStateTypeElement: Element, fields: List<VariableElement>): StateInfo {
+    fun stateInfo(
+            annotation: AnnotationMirror,
+            persistentStateTypeElement: TypeElement?,
+            contractStateTypeElement: Element,
+            fields: List<VariableElement>,
+            basePackage: String = contractStateTypeElement.asType()
+                    .asTypeElement().asKotlinClassName().topLevelClassName().packageName.getParentPackageName()
+    ): StateInfo {
         val contractStateFields = ElementFilter.fieldsIn(processingEnv.elementUtils.getAllMembers(contractStateTypeElement.asType().asTypeElement()))
         val stateInfo = StateInfoBuilder()
                 .annotation(annotation)
@@ -115,8 +124,7 @@ abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
                 .contractStateFields(contractStateFields)
                 .persistentStateTypeElement(persistentStateTypeElement)
                 .persistentStateFields(fields)
-                .generatedPackageName(contractStateTypeElement.asType()
-                        .asTypeElement().asKotlinClassName().topLevelClassName().packageName.getParentPackageName() + ".generated")
+                .generatedPackageName(basePackage + ".generated")
                 .sourceRoot(sourceRootFile).build()
         return stateInfo
     }

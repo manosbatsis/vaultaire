@@ -4,6 +4,12 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.14
+
+- Vaultaire's `*ForDependency` annotations now use the annotated element's package (suffixed with `.generated`) 
+for output. This leaves the original (state) packages exclusive to their modules if needed, avoiding when 
+cordapp package conflicts while testing. 
+
 ## 0.13
 
 - Add support for `final` responder flow supertypes in `VaultaireGenerateResponder` 
