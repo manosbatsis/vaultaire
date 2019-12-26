@@ -45,6 +45,9 @@ idea {
 }
 ```
 
+> Note that setting `kotlin.incremental=true` in gradle.properties may break non-clean builds earlier versions
+> of kotlin like 1.2.71 - if you enable incremental then you'll need to `./gradlew clean` when building.
+
 ## For Client Apps
 
 The core module can also be useful outside a cordapp, e.g. in a Spring application
