@@ -490,6 +490,10 @@
 <span class="o">}</span>
 </pre></div>
 
+<blockquote>
+<p>Note that setting <code>kotlin.incremental=true</code> in gradle.properties may break non-clean builds earlier versions
+of kotlin like 1.2.71 - if you enable incremental then you&rsquo;ll need to <code>./gradlew clean</code> when building.</p>
+</blockquote>
 <h2 id="for-client-apps">For Client Apps<a class="headerlink" href="#for-client-apps" title="Permanent link">&para;</a></h2>
 <p>The core module can also be useful outside a cordapp, e.g. in a Spring application
 interacting with Corda nodes via RPC:</p>
