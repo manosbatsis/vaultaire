@@ -470,9 +470,9 @@ maintaning such responders manually. Usage example:</p>
 </pre></div>
 
 <p>The above will automatically generate a responder flow:</p>
-<div class="codehilite"><pre><span></span><span class="p">**</span>
- <span class="p">*</span> <span class="n">A</span> <span class="n">basic</span> <span class="n">responder</span> <span class="n">to</span> <span class="n">listen</span> <span class="k">for</span> <span class="n">finality</span>
- <span class="p">*/</span>
+<div class="codehilite"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * A basic responder to listen for finality</span>
+<span class="cm"> */</span>
 <span class="n">@InitiatedBy</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="n">CreateBookFlow</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CreateBookFlowResponder</span><span class="p">(</span>
   <span class="n">otherPartySession</span><span class="p">:</span> <span class="n">FlowSession</span>
