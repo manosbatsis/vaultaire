@@ -45,6 +45,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -265,6 +267,7 @@ class FlowTests {
             val querySpec = extendedService.buildQuery {
                 status = Vault.StateStatus.UNCONSUMED // the default
                 relevancyStatus = Vault.RelevancyStatus.ALL // the default
+                timeRecorded gt Instant.now().minus(1, ChronoUnit.DAYS)
                 and {
                     fields.title `like` "%Corda Foundation%"
                     fields.genre `==` BookContract.Genre.SCIENCE_FICTION

@@ -4,6 +4,13 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.16
+
+- Added `copyAnnotationPackages` property to `VaultaireGenerateDto` and `VaultaireGenerateDtoForDependency`. 
+The property can be used to define a list of base packages for matching annotations to be copied automatically 
+from a source `ContractState` to it's generated DTO. This is useful when replication of e.g. Jackson or Bean Validation 
+annotations can be useful.
+
 ## 0.15
 
 - Replaced `com.github.manosbatsis.vaultaire.dto.Dto` 

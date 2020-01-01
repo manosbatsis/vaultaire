@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.example.contract
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
 import net.corda.core.contracts.Contract
@@ -70,7 +71,7 @@ class BookContract : Contract {
     }
 
     // State.
-    @VaultaireGenerateDto
+    @VaultaireGenerateDto(copyAnnotationPackages = ["com.fasterxml.jackson.annotation"])
     data class BookState(
             val publisher: Party,
             val author: Party,
@@ -79,6 +80,7 @@ class BookContract : Contract {
             val editions: Int = 1,
             val title: String = "Uknown",
             val published: Date = Date(),
+            @field:JsonProperty("alias")
             val alternativeTitle: String? = null,
             override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
         override val participants get() = listOf(publisher, author)

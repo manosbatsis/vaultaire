@@ -30,6 +30,7 @@ import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
+import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.TypeElement
 
 /**
@@ -60,10 +61,18 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
     }
 
     private fun contractStateDtoSpecBuilder(stateInfo: StateInfo): TypeSpec.Builder {
+        val contractState = stateInfo.contractStateTypeElement
+        val dtoGenAnnotation = contractState.findAnnotationMirror(VaultaireGenerateDto::class.java) ?: contractState.findAnnotationMirror(VaultaireGenerateDtoForDependency::class.java)
+        val copyAnnotationPackagesValue: List<AnnotationValue>? = dtoGenAnnotation?.findAnnotationValueList("copyAnnotationPackages")
+        val copyAnnotationPackages: List<String> = if(copyAnnotationPackagesValue == null) emptyList()
+        else copyAnnotationPackagesValue.mapNotNull {
+            it.value.toString()
+        }
         return dtoSpecBuilder(DtoInfo(
                 stateInfo.contractStateTypeElement as TypeElement,
                 stateInfo.contractStateFields,
-                stateInfo.generatedPackageName))
+                stateInfo.generatedPackageName,
+                copyAnnotationPackages))
     }
 
 

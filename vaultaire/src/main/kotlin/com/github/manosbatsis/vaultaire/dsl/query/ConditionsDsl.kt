@@ -27,6 +27,11 @@ import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateRef
 import net.corda.core.identity.AbstractParty
 import net.corda.core.node.services.Vault
+import net.corda.core.node.services.vault.BinaryComparisonOperator
+import net.corda.core.node.services.vault.BinaryComparisonOperator.GREATER_THAN
+import net.corda.core.node.services.vault.BinaryComparisonOperator.GREATER_THAN_OR_EQUAL
+import net.corda.core.node.services.vault.BinaryComparisonOperator.LESS_THAN
+import net.corda.core.node.services.vault.BinaryComparisonOperator.LESS_THAN_OR_EQUAL
 import net.corda.core.node.services.vault.Builder.`in`
 import net.corda.core.node.services.vault.Builder.avg
 import net.corda.core.node.services.vault.Builder.between
@@ -45,11 +50,15 @@ import net.corda.core.node.services.vault.Builder.notIn
 import net.corda.core.node.services.vault.Builder.notLike
 import net.corda.core.node.services.vault.Builder.notNull
 import net.corda.core.node.services.vault.Builder.sum
+import net.corda.core.node.services.vault.ColumnPredicate.BinaryComparison
 import net.corda.core.node.services.vault.QueryCriteria
+import net.corda.core.node.services.vault.QueryCriteria.TimeCondition
+import net.corda.core.node.services.vault.QueryCriteria.TimeInstantType
 import net.corda.core.node.services.vault.QueryCriteria.VaultCustomQueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.SortAttribute
 import net.corda.core.schemas.StatePersistable
+import java.time.Instant
 import kotlin.reflect.KProperty1
 import kotlin.Suppress as supress
 
@@ -265,6 +274,9 @@ class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>){
     }
 }
 
+abstract class TimeInstantTypeCondition(internal val type: TimeInstantType)
+class TimeRecordedCondition: TimeInstantTypeCondition(TimeInstantType.RECORDED)
+class TimeConsumedCondition: TimeInstantTypeCondition(TimeInstantType.CONSUMED)
 
 /**
  * A [ConditionsCondition] extended by Vaultaire's annotation processing to create a condition DSL specific to a [ContractState] type.
@@ -290,6 +302,23 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
 
     lateinit private var aggregates: Aggregates<P>
     lateinit private var sortColumns: SortColumns<P>
+
+    val timeRecorded = TimeRecordedCondition()
+    val timeConsumed = TimeConsumedCondition()
+
+    private fun setTimeCondition(instantType: TimeInstantType, operator: BinaryComparisonOperator, instant: Instant){
+        timeCondition = TimeCondition(instantType, BinaryComparison(operator, instant))
+    }
+
+    infix fun TimeInstantTypeCondition.greaterThanOrEqual(instant: Instant) = setTimeCondition(this.type, GREATER_THAN_OR_EQUAL, instant)
+    infix fun TimeInstantTypeCondition.gtw(instant: Instant) = greaterThanOrEqual(instant)
+    infix fun TimeInstantTypeCondition.greaterThan(instant: Instant) = setTimeCondition(this.type, GREATER_THAN, instant)
+    infix fun TimeInstantTypeCondition.gt(instant: Instant) = greaterThan(instant)
+    infix fun TimeInstantTypeCondition.lessThanOrEqual(instant: Instant) = setTimeCondition(this.type, LESS_THAN_OR_EQUAL, instant)
+    infix fun TimeInstantTypeCondition.ltw(instant: Instant) = lessThanOrEqual(instant)
+    infix fun TimeInstantTypeCondition.lessThan(instant: Instant) = setTimeCondition(this.type, LESS_THAN, instant)
+    infix fun TimeInstantTypeCondition.lt(instant: Instant) = lessThan(instant)
+
 
     fun aggregate(initializer: Aggregates<P>.() -> Unit) {
         aggregates = Aggregates(statePersistableType).apply(initializer)
