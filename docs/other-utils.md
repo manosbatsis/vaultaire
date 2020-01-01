@@ -27,7 +27,7 @@ The above will automatically generate a responder flow:
 
 
 ```kotlin
-**
+/**
  * A basic responder to listen for finality
  */
 @InitiatedBy(value = CreateBookFlow::class)

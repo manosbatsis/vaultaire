@@ -51,7 +51,7 @@ class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookState
                                 published = input.published ?: Date(),
                                 linearId = input.linearId ?: UniqueIdentifier()
                         )
-                        .toState(), BOOK_CONTRACT_ID)
+                        .toTargetType(), BOOK_CONTRACT_ID)
                 .addCommand(BookContract.Send())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))

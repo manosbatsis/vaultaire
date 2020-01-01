@@ -13,7 +13,7 @@ buildscript {
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.4.1'
-        kotlinpoetutils_version = '0.5'
+        kotlinutils_version = '0.7'
         partiture_version = '0.5'
     }
     repositories {
@@ -54,7 +54,7 @@ nexusStaging {
 
 allprojects {
     group = 'com.github.manosbatsis.vaultaire'
-    version = '0.15-SNAPSHOT'
+    version = '0.15'
     apply plugin: "kotlin"
 
 

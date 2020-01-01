@@ -19,7 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
-import com.github.manosbatsis.kotlinpoet.utils.ProcessingEnvironmentAware
+import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
 import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper

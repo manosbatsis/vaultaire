@@ -4,6 +4,13 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.15
+
+- Replaced `com.github.manosbatsis.vaultaire.dto.Dto` 
+and `com.github.manosbatsis.vaultaire.util.DtoInsufficientStateMappingException` with   
+[kotlin-utils](https://github.com/manosbatsis/kotlin-utils) equivalents extracted there. 
+You may need to update package/method names in your code if you make use of generated DTOs.
+
 ## 0.14
 
 - Vaultaire's `*ForDependency` annotations now use the annotated element's package (suffixed with `.generated`) 
@@ -16,13 +23,13 @@ cordapp package conflicts while testing.
 
 ## 0.12
 
-- Fixed dependency scope for kotlinpoet-utils
+- Fixed dependency scope for kotlin-utils
 
 ## 0.11
 
 - Added `VaultaireGenerateDto`, `VaultaireGenerateDtoForDependency` annotations for generating DTOs for contract states
 - Added `VaultaireGenerateResponder` annotation for generating responder flows extending common supertypes 
-- Refactored to extract [kotlinpoet-utils](https://github.com/manosbatsis/kotlinpoet-utils)
+- Refactored to extract [kotlin-utils](https://github.com/manosbatsis/kotlin-utils)
 
 ## 0.10
 
