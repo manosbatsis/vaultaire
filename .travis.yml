@@ -13,4 +13,4 @@ cache:
     - '.gradle'
 
 script:
-  - ./gradlew clean build
+  - ./gradlew clean build -x dokka
