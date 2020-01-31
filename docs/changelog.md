@@ -4,6 +4,13 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+
+## 0.17
+
+- Added support for sorting based on standard attributes and aliases of those, 
+i.e. enum values of `Sort.CommonStateAttribute`, `Sort.VaultStateAttribute`, 
+`Sort.LinearStateAttribute` and  `Sort.FungibleStateAttribute`.
+
 ## 0.16
 
 - Added `copyAnnotationPackages` property to `VaultaireGenerateDto` and `VaultaireGenerateDtoForDependency`. 
