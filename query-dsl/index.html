@@ -960,17 +960,90 @@ non typesafe functions like <code>_equal</code>, <code>_notEqual</code>, <code>_
 </table>
 
 <h2 id="sorting">Sorting<a class="headerlink" href="#sorting" title="Permanent link">&para;</a></h2>
-<p>Sorting is defined using the <code>orderBy</code> function:</p>
+<p>Sorting is defined using the <code>orderBy</code> function. Both custom fields and 
+standard attributes are supported, while aliases for standard attributes 
+are provided for convenience:</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">criteria</span> <span class="p">=</span> <span class="n">bookConditions</span> <span class="p">{</span>
     <span class="c1">// settings and criteria...</span>
 
     <span class="c1">// sorting</span>
     <span class="n">orderBy</span> <span class="p">{</span>
-        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">sort</span> <span class="n">ASC</span>
-        <span class="n">fields</span><span class="p">.</span><span class="n">published</span> <span class="n">sort</span> <span class="n">DESC</span>
+        <span class="c1">// Sort by standard attribute alias, same as</span>
+        <span class="c1">// Sort.VaultStateAttribute.RECORDED_TIME sort ASC</span>
+        <span class="n">recordedTime</span> <span class="n">sort</span> <span class="n">ASC</span>
+        <span class="c1">// Sort by custom field</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">sort</span> <span class="n">DESC</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
+
+<p>The following standard attribute aliases are provided:</p>
+<table>
+<thead>
+<tr>
+<th>Alias</th>
+<th>Standard Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stateRef</td>
+<td>Sort.CommonStateAttribute.STATE_REF</td>
+</tr>
+<tr>
+<td>stateRefTxnId</td>
+<td>Sort.CommonStateAttribute.STATE_REF_TXN_ID</td>
+</tr>
+<tr>
+<td>stateRefIndex</td>
+<td>Sort.CommonStateAttribute.STATE_REF_INDEX</td>
+</tr>
+<tr>
+<td>notaryName</td>
+<td>Sort.VaultStateAttribute.NOTARY_NAME</td>
+</tr>
+<tr>
+<td>contractStateType</td>
+<td>Sort.VaultStateAttribute.CONTRACT_STATE_TYPE</td>
+</tr>
+<tr>
+<td>stateStatus</td>
+<td>Sort.VaultStateAttribute.STATE_STATUS</td>
+</tr>
+<tr>
+<td>recordedTime</td>
+<td>Sort.VaultStateAttribute.RECORDED_TIME</td>
+</tr>
+<tr>
+<td>consumedTime</td>
+<td>Sort.VaultStateAttribute.CONSUMED_TIME</td>
+</tr>
+<tr>
+<td>lockId</td>
+<td>Sort.VaultStateAttribute.LOCK_ID</td>
+</tr>
+<tr>
+<td>constraintType</td>
+<td>Sort.VaultStateAttribute.CONSTRAINT_TYPE</td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>Sort.LinearStateAttribute.UUID</td>
+</tr>
+<tr>
+<td>externalId</td>
+<td>Sort.LinearStateAttribute.EXTERNAL_ID</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>Sort.FungibleStateAttribute.QUANTITY</td>
+</tr>
+<tr>
+<td>issuerRef</td>
+<td>Sort.FungibleStateAttribute.ISSUER_REF</td>
+</tr>
+</tbody>
+</table>
                 
                   
                 

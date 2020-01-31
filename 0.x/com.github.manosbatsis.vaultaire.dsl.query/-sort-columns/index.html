@@ -446,6 +446,18 @@
 <td><code>val ASC: Direction</code></td>
 </tr>
 <tr>
+<td><a href="constraint-type/">constraintType</a></td>
+<td><code>val constraintType: VaultStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="consumed-time/">consumedTime</a></td>
+<td><code>val consumedTime: VaultStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="contract-state-type/">contractStateType</a></td>
+<td><code>val contractStateType: VaultStateAttribute</code></td>
+</tr>
+<tr>
 <td><a href="-d-e-s-c/">DESC</a></td>
 <td><code>val DESC: Direction</code></td>
 </tr>
@@ -454,8 +466,52 @@
 <td><code>val entries: LinkedHashSet&lt;SortColumn&gt;</code></td>
 </tr>
 <tr>
+<td><a href="external-id/">externalId</a></td>
+<td><code>val externalId: LinearStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="issuer-ref/">issuerRef</a></td>
+<td><code>val issuerRef: FungibleStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="lock-id/">lockId</a></td>
+<td><code>val lockId: VaultStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="notary-name/">notaryName</a></td>
+<td><code>val notaryName: VaultStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="quantity/">quantity</a></td>
+<td><code>val quantity: FungibleStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="recorded-time/">recordedTime</a></td>
+<td><code>val recordedTime: VaultStateAttribute</code></td>
+</tr>
+<tr>
 <td><a href="state-persistable-type/">statePersistableType</a></td>
 <td><code>val statePersistableType: Class&lt;</code><a href="./#P"><code>P</code></a><code>&gt;</code></td>
+</tr>
+<tr>
+<td><a href="state-ref/">stateRef</a></td>
+<td><code>val stateRef: CommonStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="state-ref-index/">stateRefIndex</a></td>
+<td><code>val stateRefIndex: CommonStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="state-ref-txn-id/">stateRefTxnId</a></td>
+<td><code>val stateRefTxnId: CommonStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="state-status/">stateStatus</a></td>
+<td><code>val stateStatus: VaultStateAttribute</code></td>
+</tr>
+<tr>
+<td><a href="uuid/">uuid</a></td>
+<td><code>val uuid: LinearStateAttribute</code></td>
 </tr>
 </tbody>
 </table>
@@ -470,7 +526,7 @@
 <tbody>
 <tr>
 <td><a href="sort/">sort</a></td>
-<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;.sort(value: Direction): Unit</code></td>
+<td><code>infix fun CommonStateAttribute.sort(value: Direction): Boolean</code><br><code>infix fun FungibleStateAttribute.sort(value: Direction): Boolean</code><br><code>infix fun LinearStateAttribute.sort(value: Direction): Boolean</code><br><code>infix fun VaultStateAttribute.sort(value: Direction): Boolean</code><br><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;.sort(value: Direction): Unit</code></td>
 </tr>
 </tbody>
 </table>
