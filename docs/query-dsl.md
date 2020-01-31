@@ -373,7 +373,9 @@ non typesafe functions like `_equal`, `_notEqual`, `_like`, `_notLike` but this 
 
 ## Sorting
 
-Sorting is defined using the `orderBy` function:
+Sorting is defined using the `orderBy` function. Both custom fields and 
+standard attributes are supported, while aliases for standard attributes 
+are provided for convenience:
 
 ```kotlin
 val criteria = bookConditions {
@@ -381,9 +383,30 @@ val criteria = bookConditions {
 
     // sorting
     orderBy {
-        fields.title sort ASC
-        fields.published sort DESC
+        // Sort by standard attribute alias, same as
+        // Sort.VaultStateAttribute.RECORDED_TIME sort ASC
+        recordedTime sort ASC
+        // Sort by custom field
+        fields.title sort DESC
     }
 }
 ```
 
+The following standard attribute aliases are provided:
+
+| Alias              	| Standard Attribute                           	|
+|-------------------	|----------------------------------------------	|
+| stateRef          	| Sort.CommonStateAttribute.STATE_REF          	|
+| stateRefTxnId     	| Sort.CommonStateAttribute.STATE_REF_TXN_ID   	|
+| stateRefIndex     	| Sort.CommonStateAttribute.STATE_REF_INDEX    	|
+| notaryName        	| Sort.VaultStateAttribute.NOTARY_NAME         	|
+| contractStateType 	| Sort.VaultStateAttribute.CONTRACT_STATE_TYPE 	|
+| stateStatus       	| Sort.VaultStateAttribute.STATE_STATUS        	|
+| recordedTime      	| Sort.VaultStateAttribute.RECORDED_TIME       	|
+| consumedTime      	| Sort.VaultStateAttribute.CONSUMED_TIME       	|
+| lockId            	| Sort.VaultStateAttribute.LOCK_ID             	|
+| constraintType    	| Sort.VaultStateAttribute.CONSTRAINT_TYPE     	|
+| uuid              	| Sort.LinearStateAttribute.UUID               	|
+| externalId        	| Sort.LinearStateAttribute.EXTERNAL_ID        	|
+| quantity          	| Sort.FungibleStateAttribute.QUANTITY         	|
+| issuerRef         	| Sort.FungibleStateAttribute.ISSUER_REF       	|

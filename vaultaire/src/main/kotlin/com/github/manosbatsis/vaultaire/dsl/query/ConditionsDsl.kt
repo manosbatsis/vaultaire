@@ -267,7 +267,39 @@ class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>){
 
     val ASC = Sort.Direction.ASC
     val DESC = Sort.Direction.DESC
+
+    // CommonStateAttribute entries
+    val stateRef = Sort.CommonStateAttribute.STATE_REF
+    val stateRefTxnId = Sort.CommonStateAttribute.STATE_REF_TXN_ID
+    val stateRefIndex = Sort.CommonStateAttribute.STATE_REF_INDEX
+    // VaultStateAttribute entries
+    val notaryName = Sort.VaultStateAttribute.NOTARY_NAME
+    val contractStateType = Sort.VaultStateAttribute.CONTRACT_STATE_TYPE
+    val stateStatus = Sort.VaultStateAttribute.STATE_STATUS
+    val recordedTime = Sort.VaultStateAttribute.RECORDED_TIME
+    val consumedTime = Sort.VaultStateAttribute.CONSUMED_TIME
+    val lockId = Sort.VaultStateAttribute.LOCK_ID
+    val constraintType = Sort.VaultStateAttribute.CONSTRAINT_TYPE
+    // LinearStateAttribute entries
+    val uuid = Sort.LinearStateAttribute.UUID
+    val externalId = Sort.LinearStateAttribute.EXTERNAL_ID
+    // FungibleStateAttribute entries
+    val quantity = Sort.FungibleStateAttribute.QUANTITY
+    val issuerRef = Sort.FungibleStateAttribute.ISSUER_REF
+
     val entries: LinkedHashSet<Sort.SortColumn> = linkedSetOf()
+
+    infix fun Sort.CommonStateAttribute.sort(value: Sort.Direction) =
+        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
+
+    infix fun Sort.FungibleStateAttribute.sort(value: Sort.Direction) =
+        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
+
+    infix fun Sort.LinearStateAttribute.sort(value: Sort.Direction) =
+        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
+
+    infix fun Sort.VaultStateAttribute.sort(value: Sort.Direction) =
+        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
 
     infix fun FieldWrapper<P>.sort(value: Sort.Direction) {
         entries.add(Sort.SortColumn(SortAttribute.Custom(statePersistableType, this.property.name), value))

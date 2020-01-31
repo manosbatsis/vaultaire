@@ -272,6 +272,13 @@ class FlowTests {
                     fields.title `like` "%Corda Foundation%"
                     fields.genre `==` BookContract.Genre.SCIENCE_FICTION
                 }
+                orderBy {
+                    // Sort by standard attribute alias, same as
+                    // Sort.VaultStateAttribute.RECORDED_TIME sort ASC
+                    recordedTime sort ASC
+                    // Sort by custom field
+                    fields.title sort DESC
+                }
             }
             extendedService.queryBy(querySpec, 1, 1)
 
