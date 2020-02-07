@@ -3,7 +3,7 @@ buildscript {
         autodsl_version = '0.0.9'
         corda_release_group = 'net.corda'
         corda_release_version = '4.1'
-        corda_gradle_plugins_version = '4.0.45'
+        corda_gradle_plugins_version = '5.0.7'
         corda_platform_version = '4'
         tokens_release_version = '1.0'
         tokens_release_group = 'com.r3.corda.lib.tokens'
