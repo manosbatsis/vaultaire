@@ -31,5 +31,5 @@ dependencies {
     testImplementation ("$corda_release_group:corda-node-driver:$corda_release_version")
 
     testCompile "org.assertj:assertj-core:3.10.0"
-    testCompile "com.willowtreeapps.assertk:assertk:0.10"
+    testCompile "com.willowtreeapps.assertk:assertk:0.21"
 }
