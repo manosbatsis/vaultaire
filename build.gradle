@@ -2,19 +2,19 @@ buildscript {
     ext {
         autodsl_version = '0.0.9'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.1'
-        corda_gradle_plugins_version = '4.0.45'
-        corda_platform_version = '4'
+        corda_release_version = '4.3'
+        corda_gradle_plugins_version = '5.0.4'
+        corda_platform_version = '5'
         tokens_release_version = '1.0'
         tokens_release_group = 'com.r3.corda.lib.tokens'
         dokka_version = '0.9.18'
-        junitVersion = '5.1.1'
+        junitVersion = '5.3.2'
         junit_jupiter_version = '5.3.1' // TODO
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.4.1'
         kotlinutils_version = '0.8'
-        partiture_version = '0.5'
+        partiture_version = '0.8'
     }
     repositories {
         mavenLocal()
@@ -38,6 +38,7 @@ buildscript {
         // release to Maven Central through Sonatype OSSRH
         // without the need to use Nexus GUI
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.0"
+        classpath 'com.vanniktech:gradle-maven-publish-plugin:0.9.0'
     }
 }
 
@@ -53,9 +54,6 @@ nexusStaging {
 }
 
 allprojects {
-    group = 'com.github.manosbatsis.vaultaire'
-    version = '0.18-SNAPSHOT'
-    apply plugin: "kotlin"
 
 
     repositories {
@@ -103,6 +101,7 @@ allprojects {
 }
 subprojects {
     apply plugin: 'license'
+    apply plugin: 'java'
     apply plugin: 'kotlin'
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -178,10 +177,11 @@ subprojects {
 }
 
 configure([project(':vaultaire'), project(':vaultaire-processor')]) {
+    apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    apply plugin: 'org.jetbrains.dokka'
+
 
     task dokkaForGhPages(type: org.jetbrains.dokka.gradle.DokkaTask) {
         outputDirectory = "$rootDir/docs/0.x"
@@ -214,7 +214,7 @@ configure([project(':vaultaire'), project(':vaultaire-processor')]) {
         classifier = 'sources'
     }
 
-    artifacts { archives jar, sourcesJar, javadocJar }
+    artifacts { archives sourcesJar, javadocJar }
     // Conditional signature of artifacts
     if (project.findProperty('signing.password') != '<YOUR-PASSWORD>') {
         signing {
