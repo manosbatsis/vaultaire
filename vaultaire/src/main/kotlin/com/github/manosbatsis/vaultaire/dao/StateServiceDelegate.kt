@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.dao
 
+import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import net.corda.core.contracts.ContractState
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
@@ -61,6 +62,27 @@ class StateServiceRpcDelegate<T: ContractState>(
         private val rpcOps: CordaRPCOps,
         override val contractStateType: Class<T>,
         override val defaults: StateServiceDefaults = StateServiceDefaults()): StateServiceDelegate<T> {
+
+    override fun queryBy(
+            criteria: QueryCriteria,
+            paging: PageSpecification,
+            sort: Sort
+    ): Vault.Page<T> = rpcOps.vaultQueryBy(criteria, paging, sort, contractStateType)
+
+    override fun trackBy(
+            criteria: QueryCriteria,
+            paging: PageSpecification,
+            sort: Sort
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> = rpcOps.vaultTrackBy(criteria, paging, sort, contractStateType)
+}
+
+/** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
+class StateServiceRpcConnectionDelegate<T: ContractState>(
+        private val nodeRpcConnection: NodeRpcConnection,
+        override val contractStateType: Class<T>,
+        override val defaults: StateServiceDefaults = StateServiceDefaults()): StateServiceDelegate<T> {
+
+    val rpcOps: CordaRPCOps by lazy { nodeRpcConnection.proxy }
 
     override fun queryBy(
             criteria: QueryCriteria,

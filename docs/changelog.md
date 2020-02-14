@@ -4,6 +4,13 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+
+## 0.19
+
+- Added [NodeRpcConnection] interface and [StateServiceRpcConnectionDelegate]
+for libraries in need of more flexible [StateServiceDelegate] integration 
+e.g. Corbeans/Spring or other IoC containers 
+
 ## 0.18
 
 Bumped deps i.e. Corda to OS 4.3

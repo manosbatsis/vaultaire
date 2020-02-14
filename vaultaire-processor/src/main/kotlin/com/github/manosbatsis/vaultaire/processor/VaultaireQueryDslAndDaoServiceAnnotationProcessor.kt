@@ -19,17 +19,20 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
+import com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
 import com.github.manosbatsis.vaultaire.dao.ExtendedStateService
 import com.github.manosbatsis.vaultaire.dao.StateServiceDefaults
 import com.github.manosbatsis.vaultaire.dao.StateServiceDelegate
 import com.github.manosbatsis.vaultaire.dao.StateServiceHubDelegate
+import com.github.manosbatsis.vaultaire.dao.StateServiceRpcConnectionDelegate
 import com.github.manosbatsis.vaultaire.dao.StateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.registry.Registry
+import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.squareup.kotlinpoet.ClassName
@@ -168,6 +171,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
         val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedStateServiceSimpleName)
                 .addKdoc("A [%T]-specific [%T]", stateInfo.contractStateTypeElement, ExtendedStateService::class)
                 .addModifiers(KModifier.OPEN)
+                .addAnnotation(ExtendedStateServiceBean::class)
                 .superclass(ExtendedStateService::class.asClassName()
                         .parameterizedBy(
                                 stateInfo.contractStateTypeElement.asKotlinTypeName(),
@@ -192,9 +196,21 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
                                 .defaultValue("%T()", StateServiceDefaults::class.java)
                                 .build())
                         .callThisConstructor(CodeBlock.builder()
-                                .add("%T(%N, %T::class.java, %N)", StateServiceRpcDelegate::class, "rpcOps",
+                                .add("%T(%N, %T::class.java, %N)",
+                                        StateServiceRpcDelegate::class, "rpcOps",
                                         stateInfo.contractStateTypeElement, "defaults").build()
                         ).build())
+                .addFunction(FunSpec.constructorBuilder()
+                        .addParameter("nodeRpcConnection", NodeRpcConnection::class)
+                        .addParameter(ParameterSpec.builder("defaults", StateServiceDefaults::class)
+                                .defaultValue("%T()", StateServiceDefaults::class.java)
+                                .build())
+                        .callThisConstructor(CodeBlock.builder()
+                                .add("%T(%N, %T::class.java, %N)",
+                                        StateServiceRpcConnectionDelegate::class, "nodeRpcConnection",
+                                        stateInfo.contractStateTypeElement, "defaults").build()
+                        ).build())
+                //NodeRpcConnection
                 .addFunction(buildDslFunSpec("buildQuery", conditionsClassName, KModifier.OVERRIDE))
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("serviceHub", ServiceHub::class)
