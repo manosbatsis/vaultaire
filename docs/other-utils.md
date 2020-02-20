@@ -60,7 +60,10 @@ You can have Vaultaire generate those for you either using `@VaultaireGenerateDt
 on the contract state class directly:
 
 ```kotlin
-@VaultaireGenerateDto
+@VaultaireGenerateDto(
+    // optional: properties to ignore
+    ignoreProperties = ["participants"]
+)
 data class BookState(
     val publisher: Party,
     val author: Party,
@@ -80,8 +83,11 @@ e.g. from your contract states module or a third party class:
 
 ```kotlin
 @VaultaireGenerateDtoForDependency(
-        persistentStateType = PersistentBookState::class,
-        contractStateType = BookState::class)
+    persistentStateType = PersistentBookState::class,
+    contractStateType = BookState::class,
+    // optional: properties to ignore
+    ignoreProperties = ["participants"]
+)
 class Dummy // just a placeholder for our annotation
 ```
 
@@ -92,6 +98,7 @@ mapping/patching utility methods:
 /**
  * A [BookState]-specific [Dto] implementation
  */
+@CordaSerializable
 data class BookStateDto(
   var publisher: Party? = null,
   var author: Party? = null,
