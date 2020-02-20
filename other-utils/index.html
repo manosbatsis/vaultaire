@@ -496,7 +496,10 @@ subflow instead of extending it:</p>
 <p>Maintaining Data Transfer Objects (e.g. for REST) of your contract states can be a very mundane task.
 You can have Vaultaire generate those for you either using <code>@VaultaireGenerateDto</code> 
 on the contract state class directly:</p>
-<div class="codehilite"><pre><span></span><span class="n">@VaultaireGenerateDto</span>
+<div class="codehilite"><pre><span></span><span class="n">@VaultaireGenerateDto</span><span class="p">(</span>
+    <span class="c1">// optional: properties to ignore</span>
+    <span class="n">ignoreProperties</span> <span class="p">=</span> <span class="p">[</span><span class="s">&quot;participants&quot;</span><span class="p">]</span>
+<span class="p">)</span>
 <span class="k">data</span> <span class="k">class</span> <span class="nc">BookState</span><span class="p">(</span>
     <span class="k">val</span> <span class="py">publisher</span><span class="p">:</span> <span class="n">Party</span><span class="p">,</span>
     <span class="k">val</span> <span class="py">author</span><span class="p">:</span> <span class="n">Party</span><span class="p">,</span>
@@ -513,8 +516,11 @@ on the contract state class directly:</p>
 <p>&hellip; or <code>@VaultaireGenerateDtoForDependency</code> when targetting a contract state within your dependencies
 e.g. from your contract states module or a third party class:</p>
 <div class="codehilite"><pre><span></span><span class="n">@VaultaireGenerateDtoForDependency</span><span class="p">(</span>
-        <span class="n">persistentStateType</span> <span class="p">=</span> <span class="n">PersistentBookState</span><span class="o">::</span><span class="k">class</span><span class="p">,</span>
-        <span class="n">contractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+    <span class="n">persistentStateType</span> <span class="p">=</span> <span class="n">PersistentBookState</span><span class="o">::</span><span class="k">class</span><span class="p">,</span>
+    <span class="n">contractStateType</span> <span class="p">=</span> <span class="n">BookState</span><span class="o">::</span><span class="k">class</span><span class="p">,</span>
+    <span class="c1">// optional: properties to ignore</span>
+    <span class="n">ignoreProperties</span> <span class="p">=</span> <span class="p">[</span><span class="s">&quot;participants&quot;</span><span class="p">]</span>
+<span class="p">)</span>
 <span class="k">class</span> <span class="nc">Dummy</span> <span class="c1">// just a placeholder for our annotation</span>
 </pre></div>
 
@@ -523,6 +529,7 @@ mapping/patching utility methods:</p>
 <div class="codehilite"><pre><span></span><span class="cm">/**</span>
 <span class="cm"> * A [BookState]-specific [Dto] implementation</span>
 <span class="cm"> */</span>
+<span class="n">@CordaSerializable</span>
 <span class="k">data</span> <span class="k">class</span> <span class="nc">BookStateDto</span><span class="p">(</span>
   <span class="k">var</span> <span class="py">publisher</span><span class="p">:</span> <span class="n">Party</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
   <span class="k">var</span> <span class="py">author</span><span class="p">:</span> <span class="n">Party</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
