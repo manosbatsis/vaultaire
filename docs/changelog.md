@@ -5,6 +5,12 @@ The following sections describe major changes per version
 and can be helpful with version upgrades.
 
 
+## 0.20
+
+- Added `CordaSerializable` annotation to generated DTOs
+- Added `ignoreProperties` to `VaultaireGenerateDto` and `VaultaireGenerateDtoForDependency`, 
+useful with derived/backed properties like `participants` 
+
 ## 0.19
 
 - Added [NodeRpcConnection] interface and [StateServiceRpcConnectionDelegate]

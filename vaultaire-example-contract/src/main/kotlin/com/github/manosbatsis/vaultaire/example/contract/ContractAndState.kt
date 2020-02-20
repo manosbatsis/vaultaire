@@ -71,7 +71,7 @@ class BookContract : Contract {
     }
 
     // State.
-    @VaultaireGenerateDto(copyAnnotationPackages = ["com.fasterxml.jackson.annotation"])
+    @VaultaireGenerateDto(ignoreProperties = ["participants"], copyAnnotationPackages = ["com.fasterxml.jackson.annotation"])
     data class BookState(
             val publisher: Party,
             val author: Party,
@@ -83,7 +83,8 @@ class BookContract : Contract {
             @field:JsonProperty("alias")
             val alternativeTitle: String? = null,
             override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
-        override val participants get() = listOf(publisher, author)
+
+        override val participants = listOf(publisher, author)
 
         override fun supportedSchemas() = listOf(BookSchemaV1)
 

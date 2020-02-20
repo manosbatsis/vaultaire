@@ -11,6 +11,7 @@ import com.r3.corda.lib.tokens.contracts.states.FungibleToken
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class)
 @VaultaireGenerateDtoForDependency(
+        ignoreProperties = ["participants"],
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class)
 class Dummy1
@@ -19,6 +20,7 @@ class Dummy1
         persistentStateType = BookContract.MagazineState.MagazineSchemaV1.PersistentMagazineState::class,
         contractStateType = BookContract.MagazineState::class)
 @VaultaireGenerateDtoForDependency(
+        ignoreProperties = ["participants"],
         persistentStateType = BookContract.MagazineState.MagazineSchemaV1.PersistentMagazineState::class,
         contractStateType = BookContract.MagazineState::class)
 class Dummy2

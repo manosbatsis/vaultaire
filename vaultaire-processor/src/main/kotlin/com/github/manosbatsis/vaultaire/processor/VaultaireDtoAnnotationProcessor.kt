@@ -26,11 +26,12 @@ import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Compan
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
 import com.squareup.kotlinpoet.TypeSpec
 import net.corda.core.contracts.ContractState
+import net.corda.core.serialization.CordaSerializable
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.AnnotationValue
+import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.TypeElement
 
 /**
@@ -63,16 +64,22 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
     private fun contractStateDtoSpecBuilder(stateInfo: StateInfo): TypeSpec.Builder {
         val contractState = stateInfo.contractStateTypeElement
         val dtoGenAnnotation = contractState.findAnnotationMirror(VaultaireGenerateDto::class.java) ?: contractState.findAnnotationMirror(VaultaireGenerateDtoForDependency::class.java)
-        val copyAnnotationPackagesValue: List<AnnotationValue>? = dtoGenAnnotation?.findAnnotationValueList("copyAnnotationPackages")
-        val copyAnnotationPackages: List<String> = if(copyAnnotationPackagesValue == null) emptyList()
-        else copyAnnotationPackagesValue.mapNotNull {
-            it.value.toString()
-        }
+        val copyAnnotationPackages: List<String> = getStringValuesList(dtoGenAnnotation, "copyAnnotationPackages")
+        val ignoredProperties: List<String> = getStringValuesList(dtoGenAnnotation, "ignoreProperties")
+
+        processingEnv.noteMessage { "Ignoring properties: $ignoredProperties" }
         return dtoSpecBuilder(DtoInfo(
                 stateInfo.contractStateTypeElement as TypeElement,
-                stateInfo.contractStateFields,
+                stateInfo.contractStateFields.filterNot { ignoredProperties.contains(it.simpleName.toString()) },
                 stateInfo.generatedPackageName,
                 copyAnnotationPackages))
+                .addAnnotation(CordaSerializable::class.java)
+    }
+
+    // TODO: move to utils repo
+    private fun getStringValuesList(annotationMirror: AnnotationMirror?, memberName: String): List<String> {
+        return if (annotationMirror == null) emptyList()
+        else annotationMirror.findAnnotationValueList(memberName)?.mapNotNull { it.value.toString() } ?: emptyList()
     }
 
 

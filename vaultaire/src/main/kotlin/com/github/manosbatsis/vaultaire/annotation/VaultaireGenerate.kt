@@ -58,7 +58,8 @@ annotation class VaultaireGenerateForDependency(
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
 annotation class VaultaireGenerateDto(
-        val copyAnnotationPackages: Array<String> = emptyArray()
+        val ignoreProperties: Array<String> = [],
+        val copyAnnotationPackages: Array<String> = []
 )
 
 /**
@@ -67,9 +68,10 @@ annotation class VaultaireGenerateDto(
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
 annotation class VaultaireGenerateDtoForDependency(
+        val ignoreProperties: Array<String> = [],
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>,
-        val copyAnnotationPackages: Array<String> = emptyArray()
+        val copyAnnotationPackages: Array<String> = []
 )
 
 /**
