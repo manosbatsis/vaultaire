@@ -12,8 +12,8 @@ buildscript {
         junit_jupiter_version = '5.3.1' // TODO
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
-        kotlinpoet_version = '1.4.1'
-        kotlinutils_version = '0.9'
+        kotlinpoet_version = '1.5.0'
+        kotlinutils_version = '0.10'
         partiture_version = '0.8'
     }
     repositories {

@@ -62,7 +62,7 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
     }
 
     private fun contractStateDtoSpecBuilder(stateInfo: StateInfo): TypeSpec.Builder {
-        val contractState = stateInfo.contractStateTypeElement
+        val contractState = stateInfo.contractStateTypeElement as TypeElement
         val dtoGenAnnotation = contractState.findAnnotationMirror(VaultaireGenerateDto::class.java) ?: contractState.findAnnotationMirror(VaultaireGenerateDtoForDependency::class.java)
         val copyAnnotationPackages: List<String> = getStringValuesList(dtoGenAnnotation, "copyAnnotationPackages")
         val ignoredProperties: List<String> = getStringValuesList(dtoGenAnnotation, "ignoreProperties")

@@ -20,6 +20,7 @@
 package com.github.manosbatsis.vaultaire.example.contract
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
 import net.corda.core.contracts.Contract
@@ -77,6 +78,7 @@ class BookContract : Contract {
             val author: Party,
             val price: BigDecimal,
             val genre: Genre,
+            @DefaultValue("1")
             val editions: Int = 1,
             val title: String = "Uknown",
             val published: Date = Date(),

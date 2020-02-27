@@ -5,6 +5,11 @@ The following sections describe major changes per version
 and can be helpful with version upgrades.
 
 
+## 0.21
+
+- Bumped KotlinPoet, util versions
+- Added `@DefaultValue` example in the docs
+
 ## 0.20
 
 - Added `CordaSerializable` annotation to generated DTOs

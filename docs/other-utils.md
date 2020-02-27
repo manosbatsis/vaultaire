@@ -69,9 +69,11 @@ data class BookState(
     val author: Party,
     val price: BigDecimal,
     val genre: Genre,
+    @DefaultValue("1")
     val editions: Int = 1,
     val title: String = "Uknown",
     val published: Date = Date(),
+    @field:JsonProperty("alias")
     val alternativeTitle: String? = null,
     override val linearId: UniqueIdentifier = UniqueIdentifier()
 ) : LinearState, QueryableState {/* ... */}
@@ -104,9 +106,10 @@ data class BookStateDto(
   var author: Party? = null,
   var price: BigDecimal? = null,
   var genre: BookContract.Genre? = null,
-  var editions: Int? = null,
+  var editions: Int? = 1,
   var title: String? = null,
   var published: Date? = null,
+  @field:JsonProperty(value = "alias")
   var alternativeTitle: String? = null,
   var linearId: UniqueIdentifier? = null
 ) : Dto<BookState> {
