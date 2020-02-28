@@ -1,4 +1,4 @@
-# Vaultaire [![Maven Central](https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg)](http://central.maven.org/maven2/com/github/manosbatsis/vaultaire/) [![Build Status](https://travis-ci.org/manosbatsis/vaultaire.svg?branch=master)](https://travis-ci.org/manosbatsis/vaultaire)
+# Vaultaire [![Maven Central](https://img.shields.io/maven-central/v/com.github.manosbatsis.vaultaire/vaultaire.svg)](https://repo1.maven.org/maven2/com/github/manosbatsis/vaultaire/vaultaire/) [![Build Status](https://travis-ci.org/manosbatsis/vaultaire.svg?branch=master)](https://travis-ci.org/manosbatsis/vaultaire)
 
 Query DSL and data access utilities for Corda developers.   
 
