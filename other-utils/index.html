@@ -505,9 +505,11 @@ on the contract state class directly:</p>
     <span class="k">val</span> <span class="py">author</span><span class="p">:</span> <span class="n">Party</span><span class="p">,</span>
     <span class="k">val</span> <span class="py">price</span><span class="p">:</span> <span class="n">BigDecimal</span><span class="p">,</span>
     <span class="k">val</span> <span class="py">genre</span><span class="p">:</span> <span class="n">Genre</span><span class="p">,</span>
+    <span class="n">@DefaultValue</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">)</span>
     <span class="k">val</span> <span class="py">editions</span><span class="p">:</span> <span class="n">Int</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
     <span class="k">val</span> <span class="py">title</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s">&quot;Uknown&quot;</span><span class="p">,</span>
     <span class="k">val</span> <span class="py">published</span><span class="p">:</span> <span class="n">Date</span> <span class="p">=</span> <span class="n">Date</span><span class="p">(),</span>
+    <span class="n">@field</span><span class="p">:</span><span class="n">JsonProperty</span><span class="p">(</span><span class="s">&quot;alias&quot;</span><span class="p">)</span>
     <span class="k">val</span> <span class="py">alternativeTitle</span><span class="p">:</span> <span class="n">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
     <span class="k">override</span> <span class="k">val</span> <span class="py">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier</span> <span class="p">=</span> <span class="n">UniqueIdentifier</span><span class="p">()</span>
 <span class="p">)</span> <span class="p">:</span> <span class="n">LinearState</span><span class="p">,</span> <span class="n">QueryableState</span> <span class="p">{</span><span class="cm">/* ... */</span><span class="p">}</span>
@@ -535,9 +537,10 @@ mapping/patching utility methods:</p>
   <span class="k">var</span> <span class="py">author</span><span class="p">:</span> <span class="n">Party</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
   <span class="k">var</span> <span class="py">price</span><span class="p">:</span> <span class="n">BigDecimal</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
   <span class="k">var</span> <span class="py">genre</span><span class="p">:</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">Genre</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">editions</span><span class="p">:</span> <span class="n">Int</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
+  <span class="k">var</span> <span class="py">editions</span><span class="p">:</span> <span class="n">Int</span><span class="p">?</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
   <span class="k">var</span> <span class="py">title</span><span class="p">:</span> <span class="n">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
   <span class="k">var</span> <span class="py">published</span><span class="p">:</span> <span class="n">Date</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
+  <span class="n">@field</span><span class="p">:</span><span class="n">JsonProperty</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="s">&quot;alias&quot;</span><span class="p">)</span>
   <span class="k">var</span> <span class="py">alternativeTitle</span><span class="p">:</span> <span class="n">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
   <span class="k">var</span> <span class="py">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span>
 <span class="p">)</span> <span class="p">:</span> <span class="n">Dto</span><span class="p">&lt;</span><span class="n">BookState</span><span class="p">&gt;</span> <span class="p">{</span>
