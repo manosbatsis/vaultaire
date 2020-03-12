@@ -36,7 +36,6 @@ import net.corda.core.internal.packageName
 import net.corda.core.schemas.StatePersistable
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
-import javax.lang.model.element.AnnotationValue
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
@@ -87,17 +86,6 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
                     .addComment(" see https://manosbatsis.github.io/vaultaire\n")
                     .addComment("----------------------------------------------------")
 
-    fun TypeElement.findAnnotationValue(attribute: String, default: AnnotationValue, vararg annotations: Class<out Annotation>): AnnotationValue? {
-        var value: AnnotationValue? = default
-        for(annotation in annotations){
-            val tmp = this.findAnnotationMirror(annotation)?.findAnnotationValue(attribute)
-            if(tmp != null && tmp.toString().isNotBlank()){
-                value = tmp
-                break
-            }
-        }
-        return value
-    }
 
     fun Class<*>.getParentPackageName(): String = this.canonicalName.getParentPackageName().getParentPackageName()
 

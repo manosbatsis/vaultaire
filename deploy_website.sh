@@ -20,6 +20,9 @@ git clone $REPO $DIR
 # Move working directory into temp folder
 cd $DIR
 
+# Remove redundant link
+sed -i '/See complete documentation at/d' README.md
+
 # Generate the API docs
 ./gradlew :vaultaire:dokkaForGhPages
 

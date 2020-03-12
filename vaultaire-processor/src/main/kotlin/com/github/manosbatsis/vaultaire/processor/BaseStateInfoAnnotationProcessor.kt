@@ -30,7 +30,6 @@ import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeMirror
-import javax.lang.model.util.ElementFilter
 import javax.lang.model.util.ElementFilter.fieldsIn
 
 /**
@@ -117,7 +116,9 @@ abstract class BaseStateInfoAnnotationProcessor : BaseAnnotationProcessor() {
             basePackage: String = contractStateTypeElement.asType()
                     .asTypeElement().asKotlinClassName().topLevelClassName().packageName.getParentPackageName()
     ): StateInfo {
-        val contractStateFields = ElementFilter.fieldsIn(processingEnv.elementUtils.getAllMembers(contractStateTypeElement.asType().asTypeElement()))
+        val contractStateFields =
+                fieldsIn( processingEnv.elementUtils.getAllMembers(contractStateTypeElement.asType().asTypeElement()))
+                        .fieldsOnly()
         val stateInfo = StateInfoBuilder()
                 .annotation(annotation)
                 .contractStateTypeElement(contractStateTypeElement)

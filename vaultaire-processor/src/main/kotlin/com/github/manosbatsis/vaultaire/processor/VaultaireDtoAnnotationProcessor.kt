@@ -19,11 +19,11 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
-import com.github.manosbatsis.kotlin.utils.DtoInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
+import com.github.manotbatsis.kotlin.utils.dto.DtoTypeSpecBuilder
 import com.squareup.kotlinpoet.TypeSpec
 import net.corda.core.contracts.ContractState
 import net.corda.core.serialization.CordaSerializable
@@ -68,11 +68,13 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
         val ignoredProperties: List<String> = getStringValuesList(dtoGenAnnotation, "ignoreProperties")
 
         processingEnv.noteMessage { "Ignoring properties: $ignoredProperties" }
-        return dtoSpecBuilder(DtoInfo(
+        return DtoTypeSpecBuilder(
+                processingEnvironment,
                 stateInfo.contractStateTypeElement as TypeElement,
                 stateInfo.contractStateFields.filterNot { ignoredProperties.contains(it.simpleName.toString()) },
                 stateInfo.generatedPackageName,
-                copyAnnotationPackages))
+                copyAnnotationPackages)
+                .builder()
                 .addAnnotation(CordaSerializable::class.java)
     }
 

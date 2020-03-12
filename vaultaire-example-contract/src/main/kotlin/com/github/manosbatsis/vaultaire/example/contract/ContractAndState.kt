@@ -86,6 +86,12 @@ class BookContract : Contract {
             val alternativeTitle: String? = null,
             override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
 
+        companion object{
+            val test = "test"
+        }
+
+        enum class TestEnum
+
         override val participants = listOf(publisher, author)
 
         override fun supportedSchemas() = listOf(BookSchemaV1)
