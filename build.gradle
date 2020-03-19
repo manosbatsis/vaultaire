@@ -55,6 +55,7 @@ nexusStaging {
 
 allprojects {
 
+    apply plugin: 'idea'
 
     repositories {
         mavenLocal()

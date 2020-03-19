@@ -44,7 +44,7 @@ class BookContractTests {
             // Input state present.
             transaction {
                 input(BOOK_CONTRACT_ID, bookState)
-                command(alice.publicKey, BookContract.Send())
+                command(alice.publicKey, BookContract.Commands.Create())
                 output(BOOK_CONTRACT_ID, bookState)
                 this.failsWith("There can be no inputs when creating books.")
             }
@@ -57,18 +57,18 @@ class BookContractTests {
             // Command signed by wrong key.
             transaction {
                 output(BOOK_CONTRACT_ID, bookState)
-                command(miniCorp.publicKey, BookContract.Send())
+                command(miniCorp.publicKey, BookContract.Commands.Create())
                 this.failsWith("The book must be signed by the publisher.")
             }
             // Sending to yourself is not allowed.
             transaction {
                 output(BOOK_CONTRACT_ID, BookContract.BookState(alice.party, alice.party, BigDecimal.TEN, BookContract.Genre.TECHNOLOGY))
-                command(alice.publicKey, BookContract.Send())
+                command(alice.publicKey, BookContract.Commands.Create())
                 this.failsWith("Cannot publish your own book!")
             }
             transaction {
                 output(BOOK_CONTRACT_ID, bookState)
-                command(alice.publicKey, BookContract.Send())
+                command(alice.publicKey, BookContract.Commands.Create())
                 this.verifies()
             }
         }

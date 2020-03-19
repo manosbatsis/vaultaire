@@ -26,22 +26,23 @@ import com.github.manosbatsis.partiture.flow.call.CallContext
 import com.github.manosbatsis.partiture.flow.call.CallContextEntry
 import com.github.manosbatsis.partiture.flow.delegate.initiating.PartitureFlowDelegateBase
 import com.github.manosbatsis.partiture.flow.io.input.InputConverter
-import com.github.manosbatsis.partiture.flow.io.output.SingleFinalizedTxOutputConverter
+import com.github.manosbatsis.partiture.flow.io.output.TypedOutputStatesConverter
 import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_ID
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
 import com.github.manosbatsis.vaultaire.example.generated.BookStateDto
+import com.github.manosbatsis.vaultaire.example.generated.BookStateService
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
-import net.corda.core.transactions.SignedTransaction
 import java.util.Date
 
 
-class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
+class CreateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
     override fun convert(input: BookStateDto): CallContext {
         // Prepare a TX builder
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
@@ -52,7 +53,36 @@ class BookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookState
                                 linearId = input.linearId ?: UniqueIdentifier()
                         )
                         .toTargetType(), BOOK_CONTRACT_ID)
-                .addCommand(BookContract.Send())
+                .addCommand(BookContract.Commands.Create())
+        // Return a TX context with builder and participants
+        return CallContext(CallContextEntry(txBuilder))
+    }
+}
+
+
+class UpdateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
+    override fun convert(input: BookStateDto): CallContext {
+        // Load existing state
+        val existing = BookStateService(serviceHub = clientFlow.serviceHub).getByLinearId(input.linearId!!)
+        val updated = input.toPatched(existing.state.data)
+        // Prepare a TX builder
+        val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
+                .addInputState(existing)
+                .addOutputState(updated, BOOK_CONTRACT_ID)
+                .addCommand(BookContract.Commands.Update())
+        // Return a TX context with builder and participants
+        return CallContext(CallContextEntry(txBuilder))
+    }
+}
+
+class DeleteBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
+    override fun convert(input: BookStateDto): CallContext {
+        // Load existing state
+        val existing = BookStateService(serviceHub = clientFlow.serviceHub).getByLinearId(input.linearId!!)
+        // Prepare a TX builder
+        val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
+                .addInputState(existing)
+                .addCommand(BookContract.Commands.Update())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
     }
@@ -70,10 +100,38 @@ open class BaseBookFlowResponder(
 @InitiatingFlow
 @StartableByRPC
 @VaultaireGenerateResponder(
-    value = BaseBookFlowResponder::class,
-    comment = "A basic responder for countersigning and listening for finality"
+        value = BaseBookFlowResponder::class,
+        comment = "A basic responder for countersigning and listening for finality"
 )
-class CreateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, SignedTransaction>(
+class CreateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, List<BookState>>(
         input = input, // Input can be anything
-        inputConverter = BookInputConverter(),// Our custom IN converter
-        outputConverter = SingleFinalizedTxOutputConverter()) // OUT build-in converter
+        inputConverter = CreateBookInputConverter(),// Our custom IN converter
+        outputConverter = TypedOutputStatesConverter(BookState::class.java)) // OUT build-in converter
+
+
+/** Create/publish a bookstate  */
+@InitiatingFlow
+@StartableByRPC
+@VaultaireGenerateResponder(
+        value = BaseBookFlowResponder::class,
+        comment = "A basic responder for countersigning and listening for finality"
+)
+class UpdateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, List<BookState>>(
+        input = input, // Input can be anything
+        inputConverter = UpdateBookInputConverter(),// Our custom IN converter
+        outputConverter = TypedOutputStatesConverter(BookState::class.java)) // OUT build-in converter
+
+
+
+/** Create/publish a bookstate  */
+@InitiatingFlow
+@StartableByRPC
+@VaultaireGenerateResponder(
+        value = BaseBookFlowResponder::class,
+        comment = "A basic responder for countersigning and listening for finality"
+)
+class DeleteBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, List<BookState>>(
+        input = input, // Input can be anything
+        inputConverter = DeleteBookInputConverter(),// Our custom IN converter
+        outputConverter = TypedOutputStatesConverter(BookState::class.java)) // OUT build-in converter
+

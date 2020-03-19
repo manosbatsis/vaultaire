@@ -23,6 +23,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Create
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Delete
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Update
+import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
 import net.corda.core.contracts.LinearState
 import net.corda.core.contracts.TypeOnlyCommandData
@@ -36,6 +40,7 @@ import net.corda.core.schemas.QueryableState
 import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.math.BigDecimal
+import java.security.PublicKey
 import java.util.Date
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -47,17 +52,63 @@ val BOOK_CONTRACT_ID = BookContract::class.java.canonicalName
 
 class BookContract : Contract {
 
-    // Command.
-    class Send : TypeOnlyCommandData()
+    /**
+     * Contract commands
+     */
+    interface Commands : CommandData {
+        /** Create the initial state */
+        class Create : TypeOnlyCommandData(), Commands
 
-    // Contract code.
-    override fun verify(tx: LedgerTransaction) = requireThat {
-        val command = tx.commands.requireSingleCommand<Send>()
+        /** Create the updated state */
+        class Update : TypeOnlyCommandData(), Commands
+
+        /** Delete the state */
+        class Delete : TypeOnlyCommandData(), Commands
+    }
+
+    /**
+     * Verify transactions
+     */
+    override fun verify(tx: LedgerTransaction) {
+        // Ensure only one of this contract's commands is present
+        val command = tx.commands.requireSingleCommand<Commands>()
+        // Forward to command-specific verification
+        val signers = command.signers.toSet()
+        when (command.value) {
+            is Create -> verifyCreate(tx, signers)
+            is Update -> verifyUpdate(tx, signers)
+            is Delete -> verifyDelete(tx, signers)
+            else -> throw IllegalArgumentException("Unrecognised command.")
+        }
+    }
+
+    fun verifyCreate(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
+        val command = tx.commands.requireSingleCommand<Create>()
         "There can be no inputs when creating books." using (tx.inputs.isEmpty())
         "There must be one output book" using (tx.outputs.size == 1)
         val yo = tx.outputsOfType<BookState>().single()
         "Cannot publish your own book!" using (yo.author != yo.publisher)
         "The book must be signed by the publisher." using (command.signers.contains(yo.publisher.owningKey))
+        //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
+    }
+
+    fun verifyUpdate(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
+        val command = tx.commands.requireSingleCommand<Update>()
+        "There must be one input book." using (tx.inputs.size == 1)
+        "There must be one output book" using (tx.outputs.size == 1)
+        val yo = tx.outputsOfType<BookState>().single()
+        "Cannot publish your own book!" using (yo.author != yo.publisher)
+        "The book must be signed by the publisher." using (command.signers.contains(yo.publisher.owningKey))
+        //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
+    }
+
+    fun verifyDelete(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
+        val command = tx.commands.requireSingleCommand<Delete>()
+        "There must be one input book." using (tx.inputs.size == 1)
+        "There must no output book" using (tx.outputs.isEmpty())
+        val yo = tx.outputsOfType<BookState>().single()
+        "Cannot delete your own book!" using (yo.author != yo.publisher)
+        "The book deletion must be signed by the publisher." using (command.signers.contains(yo.publisher.owningKey))
         //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
     }
 
