@@ -4,6 +4,14 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.23
+
+Fixed corda API design issue, where a secondary `VaultCustomQueryCriteria`'s implicit/default status of 
+UNCONSUMED (VS null) is applied, overriding the root DSL status
+
+## 0.22
+
+Bumped kotlin-utils, fixing issue with DTO generation including `companion object` members of the source type.
 
 ## 0.21
 
