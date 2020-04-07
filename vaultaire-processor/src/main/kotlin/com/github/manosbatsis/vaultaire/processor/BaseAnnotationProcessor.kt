@@ -98,12 +98,21 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
     /** Create property that wraps a pesistent state field */
     fun buildPersistentStateFieldWrapperPropertySpec(field: VariableElement, annotatedElement: TypeElement): PropertySpec {
         val fieldWrapperClass = if (field.asKotlinTypeName().isNullable) NullableGenericFieldWrapper::class else GenericFieldWrapper::class
+        val enclosingType = field.enclosingElement.asType()
+        val enclosingTypeElement = enclosingType.asTypeElement()
+        val enclosingParameterisedType =
+            if(enclosingTypeElement.typeParameters.isNotEmpty())
+                enclosingTypeElement.asKotlinClassName()
+                        .parameterizedBy(enclosingTypeElement.typeParameters
+                                .map { TYPE_PARAMETER_STAR })
+            else enclosingTypeElement.asKotlinClassName()
+
         val fieldType = fieldWrapperClass.asClassName().parameterizedBy(
-                field.enclosingElement.asKotlinTypeName(),
+                enclosingParameterisedType,
                 field.asKotlinTypeName())
         return PropertySpec.builder(field.simpleName.toString(), fieldType, KModifier.PUBLIC)
-                .initializer("%T(${annotatedElement.qualifiedName}::${field.simpleName})", fieldWrapperClass)
-                .addKdoc("Wraps [%T.${field.simpleName}]", annotatedElement)
+                .initializer("%T(%T::${field.simpleName})", fieldWrapperClass, enclosingParameterisedType)
+                .addKdoc("Wraps [%T.${field.simpleName}]", enclosingParameterisedType)
                 .build()
     }
 

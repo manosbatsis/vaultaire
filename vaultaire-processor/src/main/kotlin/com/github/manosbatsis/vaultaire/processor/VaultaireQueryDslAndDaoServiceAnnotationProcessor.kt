@@ -85,9 +85,8 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
     /** Write a builder and services for the given [PersistentState] and [ContractState] . */
     override fun process(stateInfo: StateInfo) {
         val generatedConditionsClassName = ClassName(stateInfo.generatedPackageName, "${stateInfo.persistentStateSimpleName}Conditions")
-        val persistentStateFieldsClassName = ClassName(stateInfo.generatedPackageName, "${stateInfo.persistentStateSimpleName}Fields")
-        val contractStateFieldsClassName = ClassName(stateInfo.generatedPackageName, "${stateInfo.contractStateSimpleName}Fields")
-
+        var persistentStateFieldsClassName = ClassName(stateInfo.generatedPackageName, "${stateInfo.persistentStateSimpleName}Fields")
+        var contractStateFieldsClassName = ClassName(stateInfo.generatedPackageName, "${stateInfo.contractStateSimpleName}Fields")
         processingEnv.noteMessage { "Writing $generatedConditionsClassName" }
 
         // The fields interface and object specs for the contract/persistent state pair being processed
@@ -228,9 +227,27 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
 
     /** Create the fields object spec for the annotated element being processed */
     fun buildFieldsObjectSpec(typeElement: TypeElement, fields: List<VariableElement>, fieldsClassName: ClassName): TypeSpec.Builder {
+
+        /*
+        this.dtoTypeSpecBuilder.originalTypeElement.typeParameters.forEach {
+            dtoTypeSpecBuilder.addTypeVariable(TypeVariableName.invoke(it.simpleName.toString(), *it.bounds.map { it.asKotlinTypeName() }.toTypedArray()))
+        }
+         */
+
         val fieldsSpec = TypeSpec.objectBuilder(fieldsClassName)
-                .addSuperinterface(FIELDS_CLASSNAME.parameterizedBy(typeElement.asKotlinTypeName()))
+                .addSuperinterface(FIELDS_CLASSNAME.parameterizedBy(
+                    if(typeElement.typeParameters.isEmpty()) typeElement.asKotlinTypeName()
+                    else typeElement.asKotlinClassName().parameterizedBy(
+                            typeElement.typeParameters.map {
+                                it.bounds.single().asKotlinTypeName()
+                                //TypeVariableName.invoke(it.simpleName.toString(), *it.bounds.map { it.asKotlinTypeName() }.toTypedArray())
+                            })
+                ))
                 .addKdoc("Provides easy access to fields of [%T]", typeElement)
+        if(typeElement.typeParameters.isNotEmpty()) {
+            processingEnv.noteMessage { "typeElement.typeParameters.first: ${typeElement.typeParameters.first()}" }
+            processingEnv.noteMessage { "typeElement.typeParameters.first().bounds: ${typeElement.typeParameters.first().bounds}" }
+        }
         // Note fields by name
         val fieldsByNameBuilder = CodeBlock.builder().addStatement("mapOf(")
 

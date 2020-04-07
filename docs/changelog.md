@@ -4,9 +4,14 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.24
+
+- Added default parameter value `false` to `VaultQueryCriteriaCondition.toCriteria(boolean)`, so that 
+aggregates are __not__ ignored by default.
+
 ## 0.23
 
-Fixed corda API design issue, where a secondary `VaultCustomQueryCriteria`'s implicit/default status of 
+- Fixed corda API design issue, where a secondary `VaultCustomQueryCriteria`'s implicit/default status of 
 UNCONSUMED (VS null) is applied, overriding the root DSL status
 
 ## 0.22

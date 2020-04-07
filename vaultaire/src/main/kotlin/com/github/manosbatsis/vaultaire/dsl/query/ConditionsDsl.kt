@@ -453,7 +453,7 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
      * @param ignoreAggregates whether to ignore aggregate functions.
      * Corda paged queries can have either state or aggregate results, but not both.
      */
-    fun toCriteria(ignoreAggregates: Boolean): QueryCriteria {
+    fun toCriteria(ignoreAggregates: Boolean = false): QueryCriteria {
         var criteria: QueryCriteria = toCriteria()
         if(!ignoreAggregates && ::aggregates.isInitialized) {
             aggregates.aggregates.forEach {

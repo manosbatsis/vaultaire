@@ -13,7 +13,7 @@ buildscript {
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
-        kotlinutils_version = '0.12'
+        kotlinutils_version = '0.16'
         partiture_version = '0.9'
     }
     repositories {
@@ -44,7 +44,7 @@ buildscript {
 
 
 plugins {
-    id "com.github.hierynomus.license" version "0.14.0"
+    id "com.github.hierynomus.license" version "0.15.0"
 }
 
 apply plugin: 'io.codearte.nexus-staging'
@@ -52,6 +52,21 @@ nexusStaging {
     packageGroup = 'com.github.manosbatsis.vaultaire'
     stagingProfileId = 'com.github.manosbatsis'
 }
+
+apply plugin: 'license'
+license {
+    header rootProject.file("etc/license/header.txt")
+    includes(["**/*.java", "**/*.kt"])
+    excludes(["**/build/**", "**/config/dev/**"])
+    mapping {
+        kt='SLASHSTAR_STYLE'
+    }
+    strictCheck true
+}
+task licenseFormatForKotlin(type: com.hierynomus.gradle.license.tasks.LicenseFormat) {
+    source = fileTree(dir: "./").include("**/*.kt")
+}
+licenseFormat.dependsOn licenseFormatForKotlin
 
 allprojects {
 
@@ -101,7 +116,6 @@ allprojects {
     }
 }
 subprojects {
-    apply plugin: 'license'
     apply plugin: 'java'
     apply plugin: 'kotlin'
 
@@ -164,16 +178,6 @@ subprojects {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
         }
-    }
-
-    license {
-        header rootProject.file("${rootProject.rootDir}/etc/license/header.txt")
-        includes(["src/**/*.java", "src/**/*.kt"])
-        excludes(["build/**/*.kt"])
-        mapping {
-            kt='SLASHSTAR_STYLE'
-        }
-        strictCheck true
     }
 }
 

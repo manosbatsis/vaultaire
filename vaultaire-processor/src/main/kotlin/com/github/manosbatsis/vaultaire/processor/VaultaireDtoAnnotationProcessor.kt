@@ -72,7 +72,6 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
                 processingEnvironment,
                 stateInfo.contractStateTypeElement as TypeElement,
                 stateInfo.contractStateFields.filterNot { ignoredProperties.contains(it.simpleName.toString()) },
-                stateInfo.generatedPackageName,
                 copyAnnotationPackages)
                 .builder()
                 .addAnnotation(CordaSerializable::class.java)
