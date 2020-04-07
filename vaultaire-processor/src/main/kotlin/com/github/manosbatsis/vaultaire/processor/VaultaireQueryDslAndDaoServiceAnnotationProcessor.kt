@@ -227,20 +227,12 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
 
     /** Create the fields object spec for the annotated element being processed */
     fun buildFieldsObjectSpec(typeElement: TypeElement, fields: List<VariableElement>, fieldsClassName: ClassName): TypeSpec.Builder {
-
-        /*
-        this.dtoTypeSpecBuilder.originalTypeElement.typeParameters.forEach {
-            dtoTypeSpecBuilder.addTypeVariable(TypeVariableName.invoke(it.simpleName.toString(), *it.bounds.map { it.asKotlinTypeName() }.toTypedArray()))
-        }
-         */
-
         val fieldsSpec = TypeSpec.objectBuilder(fieldsClassName)
                 .addSuperinterface(FIELDS_CLASSNAME.parameterizedBy(
                     if(typeElement.typeParameters.isEmpty()) typeElement.asKotlinTypeName()
                     else typeElement.asKotlinClassName().parameterizedBy(
                             typeElement.typeParameters.map {
                                 it.bounds.single().asKotlinTypeName()
-                                //TypeVariableName.invoke(it.simpleName.toString(), *it.bounds.map { it.asKotlinTypeName() }.toTypedArray())
                             })
                 ))
                 .addKdoc("Provides easy access to fields of [%T]", typeElement)
