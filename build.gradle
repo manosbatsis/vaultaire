@@ -2,11 +2,19 @@ buildscript {
     ext {
         autodsl_version = '0.0.9'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.3'
-        corda_gradle_plugins_version = '5.0.4'
+        corda_release_version = '4.4'
+        corda_gradle_plugins_version = '5.0.6'
         corda_platform_version = '5'
-        tokens_release_version = '1.0'
+
+        tokens_release_version = '1.1'
         tokens_release_group = 'com.r3.corda.lib.tokens'
+
+        accounts_release_group = 'com.r3.corda.lib.accounts'
+        accounts_release_version = '1.0'
+
+        confidential_id_release_group = 'com.r3.corda.lib.ci'
+        confidential_id_release_version = '1.0-RC03'
+
         dokka_version = '0.9.18'
         junitVersion = '5.3.2'
         junit_jupiter_version = '5.3.1' // TODO
@@ -69,21 +77,11 @@ task licenseFormatForKotlin(type: com.hierynomus.gradle.license.tasks.LicenseFor
 licenseFormat.dependsOn licenseFormatForKotlin
 
 allprojects {
+    apply from: "${rootProject.projectDir}/repositories.gradle"
 
     apply plugin: 'idea'
 
     repositories {
-        mavenLocal()
-        jcenter()
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
-        //Needed only for Corda SNAPSHOT versions
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev/' }
-        //Needed only for SNAPSHOT versions
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-        // For Gradle Tooling API
-        maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
         // For Tokens SDK
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }

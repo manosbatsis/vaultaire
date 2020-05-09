@@ -19,7 +19,6 @@
  */
 package com.github.manosbatsis.vaultaire.example.workflow
 
-import com.github.manosbatsis.partiture.flow.PartitureFlow
 import com.github.manosbatsis.vaultaire.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.dao.StateNotFoundException
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
@@ -30,10 +29,17 @@ import com.github.manosbatsis.vaultaire.example.generated.BookStateDto
 import com.github.manosbatsis.vaultaire.example.generated.BookStateService
 import com.github.manosbatsis.vaultaire.example.generated.PersistentBookStateConditions
 import com.github.manosbatsis.vaultaire.example.generated.bookStateQuery
+import com.github.manosbatsis.vaultaire.example.workflow.generated.AccountInfoService
+import com.github.manosbatsis.vaultaire.example.workflow.generated.accountInfoQuery
+import com.r3.corda.lib.accounts.contracts.AccountInfoContract
+import com.r3.corda.lib.accounts.workflows.flows.CreateAccount
+import com.r3.corda.lib.accounts.workflows.internal.schemas.AccountsWorkflowsSchema
 import net.corda.core.contracts.UniqueIdentifier
+import net.corda.core.flows.FlowLogic
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.queryBy
 import net.corda.core.utilities.getOrThrow
+import net.corda.core.utilities.loggerFor
 import net.corda.testing.core.DUMMY_NOTARY_NAME
 import net.corda.testing.node.MockNetwork
 import net.corda.testing.node.MockNetworkNotarySpec
@@ -57,9 +63,18 @@ import kotlin.test.assertTrue
 @Suppress("DEPRECATION")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
 class FlowTests {
+    companion object{
+        val logger = loggerFor<FlowTests>()
+    }
 
     // Works as long as the main and test package names are  in sync
-    val cordappPackages = listOf(BOOK_CONTRACT_PACKAGE, this.javaClass.`package`.name, "com.github.manosbatsis.partiture.flow")
+    val cordappPackages = listOf(
+            AccountInfoContract::class.java.`package`.name,
+            AccountsWorkflowsSchema::class.java.`package`.name,
+            BOOK_CONTRACT_PACKAGE,
+            this.javaClass.`package`.name,
+            "com.github.manosbatsis.partiture.flow")
+
     lateinit var network: MockNetwork
     lateinit var a: StartedMockNode
     lateinit var b: StartedMockNode
@@ -80,8 +95,34 @@ class FlowTests {
     }
 
     @AfterAll
-    fun tearDown() {
+    fun tearDown(){
         network.stopNodes()
+    }
+
+    @Test
+    fun `Test @DefaultValue`(){
+        assertEquals(1, BookStateDto().editions)
+    }
+
+    @Test
+    fun `Test AccountInfo`(){
+        // Create account
+        val accountUuid = UUID.randomUUID()
+        val accountName = "vaultaire"
+        flowWorksCorrectly(a, CreateAccount(accountName))
+        flowWorksCorrectly(a, CreateAccount("foobar"))
+
+        // Query for account
+        val accountInfoService = AccountInfoService(a.services)
+        val results = accountInfoService.queryBy(
+                accountInfoQuery {
+                    and {
+                        fields.name `==` accountName
+                    }
+                }
+        )
+        // Validate query results
+        assertEquals(1, results.states.size)
     }
 
     @Test
@@ -383,7 +424,7 @@ class FlowTests {
     }
 
 
-    inline fun <reified OUT> flowWorksCorrectly(node: StartedMockNode, flow: PartitureFlow<*, OUT>): OUT {
+    inline fun <reified OUT> flowWorksCorrectly(node: StartedMockNode, flow: FlowLogic<OUT>): OUT {
         val future = node.startFlow(flow)
         val result = future.getOrThrow()
         // Ask nodes to process any queued up inbound messages
