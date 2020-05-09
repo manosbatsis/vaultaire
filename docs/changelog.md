@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.25
+
+- Bumped Corda to OS 4.4
+
 ## 0.24
 
 - Added default parameter value `false` to `VaultQueryCriteriaCondition.toCriteria(boolean)`, so that 
