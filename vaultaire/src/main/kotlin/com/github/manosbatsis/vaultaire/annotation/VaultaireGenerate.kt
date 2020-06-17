@@ -54,12 +54,17 @@ annotation class VaultaireGenerateForDependency(
         val persistentStateType: KClass<out PersistentState>
 )
 
+enum class DtoProfile{
+    DEFAULT, REST
+}
+
 /** Generate a DTO for the annotated [ContractState] class or constructor. */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
 annotation class VaultaireGenerateDto(
         val ignoreProperties: Array<String> = [],
-        val copyAnnotationPackages: Array<String> = []
+        val copyAnnotationPackages: Array<String> = [],
+        val profiles: Array<DtoProfile> = [DtoProfile.DEFAULT]
 )
 
 /**
@@ -71,7 +76,8 @@ annotation class VaultaireGenerateDtoForDependency(
         val ignoreProperties: Array<String> = [],
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>,
-        val copyAnnotationPackages: Array<String> = []
+        val copyAnnotationPackages: Array<String> = [],
+        val profiles: Array<DtoProfile> = [DtoProfile.DEFAULT]
 )
 
 /**

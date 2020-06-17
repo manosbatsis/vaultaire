@@ -28,7 +28,7 @@ val searchResults = bookStateService.queryBy(
     criteria, paging, Pair("published", DESC), Pair("title", DESC))
 ```
 
-You can see the [basic state services API](/vaultaire/0.x/com.github.manosbatsis.vaultaire.dao/-basic-state-service/) 
+You can see the [basic state services API](/vaultaire/0.x/com.github.manosbatsis.vaultaire.service.dao/-basic-state-service/) 
 for details. 
 
 ## Custom Services

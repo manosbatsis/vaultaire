@@ -20,12 +20,12 @@
 package com.github.manosbatsis.vaultaire.example.contract
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Create
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Delete
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Update
+import com.github.manotbatsis.kotlin.utils.api.DefaultValue
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
 import net.corda.core.contracts.LinearState

@@ -17,7 +17,7 @@ cordapp {
 }
 
 dependencies {
-    implementation project(':vaultaire')
+    cordaCompile project(':vaultaire')
     kapt project(':vaultaire-processor')
 
     cordaCompile group: 'io.swagger', name: 'swagger-annotations', version: '1.6.0'

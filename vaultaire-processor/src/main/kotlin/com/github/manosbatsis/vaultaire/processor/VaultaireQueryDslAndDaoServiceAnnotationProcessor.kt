@@ -22,17 +22,17 @@ package com.github.manosbatsis.vaultaire.processor
 import com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
-import com.github.manosbatsis.vaultaire.dao.ExtendedStateService
-import com.github.manosbatsis.vaultaire.dao.StateServiceDefaults
-import com.github.manosbatsis.vaultaire.dao.StateServiceDelegate
-import com.github.manosbatsis.vaultaire.dao.StateServiceHubDelegate
-import com.github.manosbatsis.vaultaire.dao.StateServiceRpcConnectionDelegate
-import com.github.manosbatsis.vaultaire.dao.StateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.registry.Registry
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService
+import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
+import com.github.manosbatsis.vaultaire.service.dao.StateServiceHubDelegate
+import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcConnectionDelegate
+import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.squareup.kotlinpoet.ClassName
@@ -191,8 +191,8 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
                 .addInitializerBlock(CodeBlock.of("criteriaConditionsType =  %N::class.java", "${stateInfo.persistentStateSimpleName}Conditions"))
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("rpcOps", CordaRPCOps::class)
-                        .addParameter(ParameterSpec.builder("defaults", StateServiceDefaults::class)
-                                .defaultValue("%T()", StateServiceDefaults::class.java)
+                        .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
+                                .defaultValue("%T()", ServiceDefaults::class.java)
                                 .build())
                         .callThisConstructor(CodeBlock.builder()
                                 .add("%T(%N, %T::class.java, %N)",
@@ -201,8 +201,8 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
                         ).build())
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("nodeRpcConnection", NodeRpcConnection::class)
-                        .addParameter(ParameterSpec.builder("defaults", StateServiceDefaults::class)
-                                .defaultValue("%T()", StateServiceDefaults::class.java)
+                        .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
+                                .defaultValue("%T()", ServiceDefaults::class.java)
                                 .build())
                         .callThisConstructor(CodeBlock.builder()
                                 .add("%T(%N, %T::class.java, %N)",
@@ -213,8 +213,8 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
                 .addFunction(buildDslFunSpec("buildQuery", conditionsClassName, KModifier.OVERRIDE))
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("serviceHub", ServiceHub::class)
-                        .addParameter(ParameterSpec.builder("defaults", StateServiceDefaults::class)
-                                .defaultValue("%T()", StateServiceDefaults::class.java)
+                        .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
+                                .defaultValue("%T()", ServiceDefaults::class.java)
                                 .build())
                         .callThisConstructor(CodeBlock.builder()
                                 .add("%T(%N, %T::class.java, %N)", StateServiceHubDelegate::class, "serviceHub",
