@@ -20,19 +20,13 @@
 package com.github.manosbatsis.vaultaire.example.contract
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Create
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Delete
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Update
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.*
 import com.github.manotbatsis.kotlin.utils.api.DefaultValue
-import net.corda.core.contracts.CommandData
-import net.corda.core.contracts.Contract
-import net.corda.core.contracts.LinearState
-import net.corda.core.contracts.TypeOnlyCommandData
-import net.corda.core.contracts.UniqueIdentifier
-import net.corda.core.contracts.requireSingleCommand
-import net.corda.core.contracts.requireThat
+import net.corda.core.contracts.*
+import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
@@ -41,7 +35,7 @@ import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.math.BigDecimal
 import java.security.PublicKey
-import java.util.Date
+import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
@@ -88,7 +82,7 @@ class BookContract : Contract {
         "There must be one output book" using (tx.outputs.size == 1)
         val yo = tx.outputsOfType<BookState>().single()
         "Cannot publish your own book!" using (yo.author != yo.publisher)
-        "The book must be signed by the publisher." using (command.signers.contains(yo.publisher.owningKey))
+        "The book must be signed by the publisher." using (command.signers.contains(yo.publisher!!.owningKey))
         //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
     }
 
@@ -98,7 +92,7 @@ class BookContract : Contract {
         "There must be one output book" using (tx.outputs.size == 1)
         val yo = tx.outputsOfType<BookState>().single()
         "Cannot publish your own book!" using (yo.author != yo.publisher)
-        "The book must be signed by the publisher." using (command.signers.contains(yo.publisher.owningKey))
+        "The book must be signed by the publisher." using (command.signers.contains(yo.publisher!!.owningKey))
         //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
     }
 
@@ -108,7 +102,7 @@ class BookContract : Contract {
         "There must no output book" using (tx.outputs.isEmpty())
         val yo = tx.outputsOfType<BookState>().single()
         "Cannot delete your own book!" using (yo.author != yo.publisher)
-        "The book deletion must be signed by the publisher." using (command.signers.contains(yo.publisher.owningKey))
+        "The book deletion must be signed by the publisher." using (command.signers.contains(yo.publisher!!.owningKey))
         //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
     }
 
@@ -123,9 +117,13 @@ class BookContract : Contract {
     }
 
     // State.
-    @VaultaireGenerateDto(ignoreProperties = ["participants"], copyAnnotationPackages = ["com.fasterxml.jackson.annotation"])
+    @VaultaireGenerateDto(
+            ignoreProperties = ["participants"],
+            copyAnnotationPackages = ["com.fasterxml.jackson.annotation"],
+            // Default is [VaultaireDtoStrategyKeys.DEFAULT]
+            strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
     data class BookState(
-            val publisher: Party,
+            val publisher: Party?,
             val author: Party,
             val price: BigDecimal,
             val genre: Genre,
@@ -143,14 +141,14 @@ class BookContract : Contract {
 
         enum class TestEnum
 
-        override val participants = listOf(publisher, author)
+        override val participants: List<AbstractParty> = listOf(publisher!!, author)
 
         override fun supportedSchemas() = listOf(BookSchemaV1)
 
         override fun generateMappedObject(schema: MappedSchema) = BookSchemaV1.PersistentBookState(
                 linearId.id.toString(),
                 linearId.externalId,
-                publisher.name.toString(),
+                publisher!!.name.toString(),
                 author.name.toString(),
                 price,
                 genre,

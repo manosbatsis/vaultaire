@@ -7,6 +7,7 @@ and can be helpful with version upgrades.
 ## 0.25
 
 - Bumped Corda to OS 4.4
+- Added support for "lite" DTO strategy
 
 ## 0.24
 

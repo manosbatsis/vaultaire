@@ -6,13 +6,13 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import javax.annotation.processing.ProcessingEnvironment
 
-class VaultaireRestDtoNameStrategy(
+class VaultaireLiteDtoNameStrategy(
         processingEnvironment: ProcessingEnvironment,
         dtoInputContext: DtoInputContext
 ): SimpleDtoNameStrategy(processingEnvironment, dtoInputContext) {
 
     override fun getClassName() = ClassName(
             mapPackageName(dtoInputContext.originalTypeElement.asClassName().packageName),
-            "${dtoInputContext.originalTypeElement.simpleName}RestDto")
+            "${dtoInputContext.originalTypeElement.simpleName}LiteDto")
 
 }

@@ -21,8 +21,8 @@ buildscript {
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
-        kotlinutils_version = '0.18-SNAPSHOT'
-        partiture_version = '0.9'
+        kotlinutils_version = '0.18'
+        partiture_version = '0.10'
     }
     repositories {
         mavenLocal()

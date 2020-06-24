@@ -1,27 +1,58 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.CompositeDtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategyComposition
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoNameStrategy
+import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.*
 import javax.annotation.processing.ProcessingEnvironment
+import javax.lang.model.element.VariableElement
+
 
 /** Vaultaire-specific overrides for building a DTO type spec */
 open class VaultaireDtoStrategy(
         processingEnvironment: ProcessingEnvironment,
         dtoInputContext: DtoInputContext,
-        composition: DtoStrategyComposition
+        composition: VaultaireDtoStrategyComposition,
+        val nameSuffix: String
 ) : CompositeDtoStrategy(
         processingEnvironment = processingEnvironment,
         dtoInputContext = dtoInputContext,
         composition = composition
+){
+
+    /**
+     * Obtain fields with `VaultaireGenerateDto.ignoreProperties`
+     * (or `VaultaireGenerateDtoForDependency.ignoreProperties`) filtered out
+     */
+    override fun getFieldsToProcess(): List<VariableElement> =
+        dtoInputContext.fields
+
+}
+
+/** Vaultaire-specific overrides for building a DTO type spec */
+open class VaultaireDefaultDtoStrategy(
+        processingEnvironment: ProcessingEnvironment,
+        dtoInputContext: DtoInputContext
+) : VaultaireDtoStrategy(
+        processingEnvironment = processingEnvironment,
+        dtoInputContext = dtoInputContext,
+        composition = VaultaireDefaultDtoStrategyComposition,
+        nameSuffix = "Dto"
 )
 
+/** Vaultaire-specific overrides for building a "lite" DTO type spec */
+open class VaultaireLiteDtoStrategy(
+        processingEnvironment: ProcessingEnvironment,
+        dtoInputContext: DtoInputContext
+) : VaultaireDtoStrategy(
+        processingEnvironment = processingEnvironment,
+        dtoInputContext = dtoInputContext,
+        composition = VaultaireLiteDtoStrategyComposition,
+        nameSuffix = "LiteDto"
+)
 
-object VaultaireDtoStrategyComposition: DtoStrategyComposition {
+interface VaultaireDtoStrategyComposition: DtoStrategyComposition{
+}
+
+object VaultaireDefaultDtoStrategyComposition: VaultaireDtoStrategyComposition {
     override fun dtoNameStrategy(
             processingEnvironment: ProcessingEnvironment,
             dtoInputContext: DtoInputContext
@@ -41,23 +72,23 @@ object VaultaireDtoStrategyComposition: DtoStrategyComposition {
             processingEnvironment, dtoInputContext
     )
 }
-object VaultaireRestDtoStrategyComposition: DtoStrategyComposition {
+object VaultaireLiteDtoStrategyComposition: VaultaireDtoStrategyComposition {
     override fun dtoNameStrategy(
             processingEnvironment: ProcessingEnvironment,
             dtoInputContext: DtoInputContext
-    ): DtoNameStrategy = VaultaireRestDtoNameStrategy(
+    ): DtoNameStrategy = VaultaireLiteDtoNameStrategy(
             processingEnvironment, dtoInputContext
     )
     override fun dtoMembersStrategy(
             processingEnvironment: ProcessingEnvironment,
             dtoInputContext: DtoInputContext
-    ): DtoMembersStrategy = VaultaireRestDtoMemberStrategy(
+    ): DtoMembersStrategy = VaultaireLiteDtoMemberStrategy(
             processingEnvironment, dtoInputContext
     )
     override fun dtoTypeStrategy(
             processingEnvironment: ProcessingEnvironment,
             dtoInputContext: DtoInputContext
-    ): DtoTypeStrategy = VaultaireRestDtoTypeStrategy(
+    ): DtoTypeStrategy = VaultaireLiteDtoTypeStrategy(
             processingEnvironment, dtoInputContext
     )
 }

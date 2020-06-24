@@ -54,8 +54,10 @@ annotation class VaultaireGenerateForDependency(
         val persistentStateType: KClass<out PersistentState>
 )
 
-enum class DtoProfile{
-    DEFAULT, REST
+
+object VaultaireDtoStrategyKeys {
+    const val DEFAULT = "com.github.manosbatsis.vaultaire.processor.dto.VaultaireDefaultDtoStrategy"
+    const val LITE = "com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoStrategy"
 }
 
 /** Generate a DTO for the annotated [ContractState] class or constructor. */
@@ -64,7 +66,7 @@ enum class DtoProfile{
 annotation class VaultaireGenerateDto(
         val ignoreProperties: Array<String> = [],
         val copyAnnotationPackages: Array<String> = [],
-        val profiles: Array<DtoProfile> = [DtoProfile.DEFAULT]
+        val strategies: Array<String> = [VaultaireDtoStrategyKeys.DEFAULT]
 )
 
 /**
@@ -77,7 +79,7 @@ annotation class VaultaireGenerateDtoForDependency(
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>,
         val copyAnnotationPackages: Array<String> = [],
-        val profiles: Array<DtoProfile> = [DtoProfile.DEFAULT]
+        val strategies: Array<String> = [VaultaireDtoStrategyKeys.DEFAULT]
 )
 
 /**
