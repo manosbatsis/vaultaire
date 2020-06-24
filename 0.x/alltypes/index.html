@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.0284f74d.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
       
-        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.01803549.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main">
+      <main class="md-main" role="main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -372,7 +372,7 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#all-types" title="All Types" class="md-nav__link">
+  <a href="#all-types" class="md-nav__link">
     All Types
   </a>
   
@@ -417,8 +417,12 @@
 <td>Defines a set of conditions where all items must be matched</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-basic-state-service/">com.github.manosbatsis.vaultaire.dao.BasicStateService</a></td>
-<td>Basic <a href="../com.github.manosbatsis.vaultaire.dao/-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-basic-node-service/">com.github.manosbatsis.vaultaire.service.node.BasicNodeService</a></td>
+<td>Basic <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service/">NodeService</a> implementation</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-basic-state-service/">com.github.manosbatsis.vaultaire.service.dao.BasicStateService</a></td>
+<td>Basic <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl.query/-composite-condition/">com.github.manosbatsis.vaultaire.dsl.query.CompositeCondition</a></td>
@@ -437,8 +441,8 @@
 <td></td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-extended-state-service/">com.github.manosbatsis.vaultaire.dao.ExtendedStateService</a></td>
-<td>Extends <a href="../com.github.manosbatsis.vaultaire.dao/-basic-state-service/">BasicStateService</a> to provide a <a href="../com.github.manosbatsis.vaultaire.dao/-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-extended-state-service/">com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService</a></td>
+<td>Extends <a href="../com.github.manosbatsis.vaultaire.service.dao/-basic-state-service/">BasicStateService</a> to provide a <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.annotation/-extended-state-service-bean/">com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean</a></td>
@@ -461,6 +465,30 @@
 <td>Wraps a Corda Node RPC connection proxy</td>
 </tr>
 <tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service/">com.github.manosbatsis.vaultaire.service.node.NodeService</a></td>
+<td>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service/">NodeService</a> delegate for vault operations</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-hub-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceHubDelegate</a></td>
+<td><a href="#">ServiceHub</a>-based <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> implementation</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-connection-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcConnectionDelegate</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> implementation</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegate</a></td>
+<td><a href="#">CordaRPCOps</a>-based <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> implementation</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-delegate-base/">com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegateBase</a></td>
+<td>RPC implementation base</td>
+</tr>
+<tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/">com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper</a></td>
 <td>Wraps a nullable <a href="#">KProperty1</a> of a class to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
@@ -477,36 +505,36 @@
 <td></td>
 </tr>
 <tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service/-service-defaults/">com.github.manosbatsis.vaultaire.service.ServiceDefaults</a></td>
+<td>Define option defaults for <a href="#">StateService</a> instances</td>
+</tr>
+<tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl.query/-sort-columns/">com.github.manosbatsis.vaultaire.dsl.query.SortColumns</a></td>
 <td>Used to define <a href="#">Sort.SortColumn</a>s</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-not-found-exception/">com.github.manosbatsis.vaultaire.dao.StateNotFoundException</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-state-not-found-exception/">com.github.manosbatsis.vaultaire.service.node.StateNotFoundException</a></td>
 <td></td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-service/">com.github.manosbatsis.vaultaire.dao.StateService</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">com.github.manosbatsis.vaultaire.service.dao.StateService</a></td>
 <td>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-service-defaults/">com.github.manosbatsis.vaultaire.dao.StateServiceDefaults</a></td>
-<td>Define option defaults for <a href="../com.github.manosbatsis.vaultaire.dao/-state-service/">StateService</a> instances</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">StateService</a> delegate for vault operations</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-service-delegate/">com.github.manosbatsis.vaultaire.dao.StateServiceDelegate</a></td>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-service/">StateService</a> delegate for vault operations</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-hub-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServiceHubDelegate</a></td>
+<td><a href="#">ServiceHub</a>-based <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-service-hub-delegate/">com.github.manosbatsis.vaultaire.dao.StateServiceHubDelegate</a></td>
-<td><a href="#">ServiceHub</a>-based <a href="../com.github.manosbatsis.vaultaire.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-rpc-connection-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcConnectionDelegate</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-service-rpc-connection-delegate/">com.github.manosbatsis.vaultaire.dao.StateServiceRpcConnectionDelegate</a></td>
-<td><a href="../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="../com.github.manosbatsis.vaultaire.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
-</tr>
-<tr>
-<td><a href="../com.github.manosbatsis.vaultaire.dao/-state-service-rpc-delegate/">com.github.manosbatsis.vaultaire.dao.StateServiceRpcDelegate</a></td>
-<td><a href="#">CordaRPCOps</a>-based <a href="../com.github.manosbatsis.vaultaire.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-rpc-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcDelegate</a></td>
+<td><a href="#">CordaRPCOps</a>-based <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/kotlin.-string/">kotlin.String</a> (extensions in package com.github.manosbatsis.vaultaire.util)</td>
@@ -533,6 +561,10 @@
 <td></td>
 </tr>
 <tr>
+<td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-dto-strategy-keys/">com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys</a></td>
+<td></td>
+</tr>
+<tr>
 <td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-generate/">com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate</a></td>
 <td>Generate a conditions DSL and a state-specific <a href="#">FieldsAwareStateService</a> for the annotated <a href="#">PersistentState</a> class or constructor.</td>
 </tr>
@@ -551,6 +583,10 @@
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-generate-responder/">com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder</a></td>
 <td>Generate a responser flow that extends the given type.</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-lite-dto/">com.github.manosbatsis.vaultaire.dto.VaultaireLiteDto</a></td>
+<td>Modeled after <a href="#">com.github.manosbatsis.kotlin.utils.api.Dto</a> only bringing a <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">StateService</a> in-context for <a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-lite-dto/to-target-type/">toTargetType</a> and <a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-lite-dto/to-patched/">toPatched</a>.</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl.query/-vault-custom-query-criteria-wrapper-condition/">com.github.manosbatsis.vaultaire.dsl.query.VaultCustomQueryCriteriaWrapperCondition</a></td>
@@ -604,7 +640,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.245445c6.js"></script>
+      <script src="../../assets/javascripts/application.ac79c3b0.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
