@@ -33,7 +33,8 @@ cordapp {
 }
 
 dependencies {
-    implementation project(':vaultaire')
+    cordaCompile project(':vaultaire')
+    cordaCompile project(':vaultaire-plugin-accounts')
     cordaCompile project(':vaultaire-example-contract')
     cordaCompile "$accounts_release_group:accounts-workflows:$accounts_release_version"
     kapt project(':vaultaire-processor')

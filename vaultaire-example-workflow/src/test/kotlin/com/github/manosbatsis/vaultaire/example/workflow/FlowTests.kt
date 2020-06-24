@@ -19,8 +19,6 @@
  */
 package com.github.manosbatsis.vaultaire.example.workflow
 
-import com.github.manosbatsis.vaultaire.dao.BasicStateService
-import com.github.manosbatsis.vaultaire.dao.StateNotFoundException
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
@@ -31,6 +29,8 @@ import com.github.manosbatsis.vaultaire.example.generated.PersistentBookStateCon
 import com.github.manosbatsis.vaultaire.example.generated.bookStateQuery
 import com.github.manosbatsis.vaultaire.example.workflow.generated.AccountInfoService
 import com.github.manosbatsis.vaultaire.example.workflow.generated.accountInfoQuery
+import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
+import com.github.manosbatsis.vaultaire.service.node.StateNotFoundException
 import com.r3.corda.lib.accounts.contracts.AccountInfoContract
 import com.r3.corda.lib.accounts.workflows.flows.CreateAccount
 import com.r3.corda.lib.accounts.workflows.internal.schemas.AccountsWorkflowsSchema

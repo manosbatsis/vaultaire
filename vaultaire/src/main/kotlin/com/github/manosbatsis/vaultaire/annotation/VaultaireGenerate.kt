@@ -54,12 +54,19 @@ annotation class VaultaireGenerateForDependency(
         val persistentStateType: KClass<out PersistentState>
 )
 
+
+object VaultaireDtoStrategyKeys {
+    const val DEFAULT = "com.github.manosbatsis.vaultaire.processor.dto.VaultaireDefaultDtoStrategy"
+    const val LITE = "com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoStrategy"
+}
+
 /** Generate a DTO for the annotated [ContractState] class or constructor. */
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
 annotation class VaultaireGenerateDto(
         val ignoreProperties: Array<String> = [],
-        val copyAnnotationPackages: Array<String> = []
+        val copyAnnotationPackages: Array<String> = [],
+        val strategies: Array<String> = [VaultaireDtoStrategyKeys.DEFAULT]
 )
 
 /**
@@ -71,7 +78,8 @@ annotation class VaultaireGenerateDtoForDependency(
         val ignoreProperties: Array<String> = [],
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>,
-        val copyAnnotationPackages: Array<String> = []
+        val copyAnnotationPackages: Array<String> = [],
+        val strategies: Array<String> = [VaultaireDtoStrategyKeys.DEFAULT]
 )
 
 /**

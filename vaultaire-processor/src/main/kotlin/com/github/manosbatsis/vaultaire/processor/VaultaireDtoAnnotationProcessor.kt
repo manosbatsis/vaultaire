@@ -19,24 +19,24 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
+import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
-import com.github.manotbatsis.kotlin.utils.dto.DtoTypeSpecBuilder
-import com.squareup.kotlinpoet.TypeSpec
+import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDefaultDtoStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDtoStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoStrategy
+import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
 import net.corda.core.contracts.ContractState
-import net.corda.core.serialization.CordaSerializable
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.TypeElement
 
 /**
- * Kapt processor for the `@VaultaireGenerate` annotation.
- * Constructs a VaultaireGenerate for the annotated class.
+ * Kapt processor for generating (Corda) state-based DTOs.
  */
 @SupportedAnnotationTypes(
         "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto",
@@ -50,38 +50,43 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
     override val sourcesAnnotation = VaultaireGenerateDto::class.java
     override val dependenciesAnnotation = VaultaireGenerateDtoForDependency::class.java
 
+    val profileStrategies = mapOf(
+            VaultaireDtoStrategyKeys.DEFAULT to VaultaireDefaultDtoStrategy::class.java,
+            VaultaireDtoStrategyKeys.LITE to VaultaireLiteDtoStrategy::class.java
+    )
+
+    private fun getDtoStrategies(stateInfo: StateInfo): List<Class<out VaultaireDtoStrategy>> {
+        return stateInfo.annotation.findAnnotationValueList("strategies")?.map {
+            profileStrategies[it.value.toString()] ?: throw IllegalArgumentException("Not a valid strategy: $it")
+        } ?: listOf(VaultaireDtoStrategy::class.java)
+    }
 
     /** Write a DTO for the given [ContractState] . */
     override fun process(stateInfo: StateInfo) {
+        getDtoStrategies(stateInfo).toSet().forEach {
+            val copyAnnotationPackages: List<String> = getStringValuesList(stateInfo.annotation, "copyAnnotationPackages")
+            val ignoredProperties: List<String> = getStringValuesList(stateInfo.annotation, "ignoreProperties")
 
-        // Generate the Kotlin file
-        getFileSpecBuilder(stateInfo.generatedPackageName, "${stateInfo.contractStateTypeElement.simpleName}VaultaireGeneratedDto")
-                .addType(contractStateDtoSpecBuilder(stateInfo).build())
-                .build()
-                .writeTo(sourceRootFile)
-    }
+            processingEnv.noteMessage { "Ignoring properties: $ignoredProperties" }
+            val dtoInputContext =  DtoInputContext(
+                    processingEnvironment,
+                    stateInfo.contractStateTypeElement as TypeElement,
+                    stateInfo.contractStateFields.filterNot { ignoredProperties.contains(it.simpleName.toString()) },
+                    copyAnnotationPackages,
+                    it)
 
-    private fun contractStateDtoSpecBuilder(stateInfo: StateInfo): TypeSpec.Builder {
-        val contractState = stateInfo.contractStateTypeElement as TypeElement
-        val dtoGenAnnotation = contractState.findAnnotationMirror(VaultaireGenerateDto::class.java) ?: contractState.findAnnotationMirror(VaultaireGenerateDtoForDependency::class.java)
-        val copyAnnotationPackages: List<String> = getStringValuesList(dtoGenAnnotation, "copyAnnotationPackages")
-        val ignoredProperties: List<String> = getStringValuesList(dtoGenAnnotation, "ignoreProperties")
+            val dtoStrategy = dtoInputContext.dtoStrategy as VaultaireDtoStrategy
+                    //.builder()
+            // Generate the Kotlin file
+            getFileSpecBuilder(stateInfo.generatedPackageName, "${stateInfo.contractStateTypeElement.simpleName}VaultaireGenerated${dtoStrategy.nameSuffix}")
+                    .addType(dtoInputContext.builder().build())
+                    .build()
+                    .writeTo(sourceRootFile)
+        }
 
-        processingEnv.noteMessage { "Ignoring properties: $ignoredProperties" }
-        return DtoTypeSpecBuilder(
-                processingEnvironment,
-                stateInfo.contractStateTypeElement as TypeElement,
-                stateInfo.contractStateFields.filterNot { ignoredProperties.contains(it.simpleName.toString()) },
-                copyAnnotationPackages)
-                .builder()
-                .addAnnotation(CordaSerializable::class.java)
-    }
-
-    // TODO: move to utils repo
-    private fun getStringValuesList(annotationMirror: AnnotationMirror?, memberName: String): List<String> {
-        return if (annotationMirror == null) emptyList()
-        else annotationMirror.findAnnotationValueList(memberName)?.mapNotNull { it.value.toString() } ?: emptyList()
     }
 
 
 }
+
+

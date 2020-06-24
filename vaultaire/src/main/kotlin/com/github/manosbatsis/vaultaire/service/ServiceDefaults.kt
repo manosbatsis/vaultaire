@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.dao
+package com.github.manosbatsis.vaultaire.service
 
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
@@ -25,7 +25,7 @@ import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
 
 /** Define option defaults for [StateService] instances */
-data class StateServiceDefaults(
+data class ServiceDefaults(
         val criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED),
         val pageNumber: Int = 1,
         val pageSize: Int = 10,

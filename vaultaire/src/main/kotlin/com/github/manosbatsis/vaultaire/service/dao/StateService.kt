@@ -17,9 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.dao
+package com.github.manosbatsis.vaultaire.service.dao
 
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
+import com.github.manosbatsis.vaultaire.service.node.NodeService
+import com.github.manosbatsis.vaultaire.service.node.StateNotFoundException
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
@@ -37,15 +42,14 @@ import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.SortAttribute
 import net.corda.core.schemas.QueryableState
 import net.corda.core.schemas.StatePersistable
-import java.util.*
+import java.util.UUID
 
-class StateNotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.javaClass.simpleName} with id ${id}")
 
 /**
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-interface StateService<T : ContractState>: StateServiceDelegate<T> {
+interface StateService<T : ContractState>: NodeService, StateServiceDelegate<T> {
 
     val ofLinearState: Boolean
     val ofQueryableState: Boolean
@@ -55,36 +59,38 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
      * @throws StateNotFoundException if no match is found
      */
     fun getByLinearId(linearId: UUID, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
-            getByLinearId(UniqueIdentifier(id = linearId), relevancyStatus)
+            getByLinearId(contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
      * @throws StateNotFoundException if no match is found
      */
     fun getByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
-            getByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
+            getByLinearId(contractStateType, linearId.asUniqueIdentifier(), relevancyStatus)
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
      * @throws StateNotFoundException if no match is found
      */
     fun getByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
-            findByLinearId(linearId, relevancyStatus) ?: throw StateNotFoundException(linearId.toString(), contractStateType)
+            findByLinearId(contractStateType, linearId, relevancyStatus) ?: throw StateNotFoundException(linearId.toString(), contractStateType)
 
     /**
      * Find the state of type [T] matching the given [UUID] if any
      */
     fun findByLinearId(linearId: UUID, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? =
-            findByLinearId(UniqueIdentifier(id = linearId), relevancyStatus)
+            findByLinearId(contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any
      */
     fun findByLinearId(linearId: String, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? =
-            findByLinearId(linearId.asUniqueIdentifier(), relevancyStatus)
+            findByLinearId(contractStateType, linearId.asUniqueIdentifier(), relevancyStatus)
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any
      */
-    fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>?
+    fun findByLinearId(
+            linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
+    ): StateAndRef<T>? = findByLinearId(contractStateType, linearId, relevancyStatus)
 
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
@@ -92,16 +98,18 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
      * @throws StateNotFoundException if no match is found
      */
     fun getByExternalId(externalId: String): StateAndRef<T> =
-            findByExternalId(externalId) ?: throw StateNotFoundException(externalId, contractStateType)
+            findByExternalId(contractStateType, externalId) ?: throw StateNotFoundException(externalId, contractStateType)
 
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
      * matching the given [UniqueIdentifier.externalId] if any
      */
-    fun findByExternalId(externalId: String): StateAndRef<T>?
+    fun findByExternalId(externalId: String): StateAndRef<T>? =
+            findByExternalId(contractStateType, externalId)
 
     /** Count states of type [T] matching stored in the vault and matching any given criteria */
-    fun countBy(criteria: QueryCriteria = defaults.criteria): Long
+    fun countBy(criteria: QueryCriteria = defaults.criteria): Long =
+            countBy(contractStateType, criteria)
 
     /**
      * Query the vault for states of type [T] matching the given criteria,
@@ -112,7 +120,7 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
             pageNumber: Int = defaults.pageNumber,
             pageSize: Int = defaults.pageSize,
             sort: Sort = defaults.sort
-    ): Vault.Page<T>
+    ): Vault.Page<T> = queryBy(contractStateType, criteria, pageNumber, pageSize, sort)
 
     /**
      * Track the vault for events of [T] states matching the given criteria,
@@ -123,8 +131,10 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
             pageNumber: Int = defaults.pageNumber,
             pageSize: Int = defaults.pageSize,
             sort: Sort = defaults.sort
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>>
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
+            trackBy(contractStateType, criteria, pageNumber, pageSize, sort)
 }
+
 
 /**
  * Basic [StateService] implementation, used for vault operations on a specific [ContractState] type
@@ -132,49 +142,27 @@ interface StateService<T : ContractState>: StateServiceDelegate<T> {
  */
 open class BasicStateService<T: ContractState>(
         private val delegate: StateServiceDelegate<T>
-) : StateServiceDelegate<T> by delegate, StateService<T> {
+) : BasicNodeService(delegate), StateServiceDelegate<T> by delegate, StateService<T> {
+
+    /** [NodeRpcConnection]-based constructor */
+    constructor(
+            nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>, defaults: ServiceDefaults = ServiceDefaults()
+    ) : this(StateServiceRpcConnectionDelegate(nodeRpcConnection, contractStateType, defaults))
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: StateServiceDefaults = StateServiceDefaults()
+            rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: ServiceDefaults = ServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, contractStateType: Class<T>, defaults: StateServiceDefaults = StateServiceDefaults()
+            serviceHub: ServiceHub, contractStateType: Class<T>, defaults: ServiceDefaults = ServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
 
-    override val ofLinearState: Boolean by lazy { LinearState::class.java.isAssignableFrom(delegate.contractStateType) }
-    override val ofQueryableState: Boolean by lazy { QueryableState::class.java.isAssignableFrom(delegate.contractStateType) }
 
-    override fun findByLinearId(linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? =
-            if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
-                    linearId = listOf(linearId),
-                    relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
-            else throw IllegalStateException("Type is not a LinearState: ${delegate.contractStateType.simpleName}")
+    override val ofLinearState: Boolean = isLinearState(contractStateType)
+    override val ofQueryableState: Boolean = isQueryableState(contractStateType)
 
-    override fun findByExternalId(externalId: String): StateAndRef<T>? = if(ofLinearState) this.queryBy(LinearStateQueryCriteria(
-            externalId = listOf(externalId),
-            status = Vault.StateStatus.UNCONSUMED), 1, 1).states.firstOrNull()
-    else throw IllegalStateException("Type is not a LinearState: ${delegate.contractStateType.simpleName}")
-
-    override fun countBy(criteria: QueryCriteria): Long =
-            queryBy(criteria, 1, 1).totalStatesAvailable
-
-    override fun queryBy(
-            criteria: QueryCriteria,
-            pageNumber: Int,
-            pageSize: Int,
-            sort: Sort
-    ): Vault.Page<T> = queryBy(criteria, PageSpecification(pageNumber, pageSize), sort)
-
-    override fun trackBy(
-            criteria: QueryCriteria,
-            pageNumber: Int,
-            pageSize: Int,
-            sort: Sort
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
-        this.trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
 
 }
 
@@ -247,18 +235,6 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
     ): Vault.Page<T> = if (sort.isNotEmpty()) queryBy(criteria, paging, toSort(*sort))
     else queryBy(criteria, paging)
 
-    /**
-     * Track the vault for states of type [T] matching the given DSL query,
-     * applying the given page number and size, ignoring any aggregates.
-     */
-    fun trackBy(
-            condition: Q, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
-        val criteria = condition.toCriteria(true)
-        val sort = condition.toSort()
-        return if(sort.columns.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
-        else trackBy(criteria, PageSpecification(pageNumber, pageSize))
-    }
 
     /**
      * Track the vault for events of [T] states matching the given criteria,
@@ -284,4 +260,18 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
             if(sort.isNotEmpty()) trackBy(criteria, paging, toSort(*sort))
             else trackBy(criteria, paging)
+
+    /**
+     * Track the vault for states of type [T] matching the given DSL query,
+     * applying the given page number and size, ignoring any aggregates.
+     */
+    fun trackBy(
+            condition: Q, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        val criteria = condition.toCriteria(true)
+        val sort = condition.toSort()
+        return if(sort.columns.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
+        else trackBy(criteria, PageSpecification(pageNumber, pageSize))
+    }
+
 }

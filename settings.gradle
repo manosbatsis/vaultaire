@@ -2,4 +2,6 @@ rootProject.name = 'vaultaire-parent'
 include ':vaultaire',
         ':vaultaire-processor',
         ':vaultaire-example-contract',
-        ':vaultaire-example-workflow'
+        ':vaultaire-example-workflow',
+        ':vaultaire-plugin-accounts'
+

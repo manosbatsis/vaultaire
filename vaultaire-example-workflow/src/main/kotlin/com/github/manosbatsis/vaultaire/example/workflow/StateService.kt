@@ -20,9 +20,13 @@
 package com.github.manosbatsis.vaultaire.example.workflow
 
 
-import com.github.manosbatsis.vaultaire.dao.*
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.generated.BookStateService
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
+import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
+import com.github.manosbatsis.vaultaire.service.dao.StateServiceHubDelegate
+import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcDelegate
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.node.ServiceHub
 
@@ -33,12 +37,12 @@ class CustomBasicBookStateService(
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: StateServiceDefaults = StateServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: ServiceDefaults = ServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: StateServiceDefaults = StateServiceDefaults()
+            serviceHub: ServiceHub, defaults: ServiceDefaults = ServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
 
     // Custom business methods...
@@ -54,12 +58,12 @@ class MyExtendedBookStateService(
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: StateServiceDefaults = StateServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: ServiceDefaults = ServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: StateServiceDefaults = StateServiceDefaults()
+            serviceHub: ServiceHub, defaults: ServiceDefaults = ServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
 
     // Custom business methods...

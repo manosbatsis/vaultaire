@@ -23,18 +23,6 @@ import net.corda.core.schemas.StatePersistable
 import kotlin.reflect.KProperty1
 
 /**
- * Wraps a non-nullable [KProperty1] of a class to provide for cleaner operators,
- * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
- */
-class GenericFieldWrapper<T, S>(override val property: KProperty1<T, S>): TypedFieldWrapper<T, S>
-
-/**
- * Wraps a nullable [KProperty1] of a class to provide for cleaner operators,
- * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
- */
-class NullableGenericFieldWrapper<T, S>(override val property: KProperty1<T, S?>): TypedFieldWrapper<T, S?>
-
-/**
  * Wraps a [KProperty1] of a class to provide for cleaner operators,
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
@@ -57,3 +45,15 @@ interface Fields<T>{
     operator fun get(name: String): FieldWrapper<T> =
             fieldsByName[name] ?: throw IllegalArgumentException("Field not found: $name")
 }
+
+/**
+ * Wraps a non-nullable [KProperty1] of a class to provide for cleaner operators,
+ * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
+ */
+class GenericFieldWrapper<T, S>(override val property: KProperty1<T, S>): TypedFieldWrapper<T, S>
+
+/**
+ * Wraps a nullable [KProperty1] of a class to provide for cleaner operators,
+ * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
+ */
+class NullableGenericFieldWrapper<T, S>(override val property: KProperty1<T, S?>): TypedFieldWrapper<T, S?>

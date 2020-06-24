@@ -21,8 +21,11 @@ package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.processor.plugins.AnnotationProcessorPluginService
+import com.github.manosbatsis.vaultaire.processor.plugins.DefaultBaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
 import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper
+import com.github.manotbatsis.kotlin.utils.api.BaseTypesConfigAnnotationProcessorPlugin
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
@@ -57,6 +60,14 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
         val TYPE_PARAMETER_STAR = WildcardTypeName.producerOf(Any::class.asTypeName().copy(nullable = true))
         val CONTRACT_STATE_CLASSNAME = ClassName(ContractState::class.packageName, ContractState::class.simpleName!!)
         val STATE_PERSISTABLE_CLASSNAME = ClassName(StatePersistable::class.packageName, StatePersistable::class.simpleName!!)
+
+        val baseClassesConfig = AnnotationProcessorPluginService
+                .forClassLoader(BaseAnnotationProcessor::class.java.classLoader)
+                .forServiceType(
+                        BaseTypesConfigAnnotationProcessorPlugin::class.java,
+                        DefaultBaseTypesConfigAnnotationProcessorPlugin()
+                )
+
     }
 
 
