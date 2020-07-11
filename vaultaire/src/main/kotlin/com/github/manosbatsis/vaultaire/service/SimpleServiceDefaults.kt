@@ -24,12 +24,20 @@ import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
 
+interface ServiceDefaults {
+    val criteria: QueryCriteria
+    val pageNumber: Int
+    val pageSize: Int
+    val sort: Sort
+    val paging: PageSpecification
+}
+
 /** Define option defaults for [StateService] instances */
-data class ServiceDefaults(
-        val criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED),
-        val pageNumber: Int = 1,
-        val pageSize: Int = 10,
-        val sort: Sort = Sort(emptySet())
-){
-    val paging = PageSpecification(pageNumber, pageSize)
+data class SimpleServiceDefaults(
+        override val criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED),
+        override val pageNumber: Int = 1,
+        override val pageSize: Int = 10,
+        override val sort: Sort = Sort(emptySet())
+) : ServiceDefaults {
+    override val paging = PageSpecification(pageNumber, pageSize)
 }

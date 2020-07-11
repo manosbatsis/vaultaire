@@ -4,7 +4,7 @@ import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoMembersStrategy
 import javax.annotation.processing.ProcessingEnvironment
 
-class VaultaireDtoMemberStrategy(
+open class VaultaireDtoMemberStrategy(
         processingEnvironment: ProcessingEnvironment,
         dtoInputContext: DtoInputContext
 ): SimpleDtoMembersStrategy(processingEnvironment, dtoInputContext){

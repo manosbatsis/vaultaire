@@ -1,6 +1,7 @@
 buildscript {
     ext {
         autodsl_version = '0.0.9'
+        autoservice_version = '1.0-rc7'
         corda_release_group = 'net.corda'
         corda_release_version = '4.4'
         corda_gradle_plugins_version = '5.0.6'
@@ -21,7 +22,7 @@ buildscript {
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
-        kotlinutils_version = '0.18'
+        kotlinutils_version = '0.20-SNAPSHOT'
         partiture_version = '0.10'
     }
     repositories {

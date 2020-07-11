@@ -6,7 +6,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import javax.annotation.processing.ProcessingEnvironment
 
-class VaultaireLiteDtoNameStrategy(
+open class VaultaireLiteDtoNameStrategy(
         processingEnvironment: ProcessingEnvironment,
         dtoInputContext: DtoInputContext
 ): SimpleDtoNameStrategy(processingEnvironment, dtoInputContext) {

@@ -19,23 +19,36 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.node
 
+import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
+import com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
-import com.github.manosbatsis.vaultaire.service.node.NodeServiceHubDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegateBase
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import com.r3.corda.lib.accounts.workflows.accountBaseCriteria
 import com.r3.corda.lib.accounts.workflows.accountHostCriteria
 import com.r3.corda.lib.accounts.workflows.accountNameCriteria
 import com.r3.corda.lib.accounts.workflows.accountUUIDCriteria
+import com.r3.corda.lib.accounts.workflows.flows.AccountInfoByKey
+import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount
+import com.r3.corda.lib.accounts.workflows.internal.accountService
 import net.corda.core.contracts.StateAndRef
+import net.corda.core.contracts.UniqueIdentifier
+import net.corda.core.identity.AnonymousParty
+import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
 import net.corda.core.messaging.CordaRPCOps
-import net.corda.core.node.ServiceHub
+import net.corda.core.messaging.startFlow
+import net.corda.core.node.AppServiceHub
+import net.corda.core.node.services.Vault
+import net.corda.core.node.services.vault.PageSpecification
+import net.corda.core.node.services.vault.QueryCriteria
+import net.corda.core.node.services.vault.Sort
 import org.slf4j.LoggerFactory
-import java.util.UUID
+import java.security.PublicKey
+import java.util.*
 
 
 /** [NodeService] delegate for vault operations */
@@ -45,67 +58,163 @@ interface AccountsAwareNodeServiceDelegate: NodeServiceDelegate {
         val logger = LoggerFactory.getLogger(AccountsAwareNodeServiceDelegate::class.java)
     }
 
-    fun accountsForHost(host: Party): List<StateAndRef<AccountInfo>> {
-        return queryBy(AccountInfo::class.java, accountBaseCriteria.and(accountHostCriteria(host))).states
+    /** Find accounts that are already stored locally and hosted by the node matching the given [host] */
+    fun findStoredAccounts(
+            host: Party,
+            paging: PageSpecification = defaults.paging,
+            sort: Sort = defaults.sort
+    ): Vault.Page<AccountInfo> {
+        return queryBy(AccountInfo::class.java, accountBaseCriteria.and(accountHostCriteria(host)), paging, sort)
     }
 
-    fun ourAccounts(): List<StateAndRef<AccountInfo>> {
-        return accountsForHost(nodeIdentity)
+    /** Find accounts that belong to the host (node) in context */
+    fun findHostedAccounts(
+            paging: PageSpecification = defaults.paging,
+            sort: Sort = defaults.sort
+    ): Vault.Page<AccountInfo>{
+        return findStoredAccounts(nodeIdentity, paging, sort)
     }
 
-    fun allAccounts(): List<StateAndRef<AccountInfo>> {
-        return queryBy(AccountInfo::class.java, accountBaseCriteria).states
+    /** Find accounts that are already stored locally and match the given [criteria] */
+    fun findStoredAccounts(
+            criteria: QueryCriteria = accountBaseCriteria,
+            paging: PageSpecification = defaults.paging,
+            sort: Sort = defaults.sort
+    ): Vault.Page<AccountInfo>{
+        return queryBy(AccountInfo::class.java, criteria)
     }
 
-    fun accountInfo(id: UUID): StateAndRef<AccountInfo>? {
-        val uuidCriteria = accountUUIDCriteria(id)
-        return queryBy(AccountInfo::class.java, accountBaseCriteria.and(uuidCriteria)).states.singleOrNull()
+    /**
+     * Get the account that is already stored locally
+     * and matching the given [id] if found, null otherwise
+     */
+    fun findStoredAccount(id: UUID): StateAndRef<AccountInfo>? {
+        return queryBy(
+                AccountInfo::class.java,
+                accountBaseCriteria.and(accountUUIDCriteria(id)),
+                PageSpecification(1, 1)).states.singleOrNull()
     }
+    /**
+     * Get the account that is already stored locally
+     * and matching the given [id] if found, null otherwise
+     */
+    fun findStoredAccount(id: UniqueIdentifier): StateAndRef<AccountInfo>? =
+            findStoredAccount(id.id)
+    /**
+     * Get the account that is already stored locally
+     * and matching the given [id] if found, null otherwise
+     */
+    fun getStoredAccount(id: UniqueIdentifier): StateAndRef<AccountInfo> =
+            getStoredAccount(id.id)
+    /**
+     * Get the account that is already stored locally
+     * and matching the given [id] if found, null otherwise
+     */
+    fun getStoredAccount(id: UUID): StateAndRef<AccountInfo> =
+            findStoredAccount(id)  ?: throw IllegalStateException("No well known party found matching the given id")
 
-    fun accountInfo(name: String, host: Party): List<StateAndRef<AccountInfo>> {
+    /**
+     * Get the account that is already stored locally
+     * with the given [name] and [host] if found, null otherwise
+     */
+    fun findStoredAccount(name: String, host: Party): StateAndRef<AccountInfo>? {
         val nameCriteria = accountNameCriteria(name)
         val results = queryBy(
                 AccountInfo::class.java,
                 accountBaseCriteria
                     .and(nameCriteria)
-                    .and(accountHostCriteria(host)))
-                .states
-        return when (results.size) {
-            0 -> emptyList()
-            1 -> listOf(results.single())
-            else -> throw IllegalStateException("WARNING: Querying for account by name and host returned more than one account")
+                    .and(accountHostCriteria(host)),
+                PageSpecification(1, 1))
+        return when (results.totalStatesAvailable.toInt()) {
+            0 -> null
+            1 -> results.states.single()
+            else -> throw IllegalStateException("Query for account by name and host returned multiple results")
         }
     }
 
+    /**
+     * Get the account that is already stored locally
+     * with the given [name] and [host] if found, null otherwise
+     */
+    fun findStoredAccount(name: String, host: CordaX500Name): StateAndRef<AccountInfo>? =
+            findStoredAccount(name, wellKnownPartyFromX500Name(host)
+                    ?: throw IllegalStateException("No well known party found matching the given X500"))
+    /**
+     * Get the account that is already stored locally
+     * with the given [name] and [host]
+     */
+    fun getStoredAccount(name: String, host: Party): StateAndRef<AccountInfo> =
+            findStoredAccount(name, host) ?: throw IllegalStateException("No account found matching the given name and host")
+
+    /**
+     * Get the account that is already stored locally
+     * with the given [name] and [host]
+     */
+    fun getStoredAccount(name: String, host: CordaX500Name): StateAndRef<AccountInfo> =
+            getStoredAccount(name, wellKnownPartyFromX500Name(host)
+                    ?: throw IllegalStateException("No well known host found matching the given party name"))
+
+    /** Create a public key for the given [accountInfo] */
+    fun createPublicKey(accountInfo: AccountInfo): AnonymousParty
+
+    /**
+     * Get the account that is already stored locally
+     * and matching the optional [owningKey] if found, null otherwise
+     */
+    fun findStoredAccount(owningKey: PublicKey?): StateAndRef<AccountInfo>?
+
+    /**
+     * Get the account that is already stored locally
+     * and matching the given [owningKey]
+     */
+    fun getStoredAccount(owningKey: PublicKey): StateAndRef<AccountInfo> =
+            findStoredAccount(owningKey) ?: throw IllegalStateException("No account found matching the given public key")
 }
 
 
 /** RPC implementation base */
 abstract class AccountsAwareNodeServiceRpcDelegateBase(
-        defaults: ServiceDefaults = ServiceDefaults()
-): NodeServiceRpcDelegateBase(defaults), AccountsAwareNodeServiceDelegate
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+): NodeServiceRpcDelegateBase(defaults), AccountsAwareNodeServiceDelegate {
+
+    override fun findStoredAccount(owningKey: PublicKey?): StateAndRef<AccountInfo>? =
+            if(owningKey != null ) rpcOps.startFlow(::AccountInfoByKey, owningKey).returnValue.get() else null
+
+    override fun createPublicKey(accountInfo: AccountInfo): AnonymousParty =
+        rpcOps.startFlow(::RequestKeyForAccount, accountInfo).returnValue.get()
+}
 
 /** [CordaRPCOps]-based [NodeServiceDelegate] implementation */
 open class AccountsAwareNodeServiceRpcDelegate(
         override val rpcOps: CordaRPCOps,
-        defaults: ServiceDefaults = ServiceDefaults()
-): AccountsAwareNodeServiceRpcDelegateBase(defaults)
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+): AccountsAwareNodeServiceRpcDelegateBase(defaults) {
+}
 
 
 /** [NodeRpcConnection]-based [NodeServiceDelegate] implementation */
 open class AccountsAwareNodeServiceRpcConnectionDelegate(
         private val nodeRpcConnection: NodeRpcConnection,
-        override val defaults: ServiceDefaults = ServiceDefaults()
+        override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
 ): AccountsAwareNodeServiceRpcDelegateBase(defaults) {
 
     override val rpcOps: CordaRPCOps by lazy { nodeRpcConnection.proxy }
 
 }
 
-/** [ServiceHub]-based [NodeServiceDelegate] implementation */
-open class AccountsAwareNodeServiceHubDelegate(
-        serviceHub: ServiceHub,
-        defaults: ServiceDefaults = ServiceDefaults()
-) : NodeServiceHubDelegate(serviceHub, defaults), AccountsAwareNodeServiceDelegate
+/** A [NodeServiceDelegate] with extended Corda Accounts support, implemented as a CordaServicen */
+open class AccountsAwareNodeCordaServiceDelegate(
+        serviceHub: AppServiceHub
+) : NodeCordaServiceDelegate(serviceHub), AccountsAwareNodeServiceDelegate {
+
+    @Suspendable
+    override fun findStoredAccount(owningKey: PublicKey?): StateAndRef<AccountInfo>? =
+            if(owningKey != null ) serviceHub.accountService.accountInfo(owningKey) else null
+
+    @Suspendable
+    override fun createPublicKey(accountInfo: AccountInfo): AnonymousParty =
+            serviceHub.startFlow(RequestKeyForAccount(accountInfo)).returnValue.get()
+
+}
 
 

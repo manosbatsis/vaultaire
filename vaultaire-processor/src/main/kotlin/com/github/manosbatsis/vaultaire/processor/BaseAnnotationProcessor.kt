@@ -21,21 +21,14 @@ package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.VaultaireBaseTypesConfigAnnotationProcessorPlugin
+import com.github.manosbatsis.vaultaire.processor.plugin.VaultaireDefaultBaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.processor.plugins.AnnotationProcessorPluginService
-import com.github.manosbatsis.vaultaire.processor.plugins.DefaultBaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
 import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper
-import com.github.manotbatsis.kotlin.utils.api.BaseTypesConfigAnnotationProcessorPlugin
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.WildcardTypeName
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.contracts.ContractState
-import net.corda.core.internal.packageName
 import net.corda.core.schemas.StatePersistable
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
@@ -52,25 +45,26 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
         const val ANN_ATTR_CONTRACT_STATE = "contractStateType"
         const val ANN_ATTR_PERSISTENT_STATE = "persistentStateType"
         const val ANN_ATTR_COPY_ANNOTATION_PACKAGES = "copyAnnotationPackages"
-        
+
         const val BLOCK_FUN_NAME = "block"
         const val KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME = "kapt.kotlin.vaultaire.generated"
         const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
 
         val TYPE_PARAMETER_STAR = WildcardTypeName.producerOf(Any::class.asTypeName().copy(nullable = true))
-        val CONTRACT_STATE_CLASSNAME = ClassName(ContractState::class.packageName, ContractState::class.simpleName!!)
-        val STATE_PERSISTABLE_CLASSNAME = ClassName(StatePersistable::class.packageName, StatePersistable::class.simpleName!!)
+        val CLASSNAME_CONTRACT_STATE = ContractState::class.java.asClassName()
+        val CLASSNAME_STATE_PERSISTABLE = StatePersistable::class.java.asClassName()
 
-        val baseClassesConfig = AnnotationProcessorPluginService
-                .forClassLoader(BaseAnnotationProcessor::class.java.classLoader)
-                .forServiceType(
-                        BaseTypesConfigAnnotationProcessorPlugin::class.java,
-                        DefaultBaseTypesConfigAnnotationProcessorPlugin()
-                )
 
     }
 
-
+    val baseClassesConfig: VaultaireBaseTypesConfigAnnotationProcessorPlugin by lazy {
+        AnnotationProcessorPluginService
+                .forClassLoader(BaseAnnotationProcessor::class.java.classLoader)
+                .forServiceType(
+                        VaultaireBaseTypesConfigAnnotationProcessorPlugin::class.java,
+                        VaultaireDefaultBaseTypesConfigAnnotationProcessorPlugin()
+                )
+    }
 
     val generatedSourcesRoot: String by lazy {
         processingEnv.options[KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME]
@@ -100,9 +94,9 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
 
     fun Class<*>.getParentPackageName(): String = this.canonicalName.getParentPackageName().getParentPackageName()
 
-    fun String.getParentPackageName(): String{
+    fun String.getParentPackageName(): String {
         var name = this
-        if(name.contains(".")) name = name.substring(0, name.lastIndexOf("."))
+        if (name.contains(".")) name = name.substring(0, name.lastIndexOf("."))
         return name
     }
 
@@ -112,11 +106,11 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
         val enclosingType = field.enclosingElement.asType()
         val enclosingTypeElement = enclosingType.asTypeElement()
         val enclosingParameterisedType =
-            if(enclosingTypeElement.typeParameters.isNotEmpty())
-                enclosingTypeElement.asKotlinClassName()
-                        .parameterizedBy(enclosingTypeElement.typeParameters
-                                .map { TYPE_PARAMETER_STAR })
-            else enclosingTypeElement.asKotlinClassName()
+                if (enclosingTypeElement.typeParameters.isNotEmpty())
+                    enclosingTypeElement.asKotlinClassName()
+                            .parameterizedBy(enclosingTypeElement.typeParameters
+                                    .map { TYPE_PARAMETER_STAR })
+                else enclosingTypeElement.asKotlinClassName()
 
         val fieldType = fieldWrapperClass.asClassName().parameterizedBy(
                 enclosingParameterisedType,
@@ -135,7 +129,7 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
                     KModifier.PUBLIC, KModifier.OVERRIDE)
                     .initializer("%T::class.java", contractStateTypeElement)
                     .addKdoc("The [%T] to create query criteria for, i.e. [%T]",
-                            CONTRACT_STATE_CLASSNAME,
+                            CLASSNAME_CONTRACT_STATE,
                             contractStateTypeElement)
                     .build()
 
@@ -148,7 +142,7 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
                     KModifier.PUBLIC, KModifier.OVERRIDE)
                     .initializer("%T::class.java", annotatedElement)
                     .addKdoc("The [%T] to create query criteria for, i.e. [%T]",
-                            STATE_PERSISTABLE_CLASSNAME,
+                            CLASSNAME_STATE_PERSISTABLE,
                             annotatedElement)
                     .build()
 
@@ -162,3 +156,4 @@ abstract class BaseAnnotationProcessor : AbstractProcessor(), ProcessingEnvironm
                     .addKdoc("Provides easy access to fields of [%T]", annotatedElement)
                     .build()
 }
+

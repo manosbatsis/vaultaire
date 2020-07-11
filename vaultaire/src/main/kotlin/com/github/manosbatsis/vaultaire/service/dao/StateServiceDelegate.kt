@@ -21,13 +21,12 @@ package com.github.manosbatsis.vaultaire.service.dao
 
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
-import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
-import com.github.manosbatsis.vaultaire.service.node.NodeServiceHubDelegate
-import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcConnectionDelegate
-import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegate
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
+import com.github.manosbatsis.vaultaire.service.node.*
 import net.corda.core.contracts.ContractState
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
+import net.corda.core.node.AppServiceHub
 import net.corda.core.node.ServiceHub
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
@@ -67,19 +66,30 @@ interface StateServiceDelegate<T: ContractState>: NodeServiceDelegate {
 open class StateServiceRpcDelegate<T: ContractState>(
         rpcOps: CordaRPCOps,
         override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
 ): NodeServiceRpcDelegate(rpcOps, defaults), StateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
 open class StateServiceRpcConnectionDelegate<T: ContractState>(
         nodeRpcConnection: NodeRpcConnection,
         override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
 ): NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), StateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
+@Deprecated(
+        message = "Deprecated in favor of CordaService-based implementation",
+        replaceWith = ReplaceWith("serviceHub.cordaService(MyStateCordaServiceDelegate::class.java)",
+                imports = ["com.github.manosbatsis.vaultaire.service.dao.StateCordaServiceDelegate"]))
 open class StateServiceHubDelegate<T: ContractState>(
         serviceHub: ServiceHub,
         override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceHubDelegate(serviceHub, defaults), StateServiceDelegate<T>
+
+/** Implementation of [StateServiceDelegate] as a CordaService */
+abstract class StateCordaServiceDelegate<T: ContractState>(
+        serviceHub: AppServiceHub,
+        override val contractStateType: Class<T>,
+        defaults: ServiceDefaults = SimpleServiceDefaults()
+) : NodeCordaServiceDelegate(serviceHub), StateServiceDelegate<T>

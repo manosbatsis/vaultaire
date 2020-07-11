@@ -21,14 +21,13 @@ package com.github.manosbatsis.vaultaire.service.dao
 
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.github.manosbatsis.vaultaire.service.node.StateNotFoundException
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
-import net.corda.core.contracts.LinearState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.messaging.CordaRPCOps
@@ -37,12 +36,10 @@ import net.corda.core.node.ServiceHub
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
-import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.SortAttribute
-import net.corda.core.schemas.QueryableState
 import net.corda.core.schemas.StatePersistable
-import java.util.UUID
+import java.util.*
 
 
 /**
@@ -141,54 +138,52 @@ interface StateService<T : ContractState>: NodeService, StateServiceDelegate<T> 
  * @param T the [ContractState] type
  */
 open class BasicStateService<T: ContractState>(
-        private val delegate: StateServiceDelegate<T>
+        override val delegate: StateServiceDelegate<T>
 ) : BasicNodeService(delegate), StateServiceDelegate<T> by delegate, StateService<T> {
 
     /** [NodeRpcConnection]-based constructor */
     constructor(
-            nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>, defaults: ServiceDefaults = ServiceDefaults()
+            nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcConnectionDelegate(nodeRpcConnection, contractStateType, defaults))
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: ServiceDefaults = ServiceDefaults()
+            rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, contractStateType: Class<T>, defaults: ServiceDefaults = ServiceDefaults()
+            serviceHub: ServiceHub, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
 
 
-    override val ofLinearState: Boolean = isLinearState(contractStateType)
-    override val ofQueryableState: Boolean = isQueryableState(contractStateType)
+    override val ofLinearState: Boolean by lazy { isLinearState(delegate.contractStateType) }
+    override val ofQueryableState: Boolean by lazy { isQueryableState(delegate.contractStateType) }
 
 
 }
 
-/**
- * Extends [BasicStateService] to provide a [StateService] aware of the target
- * [ContractState] type's [StatePersistable] and [Fields].
- *
- * Subclassed by Vaultaire's annotation processing to generate service components.
- */
-abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out F: Fields<P>, Q: VaultQueryCriteriaCondition<P, F>>(
-        delegate: StateServiceDelegate<T>
-) : BasicStateService<T>(delegate) {
+
+interface ExtendedStateService<
+        T: ContractState,
+        P : StatePersistable,
+        out F: Fields<P>,
+        Q: VaultQueryCriteriaCondition<P, F>
+    > : StateServiceDelegate<T> {
 
     /** The type of the target state's [StatePersistable] */
-    abstract val statePersistableType: Class<P>
+    val statePersistableType: Class<P>
 
     /** The fields of the target [StatePersistable] type `P` */
-    abstract val fields: F
+    val fields: F
 
     /** The fields of the target [StatePersistable] type `P` */
-    lateinit var criteriaConditionsType: Class<Q>
+    var criteriaConditionsType: Class<Q>
 
     /**
      * DSL entry point function for a [VaultQueryCriteriaCondition] of type [Q]
      */
-    abstract fun buildQuery(block: Q.() -> Unit): Q
+    fun buildQuery(block: Q.() -> Unit): Q
 
     /** Build a sort from the given string/direction pairs */
     fun toSort(vararg sort: Pair<String, Sort.Direction>): Sort =
@@ -273,5 +268,19 @@ abstract class ExtendedStateService<T: ContractState, P : StatePersistable, out 
         return if(sort.columns.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
         else trackBy(criteria, PageSpecification(pageNumber, pageSize))
     }
+}
+
+/**
+ * Extends [BasicStateService] to provide a [StateService] aware of the target
+ * [ContractState] type's [StatePersistable] and [Fields].
+ *
+ * Subclassed by Vaultaire's annotation processing to generate service components.
+ */
+abstract class DefaultExtendedStateService<T: ContractState, P : StatePersistable, out F: Fields<P>, Q: VaultQueryCriteriaCondition<P, F>>(
+        delegate: StateServiceDelegate<T>
+) : BasicStateService<T>(delegate), ExtendedStateService<T, P, F, Q> {
+
+    /** The fields of the target [StatePersistable] type `P` */
+    override lateinit var criteriaConditionsType: Class<Q>
 
 }

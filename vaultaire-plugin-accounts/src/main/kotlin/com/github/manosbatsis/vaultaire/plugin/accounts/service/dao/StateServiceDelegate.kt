@@ -19,43 +19,40 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.dao
 
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceRpcConnectionDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
+import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
-import com.github.manosbatsis.vaultaire.service.dao.StateServiceHubDelegate
-import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcConnectionDelegate
-import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcDelegate
 import net.corda.core.contracts.ContractState
 import net.corda.core.messaging.CordaRPCOps
-import net.corda.core.messaging.DataFeed
+import net.corda.core.node.AppServiceHub
 import net.corda.core.node.ServiceHub
-import net.corda.core.node.services.Vault
-import net.corda.core.node.services.vault.PageSpecification
-import net.corda.core.node.services.vault.QueryCriteria
-import net.corda.core.node.services.vault.Sort
 
 
 /** [StateService] delegate for vault operations */
-interface NodeAwareStateServiceDelegate<T: ContractState>: AccountsAwareNodeServiceDelegate, StateServiceDelegate<T>
+interface AccountsAwareStateServiceDelegate<T: ContractState>: AccountsAwareNodeServiceDelegate, StateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
-class NodeAwareStateServiceRpcDelegate<T: ContractState>(
+open class AccountsAwareStateServiceRpcDelegate<T: ContractState>(
         rpcOps: CordaRPCOps,
-        contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
-): StateServiceRpcDelegate<T>(rpcOps, contractStateType, defaults), NodeAwareStateServiceDelegate<T>
+        override val contractStateType: Class<T>,
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+): AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults), AccountsAwareStateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
-class NodeAwareStateServiceRpcConnectionDelegate<T: ContractState>(
+class AccountsAwareStateServiceRpcConnectionDelegate<T: ContractState>(
         nodeRpcConnection: NodeRpcConnection,
-        contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
-): StateServiceRpcConnectionDelegate<T>(nodeRpcConnection, contractStateType, defaults), NodeAwareStateServiceDelegate<T>
+        override val contractStateType: Class<T>,
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+): AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), AccountsAwareStateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
-class NodeAwareStateServiceHubDelegate<T: ContractState>(
-        serviceHub: ServiceHub,
-        contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
-) : StateServiceHubDelegate<T>(serviceHub, contractStateType, defaults), NodeAwareStateServiceDelegate<T>
+abstract class AccountsAwareStateCordaServiceDelegate<T: ContractState>(
+        serviceHub: AppServiceHub,
+        override val contractStateType: Class<T>,
+        override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+) :  AccountsAwareNodeCordaServiceDelegate(serviceHub), AccountsAwareStateServiceDelegate<T>

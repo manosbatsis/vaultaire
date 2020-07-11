@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
+import com.github.manosbatsis.vaultaire.dto.AccountNameAndParty
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.*
 import com.github.manotbatsis.kotlin.utils.api.DefaultValue
 import net.corda.core.contracts.*
@@ -192,23 +193,23 @@ class BookContract : Contract {
     }
 
     // State.
-    data class MagazineState(val publisher: Party,
-                             val author: Party,
+    data class MagazineState(val publisher: AccountNameAndParty,
+                             val author: AccountNameAndParty,
                              val price: BigDecimal,
                              val genre: Genre,
                              val issues: Int = 1,
                              val title: String = "Uknown",
                              val published: Date = Date(),
                              override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
-        override val participants get() = listOf(publisher, author)
+        override val participants get() = listOf(publisher.party, author.party)
 
         override fun supportedSchemas() = listOf(MagazineSchemaV1)
 
         override fun generateMappedObject(schema: MappedSchema) = MagazineSchemaV1.PersistentMagazineState(
                 linearId.id.toString(),
                 linearId.externalId,
-                publisher.name.toString(),
-                author.name.toString(),
+                publisher.name,
+                author.name,
                 price,
                 genre,
                 issues,

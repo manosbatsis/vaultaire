@@ -91,3 +91,4 @@ annotation class VaultaireGenerateResponder(
         val value: KClass<out FlowLogic<*>>,
         val comment: String = ""
 )
+

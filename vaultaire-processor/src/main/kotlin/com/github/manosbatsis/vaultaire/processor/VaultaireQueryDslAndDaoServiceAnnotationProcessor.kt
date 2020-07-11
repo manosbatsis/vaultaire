@@ -28,29 +28,17 @@ import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Compan
 import com.github.manosbatsis.vaultaire.registry.Registry
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
-import com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService
-import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
-import com.github.manosbatsis.vaultaire.service.dao.StateServiceHubDelegate
-import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcConnectionDelegate
-import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcDelegate
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.LambdaTypeName
-import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.contracts.ContractState
 import net.corda.core.internal.packageName
 import net.corda.core.messaging.CordaRPCOps
+import net.corda.core.node.AppServiceHub
 import net.corda.core.node.ServiceHub
+import net.corda.core.node.services.CordaService
 import net.corda.core.schemas.PersistentState
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
@@ -98,8 +86,11 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
         // The DSL, i.e. Conditions Class spec for the annotated element being processed
         val conditionsSpec = buildVaultQueryCriteriaConditionsBuilder(stateInfo, generatedConditionsClassName, persistentStateFieldsClassName)
 
+        // The state CordaService delegate
+        val stateCordaServiceDelegateSpec = buildStateCordaServiceDelegateSpecBuilder(stateInfo).build()
+
         // The state service
-        val stateServiceSpecBuilder = buildStateServiceSpecBuilder(stateInfo, generatedConditionsClassName, persistentStateFieldsClassName)
+        val stateServiceSpecBuilder = buildStateServiceSpecBuilder(stateInfo, generatedConditionsClassName, persistentStateFieldsClassName, stateCordaServiceDelegateSpec)
 
 
         // Generate the Kotlin file
@@ -107,6 +98,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
                 .addType(persistentStateFieldsSpec.build())
                 .addType(contractStateFieldsSpec.build())
                 .addType(conditionsSpec.build())
+                .addType(stateCordaServiceDelegateSpec)
                 .addType(stateServiceSpecBuilder.build())
                 .addFunction(buildTopLevelDslFunSpec(generatedConditionsClassName, stateInfo.persistentStateTypeElement, stateInfo.contractStateTypeElement))
                 .build()
@@ -163,63 +155,83 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
         return conditionsSpec
     }
 
+    /** Create a state CordaService delegate builder */
+    fun buildStateCordaServiceDelegateSpecBuilder(stateInfo: StateInfo): TypeSpec.Builder {
+        val generatedSimpleName = "${stateInfo.contractStateSimpleName}CordaServiceDelegate"
+        return TypeSpec.classBuilder(generatedSimpleName)
+                .addKdoc("A [%T]-specific [%T]", stateInfo.contractStateTypeElement, baseClassesConfig.serviceHubDelegateClassName)
+                .addModifiers(KModifier.OPEN)
+                .addAnnotation(CordaService::class)
+                .superclass(baseClassesConfig.serviceHubDelegateClassName
+                        .parameterizedBy(stateInfo.contractStateTypeElement.asKotlinTypeName()))
+                .primaryConstructor(FunSpec.constructorBuilder()
+                        .addParameter("serviceHub", AppServiceHub::class.java.asClassName())
+                        .build())
+                .addSuperclassConstructorParameter("serviceHub")
+                .addSuperclassConstructorParameter("contractStateType = %T::class.java", stateInfo.contractStateTypeElement)
+
+    }
+
     /** Create a StateService subclass builder */
-    fun buildStateServiceSpecBuilder(stateInfo: StateInfo, conditionsClassName: ClassName, generatedFieldsClassName: ClassName): TypeSpec.Builder {
-        val generatedStateServiceSimpleName = "${stateInfo.contractStateSimpleName}Service"
+    fun buildStateServiceSpecBuilder(stateInfo: StateInfo, conditionsClassName: ClassName,
+             generatedFieldsClassName: ClassName,
+             stateCordaServiceDelegateSpec: TypeSpec
+            ): TypeSpec.Builder {
+        val generatedSimpleName = "${stateInfo.contractStateSimpleName}Service"
         //val conditionsLambda = LambdaTypeName.get(returnType = processingEnv.typeUtils.a.getTypeElement(conditionsSimpleName).asKotlinTypeName())
-        val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedStateServiceSimpleName)
-                .addKdoc("A [%T]-specific [%T]", stateInfo.contractStateTypeElement, ExtendedStateService::class)
+        val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedSimpleName)
+                .addKdoc("A [%T]-specific [%T]", stateInfo.contractStateTypeElement, baseClassesConfig.stateServiceClassName)
                 .addModifiers(KModifier.OPEN)
                 .addAnnotation(ExtendedStateServiceBean::class)
-                .superclass(ExtendedStateService::class.asClassName()
+                .superclass(baseClassesConfig.stateServiceClassName
                         .parameterizedBy(
                                 stateInfo.contractStateTypeElement.asKotlinTypeName(),
                                 stateInfo.persistentStateTypeElement!!.asKotlinTypeName(),
                                 generatedFieldsClassName,
                                 conditionsClassName))
                 .primaryConstructor(FunSpec.constructorBuilder()
-                        .addParameter("delegate", StateServiceDelegate::class.asClassName()
+                        .addParameter("delegate", baseClassesConfig.stateServiceDelegateClassName
                                 .parameterizedBy(stateInfo.contractStateTypeElement.asKotlinTypeName()))
                         .build())
                 .addSuperclassConstructorParameter("delegate")
                 .addType(TypeSpec.companionObjectBuilder().addInitializerBlock(
                                 CodeBlock.of("%T.registerService(%T::class, %M::class)",
-                                        Registry::class, stateInfo.contractStateTypeElement,  MemberName("", generatedStateServiceSimpleName))
+                                        Registry::class, stateInfo.contractStateTypeElement,  MemberName("", generatedSimpleName))
                         ).build())
+                .addFunction(FunSpec.constructorBuilder()
+                        .addParameter("serviceHub", ServiceHub::class.java)
+                        .addParameter("contractStateType", stateInfo.contractStateTypeElement.asKotlinTypeName())
+                        .addParameter(ParameterSpec
+                                .builder("defaults", ServiceDefaults::class.java)
+                                .defaultValue("%T()", SimpleServiceDefaults::class.java).build())
+                        .callThisConstructor(CodeBlock.builder()
+                                .add("serviceHub.cordaService(%N::class.java)",
+                                        stateCordaServiceDelegateSpec).build()).build())
                 .addProperty(buildFieldsPropertySpec(stateInfo.persistentStateTypeElement, generatedFieldsClassName))
                 .addProperty(buildStatePersistableTypePropertySpec(stateInfo.persistentStateTypeElement))
                 .addInitializerBlock(CodeBlock.of("criteriaConditionsType =  %N::class.java", "${stateInfo.persistentStateSimpleName}Conditions"))
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("rpcOps", CordaRPCOps::class)
-                        .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
-                                .defaultValue("%T()", ServiceDefaults::class.java)
+                        .addParameter(ParameterSpec.builder("defaults", SimpleServiceDefaults::class)
+                                .defaultValue("%T()", SimpleServiceDefaults::class.java)
                                 .build())
                         .callThisConstructor(CodeBlock.builder()
                                 .add("%T(%N, %T::class.java, %N)",
-                                        StateServiceRpcDelegate::class, "rpcOps",
+                                        baseClassesConfig.rpcDelegateClassName, "rpcOps",
                                         stateInfo.contractStateTypeElement, "defaults").build()
                         ).build())
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("nodeRpcConnection", NodeRpcConnection::class)
-                        .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
-                                .defaultValue("%T()", ServiceDefaults::class.java)
+                        .addParameter(ParameterSpec.builder("defaults", SimpleServiceDefaults::class)
+                                .defaultValue("%T()", SimpleServiceDefaults::class.java)
                                 .build())
                         .callThisConstructor(CodeBlock.builder()
                                 .add("%T(%N, %T::class.java, %N)",
-                                        StateServiceRpcConnectionDelegate::class, "nodeRpcConnection",
+                                        baseClassesConfig.rpcConnectionDelegateClassName, "nodeRpcConnection",
                                         stateInfo.contractStateTypeElement, "defaults").build()
                         ).build())
                 //NodeRpcConnection
                 .addFunction(buildDslFunSpec("buildQuery", conditionsClassName, KModifier.OVERRIDE))
-                .addFunction(FunSpec.constructorBuilder()
-                        .addParameter("serviceHub", ServiceHub::class)
-                        .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
-                                .defaultValue("%T()", ServiceDefaults::class.java)
-                                .build())
-                        .callThisConstructor(CodeBlock.builder()
-                                .add("%T(%N, %T::class.java, %N)", StateServiceHubDelegate::class, "serviceHub",
-                                        stateInfo.contractStateTypeElement, "defaults").build()
-                        ).build())
 
 
         return stateServiceSpecBuilder

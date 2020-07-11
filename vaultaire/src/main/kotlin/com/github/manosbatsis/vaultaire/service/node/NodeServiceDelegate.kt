@@ -21,18 +21,22 @@ package com.github.manosbatsis.vaultaire.service.node
 
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.LinearState
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
+import net.corda.core.node.AppServiceHub
 import net.corda.core.node.ServiceHub
+import net.corda.core.node.services.CordaService
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.schemas.QueryableState
+import net.corda.core.serialization.SingletonSerializeAsToken
 
 
 /** [NodeService] delegate for vault operations */
@@ -112,7 +116,7 @@ interface NodeServiceDelegate {
 
 /** RPC implementation base */
 abstract class NodeServiceRpcDelegateBase(
-        override val defaults: ServiceDefaults = ServiceDefaults()): NodeServiceDelegate {
+        override val defaults: ServiceDefaults = SimpleServiceDefaults()): NodeServiceDelegate {
 
     abstract val rpcOps: CordaRPCOps
 
@@ -151,25 +155,45 @@ abstract class NodeServiceRpcDelegateBase(
 /** [CordaRPCOps]-based [NodeServiceDelegate] implementation */
 open class NodeServiceRpcDelegate(
         override val rpcOps: CordaRPCOps,
-        defaults: ServiceDefaults = ServiceDefaults()
+        defaults : ServiceDefaults = SimpleServiceDefaults()
 ): NodeServiceRpcDelegateBase(defaults) {
 }
 
 /** [NodeRpcConnection]-based [NodeServiceDelegate] implementation */
 open class NodeServiceRpcConnectionDelegate(
         private val nodeRpcConnection: NodeRpcConnection,
-        override val defaults: ServiceDefaults = ServiceDefaults()
+        override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
 ): NodeServiceRpcDelegateBase(defaults) {
 
     override val rpcOps: CordaRPCOps by lazy { nodeRpcConnection.proxy }
 
 }
 
-/** [ServiceHub]-based [NodeServiceDelegate] implementation */
+/**
+ * Simple [ServiceHub]-based [NodeServiceDelegate] implementation
+ */
+@Deprecated(
+        message = "Deprecated in favor of CordaService-based implementation",
+        replaceWith = ReplaceWith("serviceHub.cordaService(NodeCordaServiceDelegate::class.java)",
+        imports = ["com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate"]))
 open class NodeServiceHubDelegate(
-         val serviceHub: ServiceHub,
-        override val defaults: ServiceDefaults = ServiceDefaults()
-) : NodeServiceDelegate {
+        serviceHub: ServiceHub,
+        override val defaults: ServiceDefaults = SimpleServiceDefaults()
+): AbstractNodeServiceHubDelegate<ServiceHub>(serviceHub)
+
+/** Implementation of [NodeServiceDelegate] as a CordaService */
+@CordaService
+open class NodeCordaServiceDelegate(
+        serviceHub: AppServiceHub
+): AbstractNodeServiceHubDelegate<AppServiceHub>(serviceHub) {
+
+    override val defaults: ServiceDefaults = SimpleServiceDefaults()
+}
+
+/** [ServiceHub]-based [NodeServiceDelegate] implementation */
+abstract class AbstractNodeServiceHubDelegate<S: ServiceHub>(
+         val serviceHub: S
+) : SingletonSerializeAsToken(), NodeServiceDelegate {
 
     override val nodeLegalName: CordaX500Name by lazy {
         nodeIdentity.name

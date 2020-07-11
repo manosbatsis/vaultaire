@@ -20,10 +20,9 @@
 package com.github.manosbatsis.vaultaire.service.node
 
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
-import net.corda.core.contracts.LinearState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.messaging.CordaRPCOps
@@ -34,10 +33,7 @@ import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
-import net.corda.core.node.services.vault.SortAttribute
-import net.corda.core.schemas.QueryableState
-import net.corda.core.schemas.StatePersistable
-import java.util.UUID
+import java.util.*
 
 class StateNotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.javaClass.simpleName} with id ${id}")
 
@@ -153,23 +149,23 @@ interface NodeService: NodeServiceDelegate {
  * Basic [NodeService] implementation
  */
 open class BasicNodeService(
-        private val delegate: NodeServiceDelegate
+        open val delegate: NodeServiceDelegate
 ) : NodeServiceDelegate by delegate, NodeService {
 
     /** [NodeRpcConnection]-based constructor */
     constructor(
-            nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults = ServiceDefaults()
+            nodeRpcConnection: NodeRpcConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = ServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(NodeServiceRpcDelegate(rpcOps, defaults))
 
-    /** [ServiceHub]-based constructor */
+    /** [ServiceHub]-based constructor, initiaalizes a Corda Service delegate */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = ServiceDefaults()
-    ) : this(NodeServiceHubDelegate(serviceHub, defaults))
+            serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+    ) : this(serviceHub.cordaService(NodeServiceHubDelegate::class.java))
 
     override fun <T: ContractState> findByLinearId(
             contractStateType: Class<T>, linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? =

@@ -38,6 +38,7 @@ dependencies {
     cordaCompile project(':vaultaire-example-contract')
     cordaCompile "$accounts_release_group:accounts-workflows:$accounts_release_version"
     kapt project(':vaultaire-processor')
+    //kapt project(':vaultaire-plugin-accounts')
 
     testImplementation ("$corda_release_group:corda-node-driver:$corda_release_version")
 

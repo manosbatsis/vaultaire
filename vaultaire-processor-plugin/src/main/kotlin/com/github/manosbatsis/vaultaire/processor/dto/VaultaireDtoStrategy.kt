@@ -49,9 +49,6 @@ open class VaultaireLiteDtoStrategy(
         nameSuffix = "LiteDto"
 )
 
-interface VaultaireDtoStrategyComposition: DtoStrategyComposition{
-}
-
 object VaultaireDefaultDtoStrategyComposition: VaultaireDtoStrategyComposition {
     override fun dtoNameStrategy(
             processingEnvironment: ProcessingEnvironment,
@@ -72,6 +69,7 @@ object VaultaireDefaultDtoStrategyComposition: VaultaireDtoStrategyComposition {
             processingEnvironment, dtoInputContext
     )
 }
+
 object VaultaireLiteDtoStrategyComposition: VaultaireDtoStrategyComposition {
     override fun dtoNameStrategy(
             processingEnvironment: ProcessingEnvironment,

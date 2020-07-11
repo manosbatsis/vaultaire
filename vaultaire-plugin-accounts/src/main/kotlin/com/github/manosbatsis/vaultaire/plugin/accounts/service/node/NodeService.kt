@@ -20,7 +20,7 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.node
 
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import net.corda.core.contracts.ContractState
 import net.corda.core.messaging.CordaRPCOps
@@ -40,20 +40,20 @@ interface AccountsAwareNodeService: AccountsAwareNodeServiceDelegate {
  */
 open class BasicAccountsAwareNodeService(
         delegate: AccountsAwareNodeServiceDelegate
-) : BasicNodeService(delegate), AccountsAwareNodeService {
+) : BasicNodeService(delegate), AccountsAwareNodeServiceDelegate by delegate {
 
     /** [NodeRpcConnection]-based constructor */
     constructor(
-            nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults = ServiceDefaults()
+            nodeRpcConnection: NodeRpcConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = ServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = ServiceDefaults()
-    ) : this(AccountsAwareNodeServiceHubDelegate(serviceHub, defaults))
+            serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+    ) : this(serviceHub.cordaService(AccountsAwareNodeCordaServiceDelegate::class.java))
 }

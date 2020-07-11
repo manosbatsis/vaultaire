@@ -22,12 +22,14 @@ package com.github.manosbatsis.vaultaire.processor
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.DtoInputContextFactoryProcessorPlugin
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
 import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDefaultDtoStrategy
 import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDtoStrategy
 import com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
+import com.github.manosbatsis.vaultaire.processor.plugin.VaultaireDefaultDtoStrategyFactoryProcessorPlugin
+import com.github.manosbatsis.vaultaire.processor.plugins.AnnotationProcessorPluginService
 import net.corda.core.contracts.ContractState
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
@@ -61,6 +63,17 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
         } ?: listOf(VaultaireDtoStrategy::class.java)
     }
 
+
+
+    val dtoInputContextFactory by lazy {
+        AnnotationProcessorPluginService
+                .forClassLoader(BaseAnnotationProcessor::class.java.classLoader)
+                .forServiceType(
+                        DtoInputContextFactoryProcessorPlugin::class.java,
+                        VaultaireDefaultDtoStrategyFactoryProcessorPlugin()
+                )
+    }
+
     /** Write a DTO for the given [ContractState] . */
     override fun process(stateInfo: StateInfo) {
         getDtoStrategies(stateInfo).toSet().forEach {
@@ -68,17 +81,16 @@ class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
             val ignoredProperties: List<String> = getStringValuesList(stateInfo.annotation, "ignoreProperties")
 
             processingEnv.noteMessage { "Ignoring properties: $ignoredProperties" }
-            val dtoInputContext =  DtoInputContext(
+
+            val dtoInputContext = dtoInputContextFactory.buildDtoInputContext(
                     processingEnvironment,
                     stateInfo.contractStateTypeElement as TypeElement,
                     stateInfo.contractStateFields.filterNot { ignoredProperties.contains(it.simpleName.toString()) },
                     copyAnnotationPackages,
                     it)
 
-            val dtoStrategy = dtoInputContext.dtoStrategy as VaultaireDtoStrategy
-                    //.builder()
             // Generate the Kotlin file
-            getFileSpecBuilder(stateInfo.generatedPackageName, "${stateInfo.contractStateTypeElement.simpleName}VaultaireGenerated${dtoStrategy.nameSuffix}")
+            getFileSpecBuilder(stateInfo.generatedPackageName, "${stateInfo.contractStateTypeElement.simpleName}VaultaireGenerated${(dtoInputContext.dtoStrategy as VaultaireDtoStrategy).nameSuffix}")
                     .addType(dtoInputContext.builder().build())
                     .build()
                     .writeTo(sourceRootFile)
