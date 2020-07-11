@@ -200,7 +200,6 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : BaseStateInfoAnnotatio
                         ).build())
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("serviceHub", ServiceHub::class.java)
-                        .addParameter("contractStateType", stateInfo.contractStateTypeElement.asKotlinTypeName())
                         .addParameter(ParameterSpec
                                 .builder("defaults", ServiceDefaults::class.java)
                                 .defaultValue("%T()", SimpleServiceDefaults::class.java).build())

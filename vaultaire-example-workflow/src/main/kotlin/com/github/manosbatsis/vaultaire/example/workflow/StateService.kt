@@ -21,7 +21,10 @@ package com.github.manosbatsis.vaultaire.example.workflow
 
 
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.generated.BookStateCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.example.generated.BookStateService
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
@@ -50,7 +53,7 @@ class CustomBasicBookStateService(
 
 /** Extend the generated [BookStateService] */
 class MyExtendedBookStateService(
-        delegate: StateServiceDelegate<BookContract.BookState>
+        delegate: AccountsAwareStateServiceDelegate<BookContract.BookState>
 ) : BookStateService(delegate){
 
     // Add the appropriate constructors
@@ -59,12 +62,12 @@ class MyExtendedBookStateService(
     /** [CordaRPCOps]-based constructor */
     constructor(
             rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
+    ) : this(AccountsAwareStateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
             serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
+    ) : this(serviceHub.cordaService(BookStateCordaServiceDelegate::class.java))
 
     // Custom business methods...
 }

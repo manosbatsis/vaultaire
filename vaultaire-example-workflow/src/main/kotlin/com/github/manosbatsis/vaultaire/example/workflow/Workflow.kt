@@ -39,7 +39,7 @@ import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
-import java.util.Date
+import java.util.*
 
 
 class CreateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
@@ -63,7 +63,7 @@ class CreateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<Boo
 class UpdateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
     override fun convert(input: BookStateDto): CallContext {
         // Load existing state
-        val existing = BookStateService(serviceHub = clientFlow.serviceHub).getByLinearId(input.linearId!!)
+        val existing = BookStateService(clientFlow.serviceHub).getByLinearId(input.linearId!!)
         val updated = input.toPatched(existing.state.data)
         // Prepare a TX builder
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
