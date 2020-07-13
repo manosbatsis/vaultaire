@@ -102,13 +102,13 @@ interface AccountsAwareNodeServiceDelegate: NodeServiceDelegate {
             findStoredAccount(id.id)
     /**
      * Get the account that is already stored locally
-     * and matching the given [id] if found, null otherwise
+     * and matching the given [id]
      */
     fun getStoredAccount(id: UniqueIdentifier): StateAndRef<AccountInfo> =
             getStoredAccount(id.id)
     /**
      * Get the account that is already stored locally
-     * and matching the given [id] if found, null otherwise
+     * and matching the given [id]
      */
     fun getStoredAccount(id: UUID): StateAndRef<AccountInfo> =
             findStoredAccount(id)  ?: throw IllegalStateException("No well known party found matching the given id")

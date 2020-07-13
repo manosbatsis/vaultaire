@@ -30,7 +30,6 @@ import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
 import net.corda.core.node.AppServiceHub
 import net.corda.core.node.ServiceHub
-import net.corda.core.node.services.CordaService
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
@@ -172,21 +171,15 @@ open class NodeServiceRpcConnectionDelegate(
 /**
  * Simple [ServiceHub]-based [NodeServiceDelegate] implementation
  */
-@Deprecated(
-        message = "Deprecated in favor of CordaService-based implementation",
-        replaceWith = ReplaceWith("serviceHub.cordaService(NodeCordaServiceDelegate::class.java)",
-        imports = ["com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate"]))
 open class NodeServiceHubDelegate(
         serviceHub: ServiceHub,
         override val defaults: ServiceDefaults = SimpleServiceDefaults()
 ): AbstractNodeServiceHubDelegate<ServiceHub>(serviceHub)
 
-/** Implementation of [NodeServiceDelegate] as a CordaService */
-@CordaService
-open class NodeCordaServiceDelegate(
+/** Abstract [AppServiceHub]-based implementation of [NodeServiceDelegate] as a CordaService */
+abstract class NodeCordaServiceDelegate(
         serviceHub: AppServiceHub
 ): AbstractNodeServiceHubDelegate<AppServiceHub>(serviceHub) {
-
     override val defaults: ServiceDefaults = SimpleServiceDefaults()
 }
 

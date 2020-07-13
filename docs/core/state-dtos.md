@@ -1,63 +1,75 @@
-# Other Utilities
+# State DTOs
 
-Miscellaneous utilities provides by Vaultaire 
+## Overview
 
-## Generated Responders
+Maintaining Data Transfer Objects for your contract states can be a very mundane task.
+Vaultaire's annotation processing automates this task by (re)generating those for you.
 
-Some times you might want to use the same responding flow with multiple initiating flows.
-Since `@InitiatedBy` is not a repeatable annotation, the only option would be to subclass 
-the same responder for each initiating flow, adding the appropriate `@InitiatedBy`.
+## Usage Patterns
 
-Vaultaire's annotation processor can help you automate this using a `@VaultaireGenerateResponder` instead of 
-maintaning such responders manually. Usage example:
+### State to DTO
 
-
-```kotlin
-// or simply: @VaultaireGenerateResponder(BaseBookFlowResponder::class) 
-@VaultaireGenerateResponder(
-    value = BaseBookFlowResponder::class,
-    comment = "A basic responder to listen for finality"
-)
-@InitiatingFlow
-@StartableByRPC
-class CreateBookFlow(input: BookMessage) : FlowLogic<SignedTransaction>
-```
-
-The above will automatically generate a responder flow:
-
+To convert from state to DTO, use the DTO's latter's alternative, state-based constructor:
 
 ```kotlin
-/**
- * A basic responder to listen for finality
- */
-@InitiatedBy(value = CreateBookFlow::class)
-class CreateBookFlowResponder(
-  otherPartySession: FlowSession
-) : BaseBookFlowResponder(otherPartySession)
-
+// Get the state
+val state: BookState = //...
+// Convert to state
+val dto = BookStateDto(state)
 ```
 
-__Note__: if the base responder flow is a final type, the generated responder will attempt to call it as a 
-subflow instead of extending it:
+### DTO to State
+
+To convert from DTO to state, use the DTO's `toTargetType()` method:
 
 ```kotlin
-@InitiatedBy(value = CreateBookFlow::class)
-class CreateBookFlowResponder(
-  val otherPartySession: FlowSession
-) : FlowLogic<Unit>() {
-  @Suspendable
-  override fun call() {
-    subFlow(BaseBookFlowResponder(otherPartySession))
-  }
-}
+// Using default strategy
+// ----------------------
+// Get the DTO
+val dto1: BookStateDto = //...
+// Convert to State
+val state1: BookState = dto1.toTargetType()
+
+// Using 'lite' strategy
+// ----------------------
+// Get the Service
+val stateService: BookStateService = //...
+// Get the 'lite' DTO
+val dto2: BookStateLiteDto = // ...
+// Convert to State
+val state2: BookState = dto2.toTargetType(stateService)
 ```
- 
+### DTO as Patch Update
 
-## Generated DTOs
+DTOs can be used to transfer and apply a "patch" to update
+an existing state:
 
-Maintaining Data Transfer Objects (e.g. for REST) of your contract states can be a very mundane task.
-You can have Vaultaire generate those for you either using `@VaultaireGenerateDto` 
-on the contract state class directly:
+```kotlin
+// Get the Service
+val stateService: BookStateService =  //...
+
+// Load state from Node Vault
+val state: BookState = stateService.getByLinearId(identifier)
+
+// Apply DTO as patch
+// ----------------------
+val patchedState1: BookState = dto1.toPatched(state)
+
+// Apply 'lite' DTO as patch
+// ----------------------
+val patchedState2: BookState = dto2.toPatched(state, stateService)
+```
+
+## DTO Generation
+
+This section explains the annotations and strategies involved in generating DTOs.
+
+### Annotations
+
+#### Local States
+
+To have Vaultaire generate DTOs for `ContractState`s within local (Gradle module) sources,
+annotate them with `@VaultaireGenerateDto`:
 
 ```kotlin
 @VaultaireGenerateDto(
@@ -79,9 +91,17 @@ data class BookState(
 ) : LinearState, QueryableState {/* ... */}
 ```
 
-... or `@VaultaireGenerateDtoForDependency` when targetting a contract state within your dependencies
-e.g. from your contract states module or a third party class:
+#### Dependency States
 
+To generate DTOs for `ContractState`s outside the sources in context,
+e.g. from a contract states module or a project dependency,
+create a "mixin" class as a placeholder and annotate it with
+`@VaultaireGenerateDtoForDependency`.
+
+This approach might be preferred or necessary even for state sources in context or under your control,
+e.g. when having (the good practice of) separate cordapp modules for contracts/states and flows.
+
+Mixin example:
 
 ```kotlin
 @VaultaireGenerateDtoForDependency(
@@ -90,11 +110,14 @@ e.g. from your contract states module or a third party class:
     // optional: properties to ignore
     ignoreProperties = ["participants"]
 )
-class Dummy // just a placeholder for our annotation
+class BookStateMixin // just a placeholder for our annotation
 ```
 
-In both cases the following DTO will be generated, along with proper implementations of [Dto]'s 
-mapping/patching utility methods:
+#### Sample DTO
+
+In both cases above the following DTO will be generated.
+Note the nullable var members and utilities to convert between the two types
+or to patch an existing state:
 
 ```kotlin
 /**
@@ -177,40 +200,30 @@ data class BookStateDto(
 ```
 
 
-## DTO Strategies
+### Strategies
 
-Both `@VaultaireGenerateDto` and `@VaultaireGenerateDtoForDependency` support generation strategies.
-By default the strategy used is `VaultaireDtoStrategyKeys.DEFAULT`.
+Both `@VaultaireGenerateDto` and `@VaultaireGenerateDtoForDependency` support generation strategy hints.
+By default the strategy used is `VaultaireDtoStrategyKeys.DEFAULT`. The only additional strategy provided
+is the more REST-friendly `VaultaireDtoStrategyKeys.LITE`. Using both, as in the following example,
+will generate separate DTOs for each.
 
 ```kotlin
 @VaultaireGenerateDto(
-    // optional: properties to ignore
     ignoreProperties = ["participants"],
-    // Default is [VaultaireDtoStrategyKeys.DEFAULT]
     strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
 )
 data class BookState(
-		val publisher: Party,
-		val author: Party,
-		val price: BigDecimal,
-		val genre: Genre,
-		@DefaultValue("1")
-		val editions: Int = 1,
-		val title: String = "Uknown",
-		val published: Date = Date(),
-		@field:JsonProperty("alias")
-		val alternativeTitle: String? = null,
-		override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState{
-
+		//...
+) : LinearState, QueryableState{
 		//...
 }
 ```
 
 The "lite" strategy is provided to help where deserialization would normally require
 either a `ServiceHub` or `RpcOps`, e.g. when the target property is a `Party`,
-in which case the DTO will use a more accessible type like `CordaX500Name`,
+in which case the DTO will use a more manageable type like `CordaX500Name`,
 and require a service to convert to or patch a `ContractState` instance.
-Note that "lite" DTO classname also have a `LiteDto` suffix. Here's the "lite"
+Note that "lite" DTO classnames will also have a `LiteDto` suffix. Here's the "lite"
 DTO generated for the above example:
 
 ```kotlin

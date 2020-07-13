@@ -32,3 +32,7 @@ temp-clone/vaultaire-example/build.gradle
 temp-clone/vaultaire-example/src/
 temp-clone/vaultaire-processor/
 temp-clone/vaultaire/
+
+# For mkdoc
+site/
+docs/index.md

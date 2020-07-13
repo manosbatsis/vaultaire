@@ -7,12 +7,13 @@ See complete documentation at https://manosbatsis.github.io/vaultaire
 ## Query DSL
 
 Use DSL will make your queries much easier to read and maintain. 
-Each query DSL is automatically generated and maintaind for you 
-based on your states.
+Each query DSL is automatically (re)generated at build time using annotation
+processing.
 
+Usage example:
 
 ```kotlin
-al query = booksQuery {
+val queryCriteria: QueryCriteria = booksQuery {
     and {
     	// Check publisher?
         if(checkPublisher) fields.publisher `==` "Corda Books Ltd."
@@ -27,33 +28,20 @@ al query = booksQuery {
 }.toCriteria()
 ```
 
-For more info on query DSL, checkout https://manosbatsis.github.io/vaultaire/query-dsl/
+For more details see [Query DSL](docs/query-dsl.md).
 
 ## State Services
 
-Vaultaire's annotation processor  will automatically subclass `ExtendedStateService` to generate
-an `Fields` aware state service service per annotated element. The generated service name
-is "${contractStateTypeName}Service". Usage example:
+Vaultaire's `StateService` interface provide a simple, consistent API to
+load, query and track vault states.
 
+`StateService` implementations are usually auto-generated at build time
+and specific to a single `ContractState` type.
 
-```kotlin
-// Create an instance of the generated service type
-val bookStateService = BookStateService(
-    serviceHub,        // Service hub or RPC ops
-    serviceDefaults)   // Optional: criteria, paging, sort defaults
+State Services can also decouple you code from `ServiceHub` and `CordaRPCOps`
+amd help increase code reuse between cordapps and their clients.
 
-// Load a book
-bookStateService.getByLinearId(identifier)
-// Try finding one by ISBN
-bookStateService.findByExternalId(identifier)
-
-// query the vault for books
-val searchResults = bookStateService.queryBy(
-    criteria, paging, Pair("published", DESC), Pair("title", DESC))
-```
-
-
-For more info on state services, checkout https://manosbatsis.github.io/vaultaire/state-services/
+For more details see [State Services](https://manosbatsis.github.io/vaultaire/query-dsl).
 
 ## Other Utils
 

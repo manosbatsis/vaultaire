@@ -77,10 +77,6 @@ open class StateServiceRpcConnectionDelegate<T: ContractState>(
 ): NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), StateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
-@Deprecated(
-        message = "Deprecated in favor of CordaService-based implementation",
-        replaceWith = ReplaceWith("serviceHub.cordaService(MyStateCordaServiceDelegate::class.java)",
-                imports = ["com.github.manosbatsis.vaultaire.service.dao.StateCordaServiceDelegate"]))
 open class StateServiceHubDelegate<T: ContractState>(
         serviceHub: ServiceHub,
         override val contractStateType: Class<T>,
