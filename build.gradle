@@ -180,7 +180,10 @@ subprojects {
     }
 }
 
-configure([project(':vaultaire'), project(':vaultaire-processor')]) {
+configure([project(':vaultaire'),
+           project(':vaultaire-processor'),
+           project(':vaultaire-processor-plugin'),
+           project(':vaultaire-plugin-accounts')]) {
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'

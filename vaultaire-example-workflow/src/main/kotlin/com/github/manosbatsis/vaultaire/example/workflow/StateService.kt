@@ -21,8 +21,8 @@ package com.github.manosbatsis.vaultaire.example.workflow
 
 
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
-import com.github.manosbatsis.vaultaire.example.generated.BookStateCordaServiceDelegate
-import com.github.manosbatsis.vaultaire.example.generated.BookStateService
+import com.github.manosbatsis.vaultaire.example.contract.BookStateCordaServiceDelegate
+import com.github.manosbatsis.vaultaire.example.contract.BookStateService
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults

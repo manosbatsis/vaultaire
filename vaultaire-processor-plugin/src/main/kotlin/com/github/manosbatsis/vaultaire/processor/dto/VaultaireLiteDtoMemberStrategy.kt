@@ -1,20 +1,18 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 import com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService
-import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoMembersStrategy
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
-import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.VariableElement
 
 open class VaultaireLiteDtoMemberStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext
-): SimpleDtoMembersStrategy(processingEnvironment, dtoInputContext){
+        annotatedElementInfo: AnnotatedElementInfo
+): SimpleDtoMembersStrategy(annotatedElementInfo){
 
     override fun toMapStatement(variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
         return if(variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
@@ -67,7 +65,7 @@ open class VaultaireLiteDtoMemberStrategy(
         functionBuilder.addParameter(
                 "stateService",
                 ExtendedStateService::class.java.asClassName()
-                        .parameterizedBy(dtoInputContext.originalTypeName))
+                        .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
     }
 
     override fun toPropertyTypeName(variableElement: VariableElement): TypeName {

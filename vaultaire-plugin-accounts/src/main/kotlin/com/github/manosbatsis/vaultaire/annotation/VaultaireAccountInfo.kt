@@ -9,3 +9,4 @@ package com.github.manosbatsis.vaultaire.annotation
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
 annotation class VaultaireAccountInfo(
 )
+

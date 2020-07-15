@@ -28,10 +28,7 @@ import net.corda.core.contracts.StateRef
 import net.corda.core.identity.AbstractParty
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.BinaryComparisonOperator
-import net.corda.core.node.services.vault.BinaryComparisonOperator.GREATER_THAN
-import net.corda.core.node.services.vault.BinaryComparisonOperator.GREATER_THAN_OR_EQUAL
-import net.corda.core.node.services.vault.BinaryComparisonOperator.LESS_THAN
-import net.corda.core.node.services.vault.BinaryComparisonOperator.LESS_THAN_OR_EQUAL
+import net.corda.core.node.services.vault.BinaryComparisonOperator.*
 import net.corda.core.node.services.vault.Builder.`in`
 import net.corda.core.node.services.vault.Builder.avg
 import net.corda.core.node.services.vault.Builder.between
@@ -52,16 +49,14 @@ import net.corda.core.node.services.vault.Builder.notNull
 import net.corda.core.node.services.vault.Builder.sum
 import net.corda.core.node.services.vault.ColumnPredicate.BinaryComparison
 import net.corda.core.node.services.vault.QueryCriteria
-import net.corda.core.node.services.vault.QueryCriteria.TimeCondition
-import net.corda.core.node.services.vault.QueryCriteria.TimeInstantType
-import net.corda.core.node.services.vault.QueryCriteria.VaultCustomQueryCriteria
+import net.corda.core.node.services.vault.QueryCriteria.*
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.SortAttribute
 import net.corda.core.schemas.StatePersistable
 import java.time.Instant
+import java.util.*
 import kotlin.reflect.KProperty1
 import kotlin.Suppress as supress
-
 
 /** Condition interface */
 interface Condition {
@@ -80,6 +75,7 @@ interface RootCondition<P : StatePersistable>: Condition{
     var constraintTypes: Set<Vault.ConstraintInfo.Type>
     var constraints: Set<Vault.ConstraintInfo>
     var participants: List<AbstractParty>?
+    var externalIds: List<UUID>
 }
 
 /** A [Condition] that contains other conditions. Allows for nested and/or condition groups */
@@ -387,6 +383,7 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
         override var relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL,
         override var constraintTypes: Set<Vault.ConstraintInfo.Type> = emptySet(),
         override var constraints: Set<Vault.ConstraintInfo> = emptySet(),
+        override var externalIds: List<UUID> = emptyList(),
         override var participants: List<AbstractParty>? = null
 ) : ConditionsCondition<P, F>(), RootCondition<P> {
     override val rootCondition: RootCondition<P>
@@ -429,6 +426,7 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
 
     override fun toCriteria(): QueryCriteria {
         var criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(
+                externalIds = externalIds,
                 status = status,
                 contractStateTypes = setOf(contractStateType),
                 stateRefs = stateRefs,

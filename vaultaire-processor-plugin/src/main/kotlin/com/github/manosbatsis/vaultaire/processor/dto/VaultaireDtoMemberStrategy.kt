@@ -1,12 +1,10 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoMembersStrategy
-import javax.annotation.processing.ProcessingEnvironment
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 
 open class VaultaireDtoMemberStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext
-): SimpleDtoMembersStrategy(processingEnvironment, dtoInputContext){
+        annotatedElementInfo: AnnotatedElementInfo
+): SimpleDtoMembersStrategy(annotatedElementInfo){
 
 }

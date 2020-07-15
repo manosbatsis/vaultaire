@@ -1,92 +1,41 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.*
-import javax.annotation.processing.ProcessingEnvironment
-import javax.lang.model.element.VariableElement
-
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 
 /** Vaultaire-specific overrides for building a DTO type spec */
 open class VaultaireDtoStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext,
-        composition: VaultaireDtoStrategyComposition,
-        val nameSuffix: String
-) : CompositeDtoStrategy(
-        processingEnvironment = processingEnvironment,
-        dtoInputContext = dtoInputContext,
-        composition = composition
-){
-
-    /**
-     * Obtain fields with `VaultaireGenerateDto.ignoreProperties`
-     * (or `VaultaireGenerateDtoForDependency.ignoreProperties`) filtered out
-     */
-    override fun getFieldsToProcess(): List<VariableElement> =
-        dtoInputContext.fields
-
-}
+        annotatedElementInfo: AnnotatedElementInfo,
+        composition: DtoStrategyComposition = VaultaireDefaultDtoStrategyComposition()
+) : CompositeDtoStrategy(annotatedElementInfo,composition)
 
 /** Vaultaire-specific overrides for building a DTO type spec */
 open class VaultaireDefaultDtoStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext
+        annotatedElementInfo: AnnotatedElementInfo
 ) : VaultaireDtoStrategy(
-        processingEnvironment = processingEnvironment,
-        dtoInputContext = dtoInputContext,
-        composition = VaultaireDefaultDtoStrategyComposition,
-        nameSuffix = "Dto"
+        annotatedElementInfo = annotatedElementInfo,
+        composition = VaultaireDefaultDtoStrategyComposition()
 )
-
 /** Vaultaire-specific overrides for building a "lite" DTO type spec */
-open class VaultaireLiteDtoStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext
-) : VaultaireDtoStrategy(
-        processingEnvironment = processingEnvironment,
-        dtoInputContext = dtoInputContext,
-        composition = VaultaireLiteDtoStrategyComposition,
-        nameSuffix = "LiteDto"
+class VaultaireLiteDtoStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : CompositeDtoStrategy(
+        annotatedElementInfo = annotatedElementInfo,
+        composition = VaultaireLiteDtoStrategyComposition
 )
 
-object VaultaireDefaultDtoStrategyComposition: VaultaireDtoStrategyComposition {
-    override fun dtoNameStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
-    ): DtoNameStrategy = SimpleDtoNameStrategy(
-            processingEnvironment, dtoInputContext
-    )
+open class VaultaireDefaultDtoStrategyComposition: SimpleDtoStrategyComposition() {
     override fun dtoMembersStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
+            annotatedElementInfo: AnnotatedElementInfo
     ): DtoMembersStrategy = VaultaireDtoMemberStrategy(
-            processingEnvironment, dtoInputContext
-    )
-    override fun dtoTypeStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
-    ): DtoTypeStrategy = VaultaireDtoTypeStrategy(
-            processingEnvironment, dtoInputContext
+            annotatedElementInfo
     )
 }
 
-object VaultaireLiteDtoStrategyComposition: VaultaireDtoStrategyComposition {
+object VaultaireLiteDtoStrategyComposition: DtoStrategyComposition {
     override fun dtoNameStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
-    ): DtoNameStrategy = VaultaireLiteDtoNameStrategy(
-            processingEnvironment, dtoInputContext
-    )
-    override fun dtoMembersStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
-    ): DtoMembersStrategy = VaultaireLiteDtoMemberStrategy(
-            processingEnvironment, dtoInputContext
-    )
-    override fun dtoTypeStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
-    ): DtoTypeStrategy = VaultaireLiteDtoTypeStrategy(
-            processingEnvironment, dtoInputContext
-    )
+            annotatedElementInfo: AnnotatedElementInfo
+    ): DtoNameStrategy = LiteDtoNameStrategy(annotatedElementInfo)
+    override fun dtoMembersStrategy(annotatedElementInfo: AnnotatedElementInfo): DtoMembersStrategy = VaultaireLiteDtoMemberStrategy(annotatedElementInfo)
+    override fun dtoTypeStrategy(annotatedElementInfo: AnnotatedElementInfo): DtoTypeStrategy = VaultaireLiteDtoTypeStrategy(annotatedElementInfo)
 }

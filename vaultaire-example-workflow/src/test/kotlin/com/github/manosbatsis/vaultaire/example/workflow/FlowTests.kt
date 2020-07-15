@@ -19,16 +19,9 @@
  */
 package com.github.manosbatsis.vaultaire.example.workflow
 
-import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
-import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.contract.*
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Genre.TECHNOLOGY
-import com.github.manosbatsis.vaultaire.example.generated.BookStateDto
-import com.github.manosbatsis.vaultaire.example.generated.BookStateService
-import com.github.manosbatsis.vaultaire.example.generated.PersistentBookStateConditions
-import com.github.manosbatsis.vaultaire.example.generated.bookStateQuery
-import com.github.manosbatsis.vaultaire.example.workflow.generated.AccountInfoService
-import com.github.manosbatsis.vaultaire.example.workflow.generated.accountInfoQuery
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.node.StateNotFoundException
 import com.r3.corda.lib.accounts.contracts.AccountInfoContract
@@ -46,15 +39,11 @@ import net.corda.testing.node.MockNetworkNotarySpec
 import net.corda.testing.node.MockNetworkParameters
 import net.corda.testing.node.StartedMockNode
 import net.corda.testing.node.TestCordapp.Companion.findCordapp
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue

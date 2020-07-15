@@ -6,67 +6,58 @@ import com.github.manosbatsis.vaultaire.Util.Companion.CLASSNAME_ANONYMOUS_PARTY
 import com.github.manosbatsis.vaultaire.Util.Companion.CLASSNAME_PUBLIC_KEY
 import com.github.manosbatsis.vaultaire.annotation.VaultaireAccountInfo
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
-import com.github.manosbatsis.vaultaire.processor.dto.*
-import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.LiteDtoNameStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoMemberStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoTypeStrategy
+import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.*
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
-import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.VariableElement
 
 /** Vaultaire-specific overrides for building a "lite" DTO type spec */
 open class VaultaireAccountsAwareLiteDtoStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext
-) : VaultaireDtoStrategy(
-        processingEnvironment = processingEnvironment,
-        dtoInputContext = dtoInputContext,
-        composition = VaultaireAccountsAwareLiteDtoStrategyComposition,
-        nameSuffix = "LiteDto"
+        annotatedElementInfo: AnnotatedElementInfo
+) : CompositeDtoStrategy(
+        annotatedElementInfo = annotatedElementInfo,
+        composition = VaultaireAccountsAwareLiteDtoStrategyComposition
 )
 
-object VaultaireAccountsAwareLiteDtoStrategyComposition: VaultaireDtoStrategyComposition {
+object VaultaireAccountsAwareLiteDtoStrategyComposition: DtoStrategyComposition {
     override fun dtoNameStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
-    ): DtoNameStrategy = VaultaireLiteDtoNameStrategy(
-            processingEnvironment, dtoInputContext
+            annotatedElementInfo: AnnotatedElementInfo
+    ): DtoNameStrategy = LiteDtoNameStrategy(
+            annotatedElementInfo
     )
     override fun dtoMembersStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
+            annotatedElementInfo: AnnotatedElementInfo
     ): DtoMembersStrategy = VaultaireAcountsawareLiteDtoMemberStrategy(
-            processingEnvironment, dtoInputContext
+            annotatedElementInfo
     )
     override fun dtoTypeStrategy(
-            processingEnvironment: ProcessingEnvironment,
-            dtoInputContext: DtoInputContext
+            annotatedElementInfo: AnnotatedElementInfo
     ): DtoTypeStrategy = VaultaireAccountAwareLiteDtoTypeStrategy(
-            processingEnvironment, dtoInputContext
+            annotatedElementInfo
     )
 }
 
 open class VaultaireAccountAwareLiteDtoTypeStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext
-): VaultaireLiteDtoTypeStrategy(processingEnvironment, dtoInputContext){
+        annotatedElementInfo: AnnotatedElementInfo
+): VaultaireLiteDtoTypeStrategy(annotatedElementInfo){
 
     override fun addSuperTypes(typeSpecBuilder: TypeSpec.Builder) {
         typeSpecBuilder.addSuperinterface(
                 VaultaireAccountsAwareLiteDto::class.asClassName()
-                        .parameterizedBy(dtoInputContext.originalTypeName))
+                        .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
     }
 }
 
 open class VaultaireAcountsawareLiteDtoMemberStrategy(
-        processingEnvironment: ProcessingEnvironment,
-        dtoInputContext: DtoInputContext
-): VaultaireLiteDtoMemberStrategy(processingEnvironment, dtoInputContext){
+        annotatedElementInfo: AnnotatedElementInfo
+): VaultaireLiteDtoMemberStrategy(annotatedElementInfo){
 
     override fun toMapStatement(variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
 
@@ -124,7 +115,7 @@ open class VaultaireAcountsawareLiteDtoMemberStrategy(
         functionBuilder.addParameter(
                 "stateService",
                 AccountsAwareStateService::class.asClassName().parameterizedBy(
-                        dtoInputContext.originalTypeName))
+                        annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
     }
 
 }
