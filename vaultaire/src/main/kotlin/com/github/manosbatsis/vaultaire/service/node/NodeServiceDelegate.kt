@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.service.node
 
+import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
@@ -46,6 +47,7 @@ interface NodeServiceDelegate {
     val nodeIdentity: Party
     val nodeIdentityCriteria: QueryCriteria.LinearStateQueryCriteria
 
+    @Suspendable
     fun toCordaX500Name(query: String) = CordaX500Name.parse(query)
 
     /**
@@ -56,12 +58,14 @@ interface NodeServiceDelegate {
      * @param query The string to check against the X.500 name components
      * @param exactMatch If true, a case sensitive match is done against each component of each X.500 name.
      */
+    @Suspendable
     fun partiesFromName(query: String, exactMatch: Boolean): Set<Party>
 
     /**
      * Returns a [Party] match for the given name string, trying exact and if needed fuzzy matching.
      * @param name The name to convert to a party
      */
+    @Suspendable
     fun findPartyFromName(query: String): Party? =
             this.partiesFromName(query, true).firstOrNull()
                     ?: this.partiesFromName(query, true).firstOrNull()
@@ -69,6 +73,7 @@ interface NodeServiceDelegate {
      * Returns a [Party] match for the given [CordaX500Name] if found, null otherwise
      * @param name The name to convert to a party
      */
+    @Suspendable
     fun wellKnownPartyFromX500Name(name: CordaX500Name): Party?
 
 
@@ -77,6 +82,7 @@ interface NodeServiceDelegate {
      * If not exactly one match is found an error will be thrown.
      * @param name The name to convert to a party
      */
+    @Suspendable
     fun getPartyFromName(query: String): Party =
             if(query.contains("O=")) wellKnownPartyFromX500Name(CordaX500Name.parse(query))
                     ?: throw IllegalArgumentException("No party found for query treated as an x500 name: ${query}")
@@ -93,6 +99,7 @@ interface NodeServiceDelegate {
      * Query the vault for states matching the given criteria,
      * applying the given paging and sorting specifications if any
      */
+    @Suspendable
     fun <T: ContractState> queryBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria = defaults.criteria,
@@ -104,6 +111,7 @@ interface NodeServiceDelegate {
      * Track the vault for events of [T] states matching the given criteria,
      * applying the given paging and sorting specifications if any
      */
+    @Suspendable
     fun <T: ContractState> trackBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria = defaults.criteria,
@@ -199,12 +207,16 @@ abstract class AbstractNodeServiceHubDelegate<S: ServiceHub>(
     override val nodeIdentityCriteria: QueryCriteria.LinearStateQueryCriteria by lazy {
         QueryCriteria.LinearStateQueryCriteria(participants = listOf(nodeIdentity))
     }
+
+    @Suspendable
     override fun partiesFromName(query: String, exactMatch: Boolean): Set<Party> =
             serviceHub.identityService.partiesFromName(query, exactMatch)
 
+    @Suspendable
     override fun wellKnownPartyFromX500Name(name: CordaX500Name): Party? =
             serviceHub.identityService.wellKnownPartyFromX500Name(name)
 
+    @Suspendable
     override fun <T: ContractState> queryBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria,
@@ -212,6 +224,7 @@ abstract class AbstractNodeServiceHubDelegate<S: ServiceHub>(
             sort: Sort
     ): Vault.Page<T> = serviceHub.vaultService.queryBy(contractStateType, criteria, paging, sort)
 
+    @Suspendable
     override fun <T: ContractState> trackBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria,

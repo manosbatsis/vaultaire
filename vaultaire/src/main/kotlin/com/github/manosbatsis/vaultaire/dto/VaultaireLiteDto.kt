@@ -6,11 +6,16 @@ import net.corda.core.contracts.ContractState
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
 
+
+
+
+interface VaultaireLiteDto<T : ContractState>: VaultaireBaseLiteDto<T, StateService<T>>
+
 /**
  * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
  * only bringing a [StateService] in-context for [toTargetType] and [toPatched].
  */
-interface VaultaireLiteDto<T : ContractState, S: StateService<T>> {
+interface VaultaireBaseLiteDto<T : ContractState, S: StateService<T>> {
     /**
      * Create a patched copy of the given [T] instance,
      * updated using this DTO's non-null properties

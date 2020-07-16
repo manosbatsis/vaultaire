@@ -63,7 +63,7 @@ e.g. from your contract states module or a third party class:
     persistentStateType = PersistentBookState::class,
     contractStateType = BookState::class,
     // optional: properties to ignore
-    ignoreProperties = ["participants"]
+    ignoreProperties = ["foo"]
 )
 class Dummy // just a placeholder for our annotation
 ```
@@ -160,7 +160,7 @@ By default the strategy used is `VaultaireDtoStrategyKeys.DEFAULT`.
 ```kotlin
 @VaultaireGenerateDto(
     // optional: properties to ignore
-    ignoreProperties = ["participants"],
+    ignoreProperties = ["foo"],
     // Default is [VaultaireDtoStrategyKeys.DEFAULT]
     strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
 )

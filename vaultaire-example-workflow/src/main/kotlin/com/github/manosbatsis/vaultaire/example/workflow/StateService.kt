@@ -23,7 +23,6 @@ package com.github.manosbatsis.vaultaire.example.workflow
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookStateCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.example.contract.BookStateService
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
@@ -53,7 +52,7 @@ class CustomBasicBookStateService(
 
 /** Extend the generated [BookStateService] */
 class MyExtendedBookStateService(
-        delegate: AccountsAwareStateServiceDelegate<BookContract.BookState>
+        delegate: StateServiceDelegate<BookContract.BookState>
 ) : BookStateService(delegate){
 
     // Add the appropriate constructors

@@ -23,9 +23,7 @@ import com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.VaultaireBaseTypesConfigAnnotationProcessorPlugin
-import com.github.manosbatsis.vaultaire.processor.plugin.VaultaireDefaultBaseTypesConfigAnnotationProcessorPlugin
-import com.github.manosbatsis.vaultaire.processor.plugins.AnnotationProcessorPluginService
+import com.github.manosbatsis.vaultaire.plugin.BaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.registry.Registry
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
@@ -34,6 +32,7 @@ import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
 import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper
+import com.github.manotbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
@@ -81,19 +80,16 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
         
 
     }
-    val baseClassesConfig = AnnotationProcessorPluginService
-            .forClassLoader(VaultaireQueryDslAndDaoServiceAnnotationProcessor::class.java.classLoader)
-            .forServiceType(
-                    VaultaireBaseTypesConfigAnnotationProcessorPlugin::class.java,
-                    VaultaireDefaultBaseTypesConfigAnnotationProcessorPlugin()
-            )
-    
+
     override fun processElementInfos(elementInfos: List<AnnotatedElementInfo>) =
             elementInfos.forEach{processElementInfo(it)}
 
     //override val sourcesAnnotation = VaultaireGenerate::class.java
     //override val dependenciesAnnotation = VaultaireGenerateForDependency::class.java
 
+    fun getBaseClassesConfigService(annotatedElementInfo: AnnotatedElementInfo) =
+            AnnotationProcessorPluginService.getInstance()
+                    .getPlugin(BaseTypesConfigAnnotationProcessorPlugin::class.java, annotatedElementInfo)
 
     fun processElementInfo(annotatedElementInfo: AnnotatedElementInfo) { 
         val generatedConditionsClassName = ClassName(
@@ -105,7 +101,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
         var contractStateFieldsClassName = ClassName(
                 annotatedElementInfo.generatedPackageName,
                 "${annotatedElementInfo.secondaryTargetTypeElementSimpleName}Fields")
-
+        val baseTypesConfig = getBaseClassesConfigService(annotatedElementInfo)
         // The fields interface and object specs for the contract/persistent state pair being processed
         processingEnv.noteMessage { "Prepare persistentStateFieldsSpec: $persistentStateFieldsClassName" }
         val persistentStateFieldsSpec = buildFieldsObjectSpec(
@@ -123,10 +119,13 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                 annotatedElementInfo, generatedConditionsClassName, persistentStateFieldsClassName)
 
         // The state CordaService delegate
-        val stateCordaServiceDelegateSpec = buildStateCordaServiceDelegateSpecBuilder(annotatedElementInfo).build()
+        val stateCordaServiceDelegateSpec =
+                buildStateCordaServiceDelegateSpecBuilder(baseTypesConfig, annotatedElementInfo).build()
 
         // The state service
-        val stateServiceSpecBuilder = buildStateServiceSpecBuilder(annotatedElementInfo, generatedConditionsClassName, persistentStateFieldsClassName, stateCordaServiceDelegateSpec)
+        val stateServiceSpecBuilder = buildStateServiceSpecBuilder(
+                baseTypesConfig, annotatedElementInfo, generatedConditionsClassName,
+                persistentStateFieldsClassName, stateCordaServiceDelegateSpec)
 
 
         // Generate the Kotlin file
@@ -193,7 +192,10 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     }
 
     /** Create a state CordaService delegate builder */
-    fun buildStateCordaServiceDelegateSpecBuilder(annotatedElementInfo: AnnotatedElementInfo): TypeSpec.Builder {
+    fun buildStateCordaServiceDelegateSpecBuilder(
+            baseClassesConfig: BaseTypesConfigAnnotationProcessorPlugin,
+            annotatedElementInfo: AnnotatedElementInfo
+    ): TypeSpec.Builder {
         val generatedSimpleName = "${annotatedElementInfo.secondaryTargetTypeElementSimpleName}CordaServiceDelegate"
         return TypeSpec.classBuilder(generatedSimpleName)
                 .addKdoc("A [%T]-specific [%T]", annotatedElementInfo.secondaryTargetTypeElement!!, baseClassesConfig.serviceHubDelegateClassName)
@@ -211,10 +213,11 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     }
 
     /** Create a StateService subclass builder *///annotatedElementInfo: AnnotatedElementInfo
-    fun buildStateServiceSpecBuilder(annotatedElementInfo: AnnotatedElementInfo, conditionsClassName: ClassName,
-                                     generatedFieldsClassName: ClassName,
-                                     stateCordaServiceDelegateSpec: TypeSpec
-            ): TypeSpec.Builder {
+    fun buildStateServiceSpecBuilder(
+            baseClassesConfig: BaseTypesConfigAnnotationProcessorPlugin,
+            annotatedElementInfo: AnnotatedElementInfo, conditionsClassName: ClassName,
+            generatedFieldsClassName: ClassName, stateCordaServiceDelegateSpec: TypeSpec
+        ): TypeSpec.Builder {
         val generatedSimpleName = "${annotatedElementInfo.secondaryTargetTypeElementSimpleName}Service"
         //val conditionsLambda = LambdaTypeName.get(returnType = processingEnv.typeUtils.a.getTypeElement(conditionsSimpleName).asKotlinTypeName())
         val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedSimpleName)

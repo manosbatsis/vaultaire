@@ -30,10 +30,9 @@ or other properties of a `ContractState` that map to a Corda Account. Supported 
 - `AbstractParty`
 - `AnonymousParty`
 - `PublicKey`
-- `AccountIdAndParty`
-- `AccountNameAndParty`
+- `AccountParty`
 
-Using the annotation for the last two is optional.
+Using the annotation for the last one is optional.
 
 #### Accounts-Aware DTO Types
 
@@ -54,7 +53,7 @@ As an example, consider the following state:
 
 ```kotlin
 data class MagazineState(
-        val publisher: AccountIdAndParty,
+        val publisher: AccountParty,
         @VaultaireAccountInfo
         val author: PublicKey,
         @VaultaireAccountInfo
@@ -71,9 +70,9 @@ The generated DTO for the above:
 
 ```kotlin
 data class MagazineStateLiteDto(
-		var publisher: AccountNameAndParty? = null,
-		var author: AccountNameAndParty? = null,
-		var editor: AccountNameAndParty? = null,
+		var publisher: AccountParty? = null,
+		var author: AccountParty? = null,
+		var editor: AccountNParty? = null,
 		//...
 		var linearId: UniqueIdentifier? = null
 ) : VaultaireAccountsAwareLiteDto<BookContract.MagazineState> {

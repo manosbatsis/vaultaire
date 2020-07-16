@@ -1,6 +1,7 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService
+import co.paralleluniverse.fibers.Suspendable
+import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoMembersStrategy
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
@@ -10,7 +11,7 @@ import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
 import javax.lang.model.element.VariableElement
 
-open class VaultaireLiteDtoMemberStrategy(
+open class LiteDtoMemberStrategy(
         annotatedElementInfo: AnnotatedElementInfo
 ): SimpleDtoMembersStrategy(annotatedElementInfo){
 
@@ -38,6 +39,7 @@ open class VaultaireLiteDtoMemberStrategy(
             originalTypeParameter: ParameterSpec
     ): FunSpec.Builder {
         val functionBuilder = super.getToPatchedFunctionBuilder(originalTypeParameter)
+                .addAnnotation(Suspendable::class.java)
         addStateServiceParameter(functionBuilder)
         return functionBuilder
     }
@@ -55,8 +57,16 @@ open class VaultaireLiteDtoMemberStrategy(
         else super.toAltConstructorStatement(index, variableElement, propertyName, propertyType, commaOrEmpty)
     }
 
+    // Create DTO alternative constructor
+    override fun getAltConstructorBuilder(): FunSpec.Builder {
+        val functionBuilder = super.getAltConstructorBuilder()
+        addStateServiceParameter(functionBuilder)
+        return functionBuilder
+    }
+
     override fun getToTargetTypeFunctionBuilder(): FunSpec.Builder {
         val functionBuilder = super.getToTargetTypeFunctionBuilder()
+                .addAnnotation(Suspendable::class.java)
         addStateServiceParameter(functionBuilder)
         return functionBuilder
     }
@@ -64,7 +74,7 @@ open class VaultaireLiteDtoMemberStrategy(
     open fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
         functionBuilder.addParameter(
                 "stateService",
-                ExtendedStateService::class.java.asClassName()
+                StateService::class.java.asClassName()
                         .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
     }
 

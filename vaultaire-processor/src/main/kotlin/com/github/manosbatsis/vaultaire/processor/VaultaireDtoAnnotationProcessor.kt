@@ -20,12 +20,8 @@
 package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDefaultDtoStrategy
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDtoStrategy
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoStrategy
-import com.github.manosbatsis.vaultaire.processor.plugins.AnnotationProcessorPluginService
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.plugins.DefaultDtoStrategyFactoryProcessorPlugin
+import com.github.manotbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
 import com.github.manotbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
@@ -48,27 +44,18 @@ class VaultaireDtoAnnotationProcessor : AbstractAnnotatedModelInfoProcessor(
         secondaryTargetRefAnnotationName = "persistentStateType"
 ) {
 
-    // TODO: clean up this crap
-    val profileStrategies  = mapOf(
-            VaultaireDtoStrategyKeys.DEFAULT to VaultaireDefaultDtoStrategy::class.java,
-            VaultaireDtoStrategyKeys.LITE to VaultaireLiteDtoStrategy::class.java
-    )
-
-    private fun getDtoStrategies(annotatedElementInfo: AnnotatedElementInfo): List<Class<out DtoStrategy>> {
-        return annotatedElementInfo.annotation.findAnnotationValueList("strategies")
-                ?.map {
-            profileStrategies[it.value.toString()] ?: throw IllegalArgumentException("Not a valid strategy: $it")
-        } ?: listOf(VaultaireDtoStrategy::class.java)
-    }
-
-    //val defaultDtoInputContextFactory: DtoInputContextFactoryProcessorPlugin
-    val dtoInputContextFactory by lazy {
-        AnnotationProcessorPluginService
-                .forClassLoader(VaultaireDtoAnnotationProcessor::class.java.classLoader)
-                .forServiceType(
-                        DtoStrategyFactoryProcessorPlugin::class.java,
-                        DefaultDtoStrategyFactoryProcessorPlugin()
-                )
+    /** Get a list of DTO strategies to apply per annotated element */
+    private fun getDtoStrategies(annotatedElementInfo: AnnotatedElementInfo): Map<String, DtoStrategy> {
+        val pluginServiceLoader = AnnotationProcessorPluginService.getInstance()
+        val strategyKeys =  annotatedElementInfo.annotation
+                .findAnnotationValueListEnum("strategies", VaultaireDtoStrategyKeys::class.java)?: error("Could not find annotation member: strategies")
+        return strategyKeys.map {
+                    val strategy = it.toString() //.toString()
+                    strategy to pluginServiceLoader.getPlugin(
+                            DtoStrategyFactoryProcessorPlugin::class.java,
+                            annotatedElementInfo, strategy)
+                            .createStrategy(annotatedElementInfo, strategy)
+                }.toMap()
     }
 
     override fun processElementInfos(elementInfos: List<AnnotatedElementInfo>) =
@@ -76,21 +63,13 @@ class VaultaireDtoAnnotationProcessor : AbstractAnnotatedModelInfoProcessor(
     
     private fun processElementInfo(elementInfo: AnnotatedElementInfo) {
         println("processElementInfo, elementInfo: $elementInfo")
-        getDtoStrategies(elementInfo).toSet().forEach {
+        getDtoStrategies(elementInfo).map { (suffix, strategy) ->
 
-            println("processElementInfo, strategy type: ${it.simpleName}")
-            val dtoStrategy = dtoInputContextFactory
-                    .buildDtoInputContext(elementInfo, it)
-            println("processElementInfo, strategy: ${dtoStrategy}")
-            val  dtoStrategyBuilder = dtoStrategy.dtoTypeSpecBuilder()
-            // TODO: remove
-            val suffix = if(dtoStrategy::class.java.simpleName.toUpperCase().contains("LITE"))
-                "LiteDto"
-            else "Dto"
+            val  dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
             println("processElementInfo, suffix: ${suffix}")
             val dto = dtoStrategyBuilder.build()
             val packageName = elementInfo.generatedPackageName
-            val fileName = "${elementInfo.primaryTargetTypeElement.simpleName}VaultaireGenerated${suffix}"
+            val fileName = "${elementInfo.primaryTargetTypeElementSimpleName}${suffix}"
             println("processElementInfo, dto: ${dto}")
             println("processElementInfo, packageName: ${packageName}")
             println("processElementInfo, fileName: ${fileName}")

@@ -55,9 +55,29 @@ annotation class VaultaireGenerateForDependency(
 )
 
 
-object VaultaireDtoStrategyKeys {
-    const val DEFAULT = "com.github.manosbatsis.vaultaire.processor.dto.VaultaireDefaultDtoStrategy"
-    const val LITE = "com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoStrategy"
+enum class VaultaireDtoStrategyKeys(val classNameSuffix: String) {
+    DEFAULT("Dto"),
+    LITE("LiteDto");
+
+
+
+    override fun toString(): String {
+        return this.classNameSuffix
+    }
+    companion object {
+        fun findFromString(s: String): VaultaireDtoStrategyKeys? {
+            val sUpper = s.toUpperCase()
+            return VaultaireDtoStrategyKeys.values()
+                    .find {
+                        it.name.toUpperCase() == sUpper
+                                || it.classNameSuffix.toUpperCase() == sUpper
+                    }
+        }
+        fun getFromString(s: String): VaultaireDtoStrategyKeys = findFromString(s)
+                    ?: error("Could not match input $s to VaultaireDtoStrategyKeys entry")
+
+    }
+
 }
 
 /** Generate a DTO for the annotated [ContractState] class or constructor. */
@@ -66,7 +86,8 @@ object VaultaireDtoStrategyKeys {
 annotation class VaultaireGenerateDto(
         val ignoreProperties: Array<String> = [],
         val copyAnnotationPackages: Array<String> = [],
-        val strategies: Array<String> = [VaultaireDtoStrategyKeys.DEFAULT]
+        val strategies: Array<VaultaireDtoStrategyKeys> = [VaultaireDtoStrategyKeys.DEFAULT],
+        val includeParticipants: Boolean = false
 )
 
 /**
@@ -79,7 +100,8 @@ annotation class VaultaireGenerateDtoForDependency(
         val contractStateType: KClass<out ContractState>,
         val persistentStateType: KClass<out PersistentState>,
         val copyAnnotationPackages: Array<String> = [],
-        val strategies: Array<String> = [VaultaireDtoStrategyKeys.DEFAULT]
+        val strategies: Array<VaultaireDtoStrategyKeys> = [VaultaireDtoStrategyKeys.DEFAULT],
+        val includeParticipants: Boolean = false
 )
 
 /**

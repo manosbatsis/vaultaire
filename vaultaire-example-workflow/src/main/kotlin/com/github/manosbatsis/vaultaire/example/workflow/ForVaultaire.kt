@@ -10,21 +10,15 @@ import com.r3.corda.lib.tokens.contracts.internal.schemas.PersistentFungibleToke
 import com.r3.corda.lib.tokens.contracts.states.FungibleToken
 
 
-@VaultaireGenerateForDependency(name = "fungibleTokenConditions",
+@VaultaireGenerateForDependency(name = "accountInfoConditions",
         persistentStateType = PersistentAccountInfo::class,
         contractStateType = AccountInfo::class)
-@VaultaireGenerateDtoForDependency(
-        ignoreProperties = ["participants"],
-        persistentStateType = PersistentAccountInfo::class,
-        contractStateType = AccountInfo::class,
-        strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
 class Dummy10
 
 @VaultaireGenerateForDependency(name = "fungibleTokenConditions",
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class)
 @VaultaireGenerateDtoForDependency(
-        ignoreProperties = ["participants"],
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class,
         strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
@@ -34,7 +28,6 @@ class Dummy1
         persistentStateType = BookContract.MagazineState.MagazineSchemaV1.PersistentMagazineState::class,
         contractStateType = BookContract.MagazineState::class)
 @VaultaireGenerateDtoForDependency(
-        ignoreProperties = ["participants"],
         persistentStateType = BookContract.MagazineState.MagazineSchemaV1.PersistentMagazineState::class,
         contractStateType = BookContract.MagazineState::class,
         strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])

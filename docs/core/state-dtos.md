@@ -74,7 +74,9 @@ annotate them with `@VaultaireGenerateDto`:
 ```kotlin
 @VaultaireGenerateDto(
     // optional: properties to ignore
-    ignoreProperties = ["participants"]
+    ignoreProperties = ["foo"],
+    // optional, default is false
+    includeParticipants = false
 )
 data class BookState(
     val publisher: Party,
@@ -108,7 +110,7 @@ Mixin example:
     persistentStateType = PersistentBookState::class,
     contractStateType = BookState::class,
     // optional: properties to ignore
-    ignoreProperties = ["participants"]
+    ignoreProperties = ["foo"]
 )
 class BookStateMixin // just a placeholder for our annotation
 ```
@@ -209,7 +211,7 @@ will generate separate DTOs for each.
 
 ```kotlin
 @VaultaireGenerateDto(
-    ignoreProperties = ["participants"],
+    ignoreProperties = ["foo"],
     strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
 )
 data class BookState(

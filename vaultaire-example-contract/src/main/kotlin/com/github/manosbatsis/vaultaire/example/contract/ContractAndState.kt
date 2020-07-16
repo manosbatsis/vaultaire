@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
-import com.github.manosbatsis.vaultaire.dto.AccountNameAndParty
+import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.*
 import com.github.manotbatsis.kotlin.utils.api.DefaultValue
 import net.corda.core.contracts.*
@@ -119,7 +119,6 @@ class BookContract : Contract {
 
     // State.
     @VaultaireGenerateDto(
-            ignoreProperties = ["participants"],
             copyAnnotationPackages = ["com.fasterxml.jackson.annotation"],
             // Default is [VaultaireDtoStrategyKeys.DEFAULT]
             strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
@@ -193,8 +192,8 @@ class BookContract : Contract {
     }
 
     // State.
-    data class MagazineState(val publisher: AccountNameAndParty,
-                             val author: AccountNameAndParty,
+    data class MagazineState(val publisher: AccountParty,
+                             val author: AccountParty,
                              val price: BigDecimal,
                              val genre: Genre,
                              val issues: Int = 1,
