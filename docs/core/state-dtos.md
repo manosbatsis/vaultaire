@@ -7,16 +7,11 @@ Vaultaire's annotation processing automates this task by (re)generating those fo
 
 ## Usage Patterns
 
-### State to DTO
-
-To convert from state to DTO, use the DTO's latter's alternative, state-based constructor:
-
-```kotlin
-// Get the state
-val state: BookState = //...
-// Convert to state
-val dto = BookStateDto(state)
-```
+A typical use for generated DTOs is messaging over HTTP REST or RPC as 
+input and output of Corda Flows. The provided conversion utilities 
+can be used to create, update or even patch `ContractState` types 
+they correspond to.  
+  
 
 ### DTO to State
 
@@ -46,10 +41,10 @@ an existing state:
 
 ```kotlin
 // Get the Service
-val stateService: BookStateService =  //...
+val stateService = BookStateService(serviceHub_or_RPCOps)
 
 // Load state from Node Vault
-val state: BookState = stateService.getByLinearId(identifier)
+val state: BookState = stateService.getByLinearId(id)
 
 // Apply DTO as patch
 // ----------------------
@@ -58,6 +53,17 @@ val patchedState1: BookState = dto1.toPatched(state)
 // Apply 'lite' DTO as patch
 // ----------------------
 val patchedState2: BookState = dto2.toPatched(state, stateService)
+```
+
+### State to DTO
+
+To convert from state to DTO, use the DTO's latter's alternative, state-based constructor:
+
+```kotlin
+// Get the state
+val state: BookState = stateService.getByLinearId(id)
+// Convert to DTO
+val dto = BookStateDto.mapToDto(state)
 ```
 
 ## DTO Generation
@@ -114,6 +120,27 @@ Mixin example:
 )
 class BookStateMixin // just a placeholder for our annotation
 ```
+
+
+#### Utility Annotations
+
+The`@DefaultValue` can be used to provide default property initializers. 
+It can be used equally on either `ContractState` or "mixin" properties:
+
+
+```kotlin
+@VaultaireGenerateForDependency(/*...*/)
+@VaultaireGenerateDtoForDependency(/*...*/)
+data class MagazineMixin(
+        @DefaultValue("1")
+        var issues: Int,
+        @DefaultValue("Date()")
+        val published: Date,
+        @DefaultValue("UniqueIdentifier()")
+        val linearId: UniqueIdentifier
+)
+```
+  
 
 #### Sample DTO
 

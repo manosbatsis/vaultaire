@@ -1,6 +1,6 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.dto
 
-/*
+/*TODO: move to module, have it generated
 @VaultaireGenerateForDependency(name = "accountInfoConditions",
         persistentStateType = PersistentAccountInfo::class,
         contractStateType = AccountInfo::class)

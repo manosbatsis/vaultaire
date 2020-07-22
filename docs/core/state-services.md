@@ -9,7 +9,8 @@ load, query and track vault states.
 and specific to a single `ContractState` type.
 
 State Services can also decouple you code from `ServiceHub` and `CordaRPCOps`
-amd help increase code reuse between cordapps and their clients.
+by providing constructors for either, thus helping increase code reuse 
+between cordapps and their clients.
 
 ## Basic Services
 

@@ -209,57 +209,6 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
                 ?: throw IllegalStateException("No account could be resolved matching the given identifier and host")
     }
 
-    /**
-     * Create a new DTO instance using the given [AccountInfo] as source.
-
-    @Suspendable
-    fun toAccountInfoDto(original: AccountInfo): AccountInfoLiteDto {
-    return AccountInfoLiteDto(
-    name = original.name,
-    host = original.host.name,
-    identifier = original.identifier.id)
-    }
-     */
-    /**
-     * Create an instance of [AccountInfo], using this DTO's properties.
-     * May throw a [DtoInsufficientStateMappingException]
-     * if there is mot enough information to do so.
-
-    @Suspendable
-    fun toAccountInfo(source: AccountInfoDto): AccountInfo {
-    try {
-    return AccountInfo(
-    name = source.name ?: error("A name is required to map from a AccountInfoDto "),
-    host = source.host?.let { it }
-    ?: error("A host name is required to map from a AccountInfoDto "),
-    identifier = source.identifier?.let { it }
-    ?: error("An identifier required to map from a AccountInfoDto ")
-    )
-    } catch (e: Exception) {
-    throw DtoInsufficientMappingException(exception = e)
-    }
-    }*/
-
-    /**
-     * Create an instance of [AccountInfo], using this DTO's properties.
-     * May throw a [DtoInsufficientStateMappingException]
-     * if there is mot enough information to do so.
-
-    @Suspendable
-    fun toAccountInfo(source: AccountInfoLiteDto): AccountInfo {
-    try {
-    return AccountInfo(
-    name = source.name ?: error("A name is required to map from a AccountInfoDto "),
-    host = source.host?.let { wellKnownPartyFromX500Name(it) }
-    ?: error("A host name is required to map from a AccountInfoDto "),
-    identifier = source.identifier?.let { UniqueIdentifier(null, it) }
-    ?: error("An identifier required to map from a AccountInfoDto ")
-    )
-    } catch (e: Exception) {
-    throw DtoInsufficientMappingException(exception = e)
-    }
-    }
-     */
     @Suspendable
     fun requestAccount(identifier: UUID, host: Party): AccountInfo?
     @Suspendable

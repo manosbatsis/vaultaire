@@ -42,7 +42,7 @@ The plugin also adds:
 or state properties (as supported by `@VaultaireAccountInfo` above) to Corda Accounts,
 i.e. `AccountInfo` states.
 
-- `VaultaireAccountsAwareLiteDto` as the replacement of `VaultaireLiteDto`,
+- `AccountsAwareLiteDto` as the equivalent of `LiteDto`,
 including it's use as the base DTO type by the "lite" DTO strategy.
 
 All the above effectively provide the "lite" DTO strategy with enhanced DTO<->state conversion
@@ -70,45 +70,64 @@ The generated DTO for the above:
 
 ```kotlin
 data class MagazineStateLiteDto(
-		var publisher: AccountParty? = null,
-		var author: AccountParty? = null,
-		var editor: AccountNParty? = null,
+		var publisher: AccountInfoLiteDto? = null,
+		var author: AccountInfoLiteDto? = null,
+		var editor: AccountInfoLiteDto? = null,
 		//...
 		var linearId: UniqueIdentifier? = null
-) : VaultaireAccountsAwareLiteDto<BookContract.MagazineState> {
+) : AccountsAwareLiteDto<BookContract.MagazineState> {
 ```
 
 
 ### Query DSL Enhancements
 
-TODO: support for account external IDs
+Corda 4.3 added the possibility to map any public key to an external id of type UUID. 
+Corda Accounts uses this feature to map an account's key to the account's id.
+
+Thus, using `externalIds` creates query criteria aware of state participants, without 
+the need to embed account identifiers within the state itself.
+
+This is now supported by the generated Query DSL for your contract state:
+ 
+```kotlin
+val magazineStateQuery = magazineStateQuery {
+    // Match participants using the following 
+    // AccountInfo identifiers
+    externalIds = listOfNotNull(publisher.identifier)
+    status = Vault.StateStatus.UNCONSUMED // the default
+    // The rest of the query..
+    //...
+```
 
 ### Service Enhancements
 
 The plugin also adds and applies various accounts-aware service types as replacements
-of their default equivalents.
+of their default equivalents, along with a number of utility methods around accounts. 
+
 
 ```kotlin
 // Create an instance of the generated service type,
 // passing a ServiceHub, CordaRPCOps, NodeRpcConnection
 // or even a custom StateServiceDelegate
-val bookStateService = BookStateService(serviceHub)
+val stateService = AccountInfoService(serviceHub)
 
 // Get the account that is already stored locally
 // and matching the given [id] if found, null otherwise
-val accountOrNull: AccountInfo? = bookStateService.findStoredAccount(accountId)
+val accountOrNull: AccountInfo? = 
+        stateService.findStoredAccount(accountId)
+        ?: stateService.requestAccount(accountId, accountHost)
 
 // Get the account that is already stored locally
 // and matching the given [id] if found, null otherwise
-val account: AccountInfo = bookStateService.getStoredAccount(accountId)
+val account: AccountInfo = stateService.getStoredAccount(accountId)
 
 // Find accounts that are already stored locally
 // and match the given [criteria]
 val accountsPage: Vault.Page<AccountInfo> =
-	bookStateService.findStoredAccounts(queryCriteria)
+	stateService.findStoredAccounts(queryCriteria)
 
 // Create a public key for the given [accountInfo] */
-val anonymousParty = bookStateService.createPublicKey(accountInfo)
+val anonymousParty = stateService.createPublicKey(accountInfo)
 ```
 
 

@@ -150,7 +150,7 @@ class MagazineMockTests {
 
         // Use the generated DSL to create query criteria
         val magazineStateQuery = magazineStateQuery {
-            //externalIds = listOfNotNull(aPublisherDto.identifier, bAuthorDto.identifier)
+            externalIds = listOfNotNull(aPublisherDto.identifier, bAuthorDto.identifier)
             status = Vault.StateStatus.UNCONSUMED // the default
             relevancyStatus = Vault.RelevancyStatus.ALL // the default
             and {
