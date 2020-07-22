@@ -39,7 +39,7 @@ import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
-import java.util.*
+import java.util.Date
 
 
 class CreateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {

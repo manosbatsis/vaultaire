@@ -21,17 +21,20 @@ package com.github.manosbatsis.vaultaire.plugin.accounts.service.dao
 
 import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
-import com.github.manosbatsis.vaultaire.dto.AccountInfoDto
 import com.github.manosbatsis.vaultaire.dto.AccountParty
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import net.corda.core.contracts.ContractState
+import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.AnonymousParty
 import net.corda.core.schemas.StatePersistable
+import net.corda.core.utilities.contextLogger
 import java.security.PublicKey
 
 
@@ -39,81 +42,124 @@ import java.security.PublicKey
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-interface AccountsAwareStateService<T : ContractState>: StateService<T>, AccountsAwareStateServiceDelegate<T> {
+interface AccountsAwareStateService<T : ContractState>:
+        StateService<T>,
+        AccountsAwareStateServiceDelegate<T> {
 
-    @Suspendable
-    fun toAccountInfoDtoOrNull(
-            accountInfo: AccountInfo?,
-            stateService: AccountsAwareStateService<*>? = null
-    ): AccountInfoDto? = if(accountInfo != null) AccountInfoDto(
-            name = accountInfo.name,
-            host = accountInfo.host.name,
-            identifier = accountInfo.identifier.id)
-    else null
+    companion object{
+        private val logger = contextLogger()
+    }
 
     @Suspendable
     fun toAccountInfoDtoOrNull(
             accountIdAndParty: AccountParty?
-    ): AccountInfoDto? = if(accountIdAndParty != null) {
-        val accountInfo = toAccountInfoDtoOrNull(findStoredAccountOrNull(accountIdAndParty.identifier)?.state?.data)
-        if(accountInfo != null) AccountInfoDto(
-                name = accountInfo.name,
-                host = accountInfo.host,
-                identifier = accountInfo.identifier)
-        else null
+    ): AccountInfoDto? {
+        return if (accountIdAndParty != null) {
+            val accountInfo = findStoredAccountOrNull(accountIdAndParty.identifier)
+            if (accountInfo != null) with(accountInfo!!.state!!.data) {
+                AccountInfoDto(
+                        name = name,
+                        host = host,
+                        identifier = identifier)
+            }
+            else null
+        } else null
     }
-    else null
+
+    @Suspendable
+    fun toAccountInfoLiteDtoOrNull(
+            accountIdAndParty: AccountParty?
+    ): AccountInfoLiteDto? {
+        return if (accountIdAndParty != null) {
+            val accountInfo = findStoredAccountOrNull(accountIdAndParty.identifier)
+            if (accountInfo != null) with(accountInfo!!.state!!.data) {
+                AccountInfoLiteDto(
+                        name = name,
+                        host = host.name,
+                        identifier = identifier.id)
+            }
+            else null
+        } else null
+    }
 
     @Suspendable
     fun toAccountInfoDto(
             accountIdAndParty: AccountParty
-    ): AccountInfoDto = toAccountInfoDtoOrNull(accountIdAndParty)
-            ?: error("Could not map input to AccountInfoDto")
+    ): AccountInfoDto {
+        return toAccountInfoDtoOrNull(accountIdAndParty)
+                ?: error("Could not map input to AccountInfoDto")
+    }
 
     @Suspendable
-    fun toAccountInfoDto(
-            accountInfo: AccountInfo
-    ): AccountInfoDto = toAccountInfoDtoOrNull(accountInfo)
-            ?: error("Could not map input to AccountInfoDto")
-
+    fun toAccountInfoLiteDto(
+            accountIdAndParty: AccountParty
+    ): AccountInfoLiteDto {
+        return toAccountInfoLiteDtoOrNull(accountIdAndParty)
+                ?: error("Could not map input to AccountInfoDto")
+    }
 
     @Suspendable
     fun toAccountInfoDtoOrNull(
             anonymousParty: AnonymousParty?
-    ): AccountInfoDto? = toAccountInfoDtoOrNull(anonymousParty?.owningKey)
+    ): AccountInfoDto? {
+        return toAccountInfoDtoOrNull(anonymousParty?.owningKey)
+    }
+
+
+    @Suspendable
+    fun toAccountInfoLiteDtoOrNull(
+            anonymousParty: AnonymousParty?
+    ): AccountInfoLiteDto? {
+        return toAccountInfoLiteDtoOrNull(anonymousParty?.owningKey)
+    }
 
     @Suspendable
     fun toAccountInfoDtoOrNull(
             owningKey: PublicKey?
-    ): AccountInfoDto? = if(owningKey != null) {
-        toAccountInfoDtoOrNull(findStoredAccountOrNull(owningKey)?.state?.data)
+    ): AccountInfoDto? {
+        return if (owningKey != null) {
+            AccountInfoDto.mapToDto(
+                    findStoredAccountOrNull(owningKey)!!.state!!.data)
+        } else null
     }
-    else null
+
+    @Suspendable
+    fun toAccountInfoLiteDtoOrNull(
+            owningKey: PublicKey?
+    ): AccountInfoLiteDto? {
+        return if (owningKey != null) {
+            AccountInfoLiteDto.mapToDto(
+                    findStoredAccountOrNull(owningKey)!!.state!!.data)
+        } else null
+    }
 
 
     @Suspendable
     fun findAccountInfo(
             accountInfoDto: AccountInfoDto?
-    ): AccountInfo? =
-            when{
-                // Return null input as is
-                accountInfoDto == null -> null
-                // Build instance otherwise, try by id first...
-                accountInfoDto.identifier != null ->{
-                    findStoredAccount(accountInfoDto.identifier!!).state.data
-                }
-                // ... name and host otherwise
-                accountInfoDto.name != null && accountInfoDto.host != null -> {
-                    findStoredAccount(accountInfoDto.name!!, accountInfoDto.host!!).state.data
-                }
-                else -> throw IllegalArgumentException("Invalid AccountInfoDto, must include either an id or name and host")
+    ): AccountInfo? {
+        return when {
+            // Return null input as is
+            accountInfoDto == null -> null
+            // Build instance otherwise, try by id first...
+            accountInfoDto.identifier != null -> {
+                findStoredAccount(accountInfoDto.identifier!!.id).state.data
             }
+            // ... name and host otherwise
+            accountInfoDto.name != null && accountInfoDto.host != null -> {
+                findStoredAccount(accountInfoDto.name!!, accountInfoDto.host!!).state.data
+            }
+            else -> throw IllegalArgumentException("Invalid AccountInfoDto, must include either an id or name and host")
+        }
+    }
 
     @Suspendable
     fun getAccountInfo(
             accountInfoDto: AccountInfoDto?
-    ): AccountInfo = findAccountInfo(accountInfoDto)
-            ?:throw IllegalArgumentException("No stored AccountInfo could be matched to the given AccountInfoDto")
+    ): AccountInfo {
+        return findAccountInfo(accountInfoDto)
+                ?: throw IllegalArgumentException("No stored AccountInfo could be matched to the given AccountInfoDto")
+    }
 
     @Suspendable
     fun toAbstractPartyOrNull(
@@ -121,72 +167,136 @@ interface AccountsAwareStateService<T : ContractState>: StateService<T>, Account
             default: AbstractParty? = null
     ): AbstractParty? {
         val accountInfo = findAccountInfo(accountInfoDto)
-        return when(accountInfo) {
-            // Return null input as is
-            null -> default
-            else -> createPublicKey(accountInfo)
-        }
+        if(accountInfo == null) return default
+        return createPublicKey(accountInfo)
     }
 
     @Suspendable
     fun toAbstractParty(
             accountInfoDto: AccountInfoDto?,
             default: AbstractParty? = null
-    ): AbstractParty? =
-            toAbstractPartyOrNull(accountInfoDto, default)
-                    ?:throw IllegalArgumentException("No party could be matched to the given AccountInfoDto")
+    ): AbstractParty? {
+        return toAbstractPartyOrNull(accountInfoDto, default)
+                ?: throw IllegalArgumentException("No party could be matched to the given AccountInfoDto")
+    }
 
     @Suspendable
     fun toPublicKeyOrNull(
             accountInfoDto: AccountInfoDto?,
             default: PublicKey? = null
-    ): PublicKey? = toAbstractPartyOrNull(accountInfoDto)?.owningKey
-            ?: default
+    ): PublicKey? {
+        return toAbstractPartyOrNull(accountInfoDto)?.owningKey
+                ?: default
+    }
 
     @Suspendable
     fun toPublicKey(
             accountInfoDto: AccountInfoDto?,
             default: PublicKey? = null
-    ): PublicKey? = toPublicKeyOrNull(accountInfoDto)
-            ?:throw IllegalArgumentException("No public key could be matched to the given AccountInfoDto")
+    ): PublicKey? {
+        return toPublicKeyOrNull(accountInfoDto)
+                ?: throw IllegalArgumentException("No public key could be matched to the given AccountInfoDto")
+    }
+/*
+    fun  toParty(
+            partyName: CordaX500Name?,
+            stateService: S,
+            propertyName: String = "unknown"
+    ): Party = if(partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
+                    ?: throw DtoInsufficientMappingException("Name ${partyName} not found for property: $propertyName")
+            else throw DtoInsufficientMappingException("Required property: $propertyName was null")
+
+ */
+
+    // TODO: generate from/to Lite
+    @Suspendable
+    fun toAccountPartyOrNull(
+            accountInfoLiteDto: AccountInfoLiteDto?,
+            default: AccountParty? = null,
+            ignoreMatching: Boolean  = false,
+            propertyName: String = "unknown"
+    ): AccountParty? {
+        logger.debug("toAccountPartyOrNull, accountInfoLiteDto: $accountInfoLiteDto")
+        val accountInfoDto = if(accountInfoLiteDto == null ) {null}
+        else{
+            val host = if(accountInfoLiteDto.host == null ) {null}
+            else {wellKnownPartyFromX500Name(accountInfoLiteDto.host!!)}
+            AccountInfoDto(
+                    accountInfoLiteDto.name,
+                    host,
+                    accountInfoLiteDto.identifier?.let { UniqueIdentifier(null, it) }
+            )
+        }
+        logger.debug("toAccountPartyOrNull, accountInfoDto: $accountInfoDto")
+        val accountParty = toAccountPartyOrNull(
+                accountInfoDto,
+                default,
+                ignoreMatching,
+                propertyName)
+        logger.debug("toAccountPartyOrNull, accountParty: $accountParty")
+        return accountParty
+    }
 
     // TODO: needs cleanup
     @Suspendable
     fun toAccountPartyOrNull(
             accountInfoDto: AccountInfoDto?,
             default: AccountParty? = null,
-            ignoreMatching: Boolean  = false
+            ignoreMatching: Boolean  = false,
+            propertyName: String = "unknown"
     ): AccountParty? {
-        println("toAccountPartyOrNull, accountInfoDto: $accountInfoDto ")
-        return when {
-            // Return null input as is
-            accountInfoDto == null -> default
-            // Reuse available if IDs match
-            //!ignoreMatching && accountInfoDto.hasMatchingIdentifierAndName(default) -> default
-            // Build instance otherwise, try by id first...
-            accountInfoDto.identifier != null && accountInfoDto.host != null -> {
-                val accountInfo = findAccountOrNull(accountInfoDto.identifier!!, accountInfoDto.host!!)
-                if (accountInfo != null) AccountParty(accountInfo.identifier.id, accountInfo.name, createPublicKey(accountInfo))
-                else null
-            }
-            accountInfoDto.identifier != null -> {
-                val accountInfo = findStoredAccountOrNull(accountInfoDto.identifier!!)?.state?.data
-                if (accountInfo != null) AccountParty(accountInfo.identifier.id, accountInfo.name, createPublicKey(accountInfo))
-                else null
-            }
-            else -> throw IllegalArgumentException("Failed converting from the given $accountInfoDto , must include an id and, optionally, a host")
+        logger.debug("toAccountPartyOrNull, accountInfoDto: $accountInfoDto ")
 
+        // Return null input as is
+        return if(accountInfoDto == null) {default}
+        // Reuse available if IDs match
+        //!ignoreMatching && accountInfoDto.hasMatchingIdentifierAndName(default) -> default
+        // Build instance otherwise, try by id first...
+        else if(accountInfoDto.identifier != null && accountInfoDto.host != null)  {
+            logger.debug("toAccountPartyOrNull, has identifier")
+            val accountInfo = findAccountOrNull(accountInfoDto.identifier!!.id, accountInfoDto.host!!.name)
+            if (accountInfo != null) {
+                val anonymousParty = createPublicKey(accountInfo)
+                AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty)
+            }
+            else null
         }
+        else if(accountInfoDto.identifier != null) {
+            val accountInfo = findStoredAccountOrNull(accountInfoDto.identifier!!.id)?.state?.data
+            if (accountInfo != null) {
+                val anonymousParty = createPublicKey(accountInfo)
+                AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty)
+            }
+            else null
+        }
+        else throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
+                "value: $accountInfoDto to AccountParty")
+
     }
 
     @Suspendable
     fun toAccountParty(
             accountInfoDto: AccountInfoDto?,
             default: AccountParty? = null,
-            ignoreMatching: Boolean  = false
-    ): AccountParty =
-            toAccountPartyOrNull(accountInfoDto, default, ignoreMatching)
-                    ?: throw IllegalArgumentException("Failed converting from the given $accountInfoDto to AccountParty")
+            ignoreMatching: Boolean  = false,
+            propertyName: String = "unknown"
+    ): AccountParty {
+        return toAccountPartyOrNull(accountInfoDto, default, ignoreMatching, propertyName)
+                ?: throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
+                        "value: $accountInfoDto to AccountParty")
+    }
+
+    @Suspendable
+    fun toAccountParty(
+            accountInfoDto: AccountInfoLiteDto?,
+            default: AccountParty? = null,
+            ignoreMatching: Boolean  = false,
+            propertyName: String = "unknown"
+    ): AccountParty {
+        val account = toAccountPartyOrNull(accountInfoDto, default, ignoreMatching, propertyName)
+        return account ?: throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
+                        "value: $accountInfoDto to AccountParty")
+    }
 
 }
 

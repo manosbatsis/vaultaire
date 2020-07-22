@@ -23,10 +23,13 @@ import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
+import net.corda.core.concurrent.CordaFuture
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.LinearState
+import net.corda.core.flows.FlowLogic
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
+import net.corda.core.internal.concurrent.doneFuture
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
 import net.corda.core.node.AppServiceHub
@@ -37,10 +40,15 @@ import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.schemas.QueryableState
 import net.corda.core.serialization.SingletonSerializeAsToken
+import net.corda.core.utilities.contextLogger
 
 
 /** [NodeService] delegate for vault operations */
 interface NodeServiceDelegate {
+
+    companion object{
+        private val logger = contextLogger()
+    }
 
     val defaults: ServiceDefaults
     val nodeLegalName: CordaX500Name
@@ -66,9 +74,11 @@ interface NodeServiceDelegate {
      * @param name The name to convert to a party
      */
     @Suspendable
-    fun findPartyFromName(query: String): Party? =
-            this.partiesFromName(query, true).firstOrNull()
-                    ?: this.partiesFromName(query, true).firstOrNull()
+    fun findPartyFromName(query: String): Party? {
+        return this.partiesFromName(query, true).firstOrNull()
+                ?: this.partiesFromName(query, true).firstOrNull()
+    }
+
     /**
      * Returns a [Party] match for the given [CordaX500Name] if found, null otherwise
      * @param name The name to convert to a party
@@ -83,17 +93,21 @@ interface NodeServiceDelegate {
      * @param name The name to convert to a party
      */
     @Suspendable
-    fun getPartyFromName(query: String): Party =
-            if(query.contains("O=")) wellKnownPartyFromX500Name(CordaX500Name.parse(query))
-                    ?: throw IllegalArgumentException("No party found for query treated as an x500 name: ${query}")
-            else this.partiesFromName(query, true).firstOrNull()
-                    ?: this.partiesFromName(query, false).single()
+    fun getPartyFromName(query: String): Party {
+        return if (query.contains("O=")) wellKnownPartyFromX500Name(CordaX500Name.parse(query))
+                ?: throw IllegalArgumentException("No party found for query treated as an x500 name: ${query}")
+        else this.partiesFromName(query, true).firstOrNull()
+                ?: this.partiesFromName(query, false).single()
+    }
 
 
-    fun <T: ContractState> isLinearState(contractStateType: Class<T>): Boolean =
-            LinearState::class.java.isAssignableFrom(contractStateType)
-    fun <T: ContractState> isQueryableState(contractStateType: Class<T>): Boolean =
-            QueryableState::class.java.isAssignableFrom(contractStateType)
+    fun <T: ContractState> isLinearState(contractStateType: Class<T>): Boolean {
+        return LinearState::class.java.isAssignableFrom(contractStateType)
+    }
+
+    fun <T: ContractState> isQueryableState(contractStateType: Class<T>): Boolean {
+        return QueryableState::class.java.isAssignableFrom(contractStateType)
+    }
 
     /**
      * Query the vault for states matching the given criteria,
@@ -123,7 +137,12 @@ interface NodeServiceDelegate {
 
 /** RPC implementation base */
 abstract class NodeServiceRpcDelegateBase(
-        override val defaults: ServiceDefaults = SimpleServiceDefaults()): NodeServiceDelegate {
+        override val defaults: ServiceDefaults = SimpleServiceDefaults()
+): NodeServiceDelegate {
+
+    companion object{
+        private val logger = contextLogger()
+    }
 
     abstract val rpcOps: CordaRPCOps
 
@@ -150,14 +169,18 @@ abstract class NodeServiceRpcDelegateBase(
             criteria: QueryCriteria,
             paging: PageSpecification,
             sort: Sort
-    ): Vault.Page<T> = rpcOps.vaultQueryBy(criteria, paging, sort, contractStateType)
+    ): Vault.Page<T> {
+        return rpcOps.vaultQueryBy(criteria, paging, sort, contractStateType)
+    }
 
     override fun <T: ContractState> trackBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria,
             paging: PageSpecification,
             sort: Sort
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>> = rpcOps.vaultTrackBy(criteria, paging, sort, contractStateType)
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        return rpcOps.vaultTrackBy(criteria, paging, sort, contractStateType)
+    }
 }
 /** [CordaRPCOps]-based [NodeServiceDelegate] implementation */
 open class NodeServiceRpcDelegate(
@@ -179,6 +202,12 @@ open class NodeServiceRpcConnectionDelegate(
 /**
  * Simple [ServiceHub]-based [NodeServiceDelegate] implementation
  */
+@Deprecated(
+        message = "Deprecated",
+        replaceWith = ReplaceWith(
+                "NodeCordaServiceDelegate(AppServiceHub)"
+        )
+)
 open class NodeServiceHubDelegate(
         serviceHub: ServiceHub,
         override val defaults: ServiceDefaults = SimpleServiceDefaults()
@@ -189,12 +218,32 @@ abstract class NodeCordaServiceDelegate(
         serviceHub: AppServiceHub
 ): AbstractNodeServiceHubDelegate<AppServiceHub>(serviceHub) {
     override val defaults: ServiceDefaults = SimpleServiceDefaults()
+
+    /**
+     * Will start the given flow as a subflow of the current
+     * top-level [FlowLogic] if any, or using the [AppServiceHub]
+     * otherwise.
+     */
+    @Suspendable
+    protected fun <T> flowAwareStartFlow(flowLogic: FlowLogic<T>): CordaFuture<T> {
+        val currentFlow = FlowLogic.currentTopLevel
+        return if (currentFlow != null) {
+            val result = currentFlow.subFlow(flowLogic)
+            doneFuture(result)
+        } else {
+            serviceHub.startFlow(flowLogic).returnValue
+        }
+    }
 }
 
 /** [ServiceHub]-based [NodeServiceDelegate] implementation */
 abstract class AbstractNodeServiceHubDelegate<S: ServiceHub>(
          val serviceHub: S
 ) : SingletonSerializeAsToken(), NodeServiceDelegate {
+
+    companion object{
+        private val logger = contextLogger()
+    }
 
     override val nodeLegalName: CordaX500Name by lazy {
         nodeIdentity.name
@@ -209,12 +258,14 @@ abstract class AbstractNodeServiceHubDelegate<S: ServiceHub>(
     }
 
     @Suspendable
-    override fun partiesFromName(query: String, exactMatch: Boolean): Set<Party> =
-            serviceHub.identityService.partiesFromName(query, exactMatch)
+    override fun partiesFromName(query: String, exactMatch: Boolean): Set<Party> {
+        return serviceHub.identityService.partiesFromName(query, exactMatch)
+    }
 
     @Suspendable
-    override fun wellKnownPartyFromX500Name(name: CordaX500Name): Party? =
-            serviceHub.identityService.wellKnownPartyFromX500Name(name)
+    override fun wellKnownPartyFromX500Name(name: CordaX500Name): Party? {
+        return serviceHub.identityService.wellKnownPartyFromX500Name(name)
+    }
 
     @Suspendable
     override fun <T: ContractState> queryBy(
@@ -222,7 +273,9 @@ abstract class AbstractNodeServiceHubDelegate<S: ServiceHub>(
             criteria: QueryCriteria,
             paging: PageSpecification,
             sort: Sort
-    ): Vault.Page<T> = serviceHub.vaultService.queryBy(contractStateType, criteria, paging, sort)
+    ): Vault.Page<T> {
+        return serviceHub.vaultService.queryBy(contractStateType, criteria, paging, sort)
+    }
 
     @Suspendable
     override fun <T: ContractState> trackBy(
@@ -230,6 +283,8 @@ abstract class AbstractNodeServiceHubDelegate<S: ServiceHub>(
             criteria: QueryCriteria,
             paging: PageSpecification,
             sort: Sort
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
-            serviceHub.vaultService.trackBy(contractStateType, criteria, paging, sort)
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        return serviceHub.vaultService.trackBy(contractStateType, criteria, paging, sort)
+    }
+
 }

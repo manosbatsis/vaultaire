@@ -34,7 +34,8 @@ import net.corda.core.node.ServiceHub
 
 
 /** [StateService] delegate for vault operations */
-interface AccountsAwareStateServiceDelegate<T: ContractState>: AccountsAwareNodeServiceDelegate, StateServiceDelegate<T>
+interface AccountsAwareStateServiceDelegate<T: ContractState>:
+        AccountsAwareNodeServiceDelegate, StateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
 open class AccountsAwareStateServiceRpcDelegate<T: ContractState>(

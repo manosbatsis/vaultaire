@@ -31,7 +31,7 @@ import net.corda.core.node.ServiceHub
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-interface AccountsAwareNodeService: AccountsAwareNodeServiceDelegate {
+interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
 
 }
 

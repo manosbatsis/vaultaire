@@ -3,17 +3,14 @@ package com.github.manosbatsis.vaultaire.example.workflow
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
-import com.github.manosbatsis.vaultaire.example.contract.BookContract
-import com.r3.corda.lib.accounts.contracts.internal.schemas.PersistentAccountInfo
-import com.r3.corda.lib.accounts.contracts.states.AccountInfo
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState.MagazineSchemaV1.PersistentMagazineState
+import com.github.manotbatsis.kotlin.utils.api.DefaultValue
 import com.r3.corda.lib.tokens.contracts.internal.schemas.PersistentFungibleToken
 import com.r3.corda.lib.tokens.contracts.states.FungibleToken
+import net.corda.core.contracts.UniqueIdentifier
+import java.util.Date
 
-
-@VaultaireGenerateForDependency(name = "accountInfoConditions",
-        persistentStateType = PersistentAccountInfo::class,
-        contractStateType = AccountInfo::class)
-class Dummy10
 
 @VaultaireGenerateForDependency(name = "fungibleTokenConditions",
         persistentStateType = PersistentFungibleToken::class,
@@ -25,11 +22,18 @@ class Dummy10
 class Dummy1
 
 @VaultaireGenerateForDependency(name = "magazineConditions",
-        persistentStateType = BookContract.MagazineState.MagazineSchemaV1.PersistentMagazineState::class,
-        contractStateType = BookContract.MagazineState::class)
+        persistentStateType = PersistentMagazineState::class,
+        contractStateType = MagazineState::class)
 @VaultaireGenerateDtoForDependency(
-        persistentStateType = BookContract.MagazineState.MagazineSchemaV1.PersistentMagazineState::class,
-        contractStateType = BookContract.MagazineState::class,
+        persistentStateType = PersistentMagazineState::class,
+        contractStateType = MagazineState::class,
         strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
-class Dummy2
+data class MagazineMixin(
+        @DefaultValue("1")
+        var issues: Int,
+        @DefaultValue("Date()")
+        val published: Date,
+        @DefaultValue("UniqueIdentifier()")
+        val linearId: UniqueIdentifier
+)
 

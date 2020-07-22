@@ -6,4 +6,6 @@ dependencies {
     compile("com.github.manosbatsis.kotlin-utils:kotlin-utils-api:$kotlinutils_version")
     api "com.juanchosaravia.autodsl:annotation:$autodsl_version"
     kapt "com.juanchosaravia.autodsl:processor:$autodsl_version"
+    kapt project(':vaultaire-plugin-accounts')
+//    kapt project(':vaultaire-example-contract')
 }

@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.service.node
 
+import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
@@ -33,7 +34,8 @@ import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
-import java.util.*
+import net.corda.core.utilities.contextLogger
+import java.util.UUID
 
 class StateNotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.javaClass.simpleName} with id ${id}")
 
@@ -44,55 +46,76 @@ class StateNotFoundException(id: String, stateType: Class<*>) : RuntimeException
  */
 interface NodeService: NodeServiceDelegate {
 
+    companion object{
+        private val logger = contextLogger()
+    }
+
     /**
      * Find the state of type [T] matching the given [UUID] if any, throw an error otherwise
      * @throws StateNotFoundException if no match is found
      */
+    @Suspendable
     fun <T: ContractState> getByLinearId(
             contractStateType: Class<T>,
             linearId: UUID,
-            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
-            getByLinearId(contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
+            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL,
+            externalIds: List<UUID> = emptyList()
+    ): StateAndRef<T> {
+        return getByLinearId(
+                contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
+    }
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
      * @throws StateNotFoundException if no match is found
      */
+    @Suspendable
     fun <T: ContractState> getByLinearId(
             contractStateType: Class<T>,
             linearId: String,
-            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
-            getByLinearId(contractStateType, linearId.asUniqueIdentifier(), relevancyStatus)
+            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> {
+        return getByLinearId(contractStateType, linearId.asUniqueIdentifier(), relevancyStatus)
+    }
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
      * @throws StateNotFoundException if no match is found
      */
+    @Suspendable
     fun <T: ContractState> getByLinearId(
             contractStateType: Class<T>,
             linearId: UniqueIdentifier,
-            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> =
-            findByLinearId(contractStateType, linearId, relevancyStatus) ?: throw StateNotFoundException(linearId.toString(), contractStateType)
+            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> {
+        return findByLinearId(contractStateType, linearId, relevancyStatus)
+                ?: throw StateNotFoundException(linearId.toString(), contractStateType)
+    }
 
     /**
      * Find the state of type [T] matching the given [UUID] if any
      */
+    @Suspendable
     fun <T: ContractState> findByLinearId(
             contractStateType: Class<T>,
             linearId: UUID,
-            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? =
-            findByLinearId(contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
+            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? {
+        return findByLinearId(contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
+    }
+
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any
      */
+    @Suspendable
     fun <T: ContractState> findByLinearId(
             contractStateType: Class<T>,
             linearId: String,
-            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? =
-            findByLinearId(contractStateType, linearId.asUniqueIdentifier(), relevancyStatus)
+            relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? {
+        return findByLinearId(contractStateType, linearId.asUniqueIdentifier(), relevancyStatus)
+    }
+
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any
      */
+    @Suspendable
     fun <T: ContractState> findByLinearId(
             contractStateType: Class<T>,
             linearId: UniqueIdentifier,
@@ -103,9 +126,12 @@ interface NodeService: NodeServiceDelegate {
      * matching the given [UniqueIdentifier.externalId] if any, throw an error otherwise
      * @throws StateNotFoundException if no match is found
      */
+    @Suspendable
     fun <T: ContractState> getByExternalId(
-            contractStateType: Class<T>, externalId: String): StateAndRef<T> =
-            findByExternalId(contractStateType, externalId) ?: throw StateNotFoundException(externalId, contractStateType)
+            contractStateType: Class<T>, externalId: String): StateAndRef<T> {
+        return findByExternalId(contractStateType, externalId)
+                ?: throw StateNotFoundException(externalId, contractStateType)
+    }
 
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
@@ -167,43 +193,53 @@ open class BasicNodeService(
             serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(serviceHub.cordaService(NodeServiceHubDelegate::class.java))
 
+    @Suspendable
     override fun <T: ContractState> findByLinearId(
-            contractStateType: Class<T>, linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? =
-            if(isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
-                    linearId = listOf(linearId),
-                    relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
-            else throw IllegalStateException("Type is not a LinearState: ${contractStateType.simpleName}")
+            contractStateType: Class<T>, linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? {
+        return if (isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
+                linearId = listOf(linearId),
+                relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
+        else throw IllegalStateException("Type is not a LinearState: ${contractStateType.simpleName}")
+    }
 
+    @Suspendable
     override fun <T: ContractState> findByExternalId(
             contractStateType: Class<T>,
-            externalId: String): StateAndRef<T>? =
-            if(isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
-                    externalId = listOf(externalId),
-                    status = Vault.StateStatus.UNCONSUMED), 1, 1)
-                    .states.firstOrNull()
-             else throw IllegalStateException("Type is not a LinearState: ${contractStateType.simpleName}")
+            externalId: String): StateAndRef<T>? {
+        return if (isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
+                externalId = listOf(externalId),
+                status = Vault.StateStatus.UNCONSUMED), 1, 1)
+                .states.firstOrNull()
+        else throw IllegalStateException("Type is not a LinearState: ${contractStateType.simpleName}")
+    }
 
+    @Suspendable
     override fun <T: ContractState> countBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria): Long =
             queryBy(contractStateType, criteria, 1, 1).totalStatesAvailable
 
+    @Suspendable
     override fun <T: ContractState> queryBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria,
             pageNumber: Int,
             pageSize: Int,
             sort: Sort
-    ): Vault.Page<T> = queryBy(contractStateType, criteria, PageSpecification(pageNumber, pageSize), sort)
+    ): Vault.Page<T> {
+        return queryBy(contractStateType, criteria, PageSpecification(pageNumber, pageSize), sort)
+    }
 
+    @Suspendable
     override fun <T: ContractState> trackBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria,
             pageNumber: Int,
             pageSize: Int,
             sort: Sort
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
-        this.trackBy(contractStateType, criteria, PageSpecification(pageNumber, pageSize), sort)
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        return this.trackBy(contractStateType, criteria, PageSpecification(pageNumber, pageSize), sort)
+    }
 
 }
 

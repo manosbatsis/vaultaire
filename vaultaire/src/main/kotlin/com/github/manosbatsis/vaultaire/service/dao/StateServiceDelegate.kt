@@ -19,10 +19,15 @@
  */
 package com.github.manosbatsis.vaultaire.service.dao
 
+import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
-import com.github.manosbatsis.vaultaire.service.node.*
+import com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate
+import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
+import com.github.manosbatsis.vaultaire.service.node.NodeServiceHubDelegate
+import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcConnectionDelegate
+import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegate
 import net.corda.core.contracts.ContractState
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
@@ -32,10 +37,15 @@ import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
+import net.corda.core.utilities.contextLogger
 
 
 /** [StateService] delegate for vault operations */
 interface StateServiceDelegate<T: ContractState>: NodeServiceDelegate {
+
+    companion object{
+        private val logger = contextLogger()
+    }
 
     val contractStateType: Class<T>
 
@@ -43,22 +53,28 @@ interface StateServiceDelegate<T: ContractState>: NodeServiceDelegate {
      * Query the vault for [T] states matching the given criteria,
      * applying the given paging and sorting specifications if any
      */
+
+    @Suspendable
     fun queryBy(
             criteria: QueryCriteria = defaults.criteria,
             paging: PageSpecification = defaults.paging,
             sort: Sort = defaults.sort
-    ): Vault.Page<T> = queryBy(contractStateType, criteria, paging, sort)
+    ): Vault.Page<T> {
+        return queryBy(contractStateType, criteria, paging, sort)
+    }
 
     /**
      * Track the vault for events of [T] states matching the given criteria,
      * applying the given paging and sorting specifications if any
      */
+    @Suspendable
     fun trackBy(
             criteria: QueryCriteria = defaults.criteria,
             paging: PageSpecification = defaults.paging,
             sort: Sort = defaults.sort
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
-            trackBy(contractStateType, criteria, paging, sort)
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        return trackBy(contractStateType, criteria, paging, sort)
+    }
 }
 
 

@@ -1,14 +1,21 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.*
+import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
+import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.CompositeDtoStrategy
+import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategyComposition
+import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoStrategyComposition
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import javax.lang.model.element.VariableElement
 
 /** Vaultaire-specific overrides for building a DTO type spec */
 open class VaultaireDtoStrategy(
         annotatedElementInfo: AnnotatedElementInfo,
-        composition: DtoStrategyComposition = VaultaireDefaultDtoStrategyComposition()
-) : CompositeDtoStrategy(annotatedElementInfo,composition){
+        composition: DtoStrategyComposition =
+                VaultaireDefaultDtoStrategyComposition(annotatedElementInfo)
+) : CompositeDtoStrategy(
+        annotatedElementInfo,composition
+), ProcessingEnvironmentAware, AnnotatedElementInfo by annotatedElementInfo {
+
 
     override fun getFieldsToProcess(): List<VariableElement> {
         val includeParticipants = annotatedElementInfo.annotation
@@ -30,28 +37,34 @@ open class DefaultDtoStrategy(
         annotatedElementInfo: AnnotatedElementInfo
 ) : VaultaireDtoStrategy(
         annotatedElementInfo = annotatedElementInfo,
-        composition = VaultaireDefaultDtoStrategyComposition()
+        composition = VaultaireDefaultDtoStrategyComposition(annotatedElementInfo)
 )
 /** Vaultaire-specific overrides for building a "lite" DTO type spec */
 class LiteDtoStrategy(
         annotatedElementInfo: AnnotatedElementInfo
 ) : VaultaireDtoStrategy(
         annotatedElementInfo = annotatedElementInfo,
-        composition = VaultaireLiteDtoStrategyComposition
+        composition = VaultaireLiteDtoStrategyComposition(annotatedElementInfo)
 )
 
-open class VaultaireDefaultDtoStrategyComposition: SimpleDtoStrategyComposition() {
-    override fun dtoMembersStrategy(
-            annotatedElementInfo: AnnotatedElementInfo
-    ): DtoMembersStrategy = VaultaireDtoMemberStrategy(
-            annotatedElementInfo
+open class VaultaireDefaultDtoStrategyComposition(
+        annotatedElementInfo: AnnotatedElementInfo
+): SimpleDtoStrategyComposition(annotatedElementInfo) {
+
+    override val dtoMembersStrategy = VaultaireDtoMemberStrategy(
+            annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
     )
 }
 
-object VaultaireLiteDtoStrategyComposition: DtoStrategyComposition {
-    override fun dtoNameStrategy(
-            annotatedElementInfo: AnnotatedElementInfo
-    ): DtoNameStrategy = LiteDtoNameStrategy(annotatedElementInfo)
-    override fun dtoMembersStrategy(annotatedElementInfo: AnnotatedElementInfo): DtoMembersStrategy = LiteDtoMemberStrategy(annotatedElementInfo)
-    override fun dtoTypeStrategy(annotatedElementInfo: AnnotatedElementInfo): DtoTypeStrategy = LiteDtoTypeStrategy(annotatedElementInfo)
+open class VaultaireLiteDtoStrategyComposition(
+        override val annotatedElementInfo: AnnotatedElementInfo
+): DtoStrategyComposition {
+
+    override val dtoNameStrategy = LiteDtoNameStrategy(
+            annotatedElementInfo
+    )
+    override val dtoTypeStrategy = LiteDtoTypeStrategy(annotatedElementInfo)
+    override val dtoMembersStrategy = LiteDtoMemberStrategy(
+            annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+    )
 }

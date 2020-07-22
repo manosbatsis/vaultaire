@@ -8,5 +8,5 @@ open class AccountsAwareLiteDtoStrategy(
         annotatedElementInfo: AnnotatedElementInfo
 ) : VaultaireDtoStrategy(
         annotatedElementInfo = annotatedElementInfo,
-        composition = AccountsAwareLiteDtoStrategyComposition
+        composition = AccountsAwareLiteDtoStrategyComposition(annotatedElementInfo)
 )

@@ -24,9 +24,17 @@ import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
 import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.*
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Create
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Delete
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Update
 import com.github.manotbatsis.kotlin.utils.api.DefaultValue
-import net.corda.core.contracts.*
+import net.corda.core.contracts.CommandData
+import net.corda.core.contracts.Contract
+import net.corda.core.contracts.LinearState
+import net.corda.core.contracts.TypeOnlyCommandData
+import net.corda.core.contracts.UniqueIdentifier
+import net.corda.core.contracts.requireSingleCommand
+import net.corda.core.contracts.requireThat
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
@@ -36,7 +44,7 @@ import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.math.BigDecimal
 import java.security.PublicKey
-import java.util.*
+import java.util.Date
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
@@ -44,7 +52,6 @@ import javax.persistence.Table
 // Contract and state.
 val BOOK_CONTRACT_PACKAGE = BookContract::class.java.`package`.name
 val BOOK_CONTRACT_ID = BookContract::class.java.canonicalName
-
 class BookContract : Contract {
 
     /**
@@ -117,7 +124,55 @@ class BookContract : Contract {
         HISTORICAL
     }
 
-    // State.
+    // States.
+    @VaultaireGenerateDto(
+            copyAnnotationPackages = ["com.fasterxml.jackson.annotation"],
+            // Default is [VaultaireDtoStrategyKeys.DEFAULT]
+            strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+    data class PrivateBookDraftState(
+            val author: AccountParty,
+            val publisher: AccountParty?,
+            override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
+
+        companion object {
+            val test = "test"
+        }
+
+        enum class TestEnum
+
+        override val participants: List<AbstractParty> =
+                listOfNotNull(author, publisher)
+                        .map{it.party}
+
+        override fun supportedSchemas() = listOf(PrivateBookDraftSchemaV1)
+
+        override fun generateMappedObject(schema: MappedSchema) =
+                PrivateBookDraftSchemaV1.PersistentPrivateBookDraftState(
+                linearId.id.toString(),
+                linearId.externalId,
+                author.name.toString(),
+                publisher?.name?.toString())
+
+        object PrivateBookDraftSchema
+
+        object PrivateBookDraftSchemaV1 : MappedSchema(PrivateBookDraftSchema.javaClass, 1,
+                listOf(PrivateBookDraftSchemaV1.PersistentPrivateBookDraftState::class.java)) {
+
+            @VaultaireGenerate(/*name = "bookConditions", */contractStateType = PrivateBookDraftState::class)
+            @Entity
+            @Table(name = "books")
+            class PersistentPrivateBookDraftState(
+                    @Column(name = "linear_id")
+                    var id: String = "",
+                    @Column(name = "external_id")
+                    var externalId: String? = "",
+                    var author: String = "",
+                    var publisher: String?
+            ) : PersistentState()
+        }
+    }
+
+    // States.
     @VaultaireGenerateDto(
             copyAnnotationPackages = ["com.fasterxml.jackson.annotation"],
             // Default is [VaultaireDtoStrategyKeys.DEFAULT]
@@ -135,13 +190,13 @@ class BookContract : Contract {
             val alternativeTitle: String? = null,
             override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
 
-        companion object{
+        companion object {
             val test = "test"
         }
 
         enum class TestEnum
 
-        override val participants: List<AbstractParty> = listOf(publisher!!, author)
+        override val participants: List<AbstractParty> = listOfNotNull(publisher, author)
 
         override fun supportedSchemas() = listOf(BookSchemaV1)
 
@@ -165,9 +220,9 @@ class BookContract : Contract {
             @Entity
             @Table(name = "books")
             class PersistentBookState(
-                    @Column(name = "linearId")
+                    @Column(name = "linear_id")
                     var id: String = "",
-                    @Column(name = "externalId")
+                    @Column(name = "external_id")
                     var externalId: String? = "",
                     @Column(name = "publisher")
                     var publisher: String = "",
@@ -175,7 +230,7 @@ class BookContract : Contract {
                     var author: String = "",
                     @Column(name = "price")
                     var price: BigDecimal = BigDecimal.ZERO,
-                    @Column(name = "GENRE")
+                    @Column(name = "genre")
                     var genre: Genre = Genre.UNKNOWN,
                     @Column(name = "edition_count")
                     var editions: Int = 1,
@@ -183,61 +238,6 @@ class BookContract : Contract {
                     var title: String = "",
                     @Column(name = "alt__title")
                     var alternativeTitle: String? = null,
-                    @Column(name = "published")
-                    var published: Date = Date(),
-                    @Column(name = "description", length = 500)
-                    var description: String? = null
-            ) : PersistentState()
-        }
-    }
-
-    // State.
-    data class MagazineState(val publisher: AccountParty,
-                             val author: AccountParty,
-                             val price: BigDecimal,
-                             val genre: Genre,
-                             val issues: Int = 1,
-                             val title: String = "Uknown",
-                             val published: Date = Date(),
-                             override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
-        override val participants get() = listOf(publisher.party, author.party)
-
-        override fun supportedSchemas() = listOf(MagazineSchemaV1)
-
-        override fun generateMappedObject(schema: MappedSchema) = MagazineSchemaV1.PersistentMagazineState(
-                linearId.id.toString(),
-                linearId.externalId,
-                publisher.name,
-                author.name,
-                price,
-                genre,
-                issues,
-                title,
-                published)
-
-        object MagazineSchema
-
-        object MagazineSchemaV1 : MappedSchema(MagazineSchema.javaClass, 1, listOf(MagazineSchemaV1.PersistentMagazineState::class.java)) {
-
-            @Entity
-            @Table(name = "magazines")
-            class PersistentMagazineState(
-                    @Column(name = "linearId")
-                    var id: String = "",
-                    @Column(name = "externalId")
-                    var externalId: String? = "",
-                    @Column(name = "publisher")
-                    var publisher: String = "",
-                    @Column(name = "author")
-                    var author: String = "",
-                    @Column(name = "price")
-                    var price: BigDecimal = BigDecimal.ZERO,
-                    @Column(name = "GENRE")
-                    var genre: Genre = Genre.UNKNOWN,
-                    @Column(name = "edition_count")
-                    var issues: Int = 1,
-                    @Column(name = "title")
-                    var title: String = "",
                     @Column(name = "published")
                     var published: Date = Date(),
                     @Column(name = "description", length = 500)

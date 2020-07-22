@@ -3,7 +3,11 @@ package com.github.manosbatsis.vaultaire.plugin.accounts.processor
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.plugin.BaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto.AccountsAwareLiteDtoStrategy
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.*
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateCordaServiceDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcConnectionDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.ExtendedAccountsAwareStateService
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
 import com.github.manotbatsis.kotlin.utils.kapt.plugins.AbstractDtoStrategyFactoryProcessorPlugin
 import com.github.manotbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
@@ -23,7 +27,7 @@ class AccountsAwareBaseTypesConfigAnnotationProcessorPlugin: BaseTypesConfigAnno
     override val serviceHubDelegateClassName = AccountsAwareStateCordaServiceDelegate::class.asClassName()
 
     override fun getSupportPriority(annotatedElementInfo: AnnotatedElementInfo, strategy: String?) =
-        if(AccountInfoHelper(annotatedElementInfo).hasAccountInfoMember()) 10 else 0
+        if(AccountInfoHelper(annotatedElementInfo).useAccountInfo()) 10 else 0
 }
 
 // TODO refactor to DTO property mappers config
@@ -45,7 +49,7 @@ class AccountsAwarDtoStrategyFactoryProcessorPlugin: AbstractDtoStrategyFactoryP
         if(strategy == null) return 0
         val strategyKey = VaultaireDtoStrategyKeys.findFromString(strategy) ?: return 0
         return if(strategies[strategyKey] != null
-                && AccountInfoHelper(annotatedElementInfo).hasAccountInfoMember()) 10 else 0
+                && AccountInfoHelper(annotatedElementInfo).useAccountInfo()) 10 else 0
     }
 }
 
