@@ -23,14 +23,25 @@ import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatedBy
 import java.io.File
-import javax.annotation.processing.*
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.ProcessingEnvironment
+import javax.annotation.processing.RoundEnvironment
+import javax.annotation.processing.SupportedAnnotationTypes
+import javax.annotation.processing.SupportedOptions
+import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.TypeElement
@@ -42,7 +53,7 @@ import javax.lang.model.element.TypeElement
 @SupportedAnnotationTypes("com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED)
-class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), ProcessingEnvironmentAware{
+class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), ProcessingEnvironmentAware {
 
 
     companion object {
@@ -72,14 +83,14 @@ class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), Processi
         // Group any target responders to generate by package name
         val responderTargets = roundEnv.getElementsAnnotatedWith(sourcesAnnotation).groupBy { it.asType().asTypeElement().getPackageName() }
         // Return if nothing to do
-        if(responderTargets.keys.isEmpty()) return false
+        if (responderTargets.keys.isEmpty()) return false
         // Create responders
         responderTargets.entries.forEach { it ->
             val packageName = "${it.key}.generated"
             // Generate the Kotlin file
             val fileSpecBuilder = getFileSpecBuilder(packageName, "VaultaireGeneratedResponders")
             // Add each responder
-            it.value .forEach {
+            it.value.forEach {
                 fileSpecBuilder.addType(generateResponderFlow(packageName, it as TypeElement))
             }
             // Write responders file
@@ -103,7 +114,7 @@ class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), Processi
                         .addParameter("otherPartySession", FlowSession::class.asClassName())
                         .build())
         // extend or inline based on open/final base responder
-        if(baseFlowTypeElement.modifiers.contains(FINAL)){
+        if (baseFlowTypeElement.modifiers.contains(FINAL)) {
             responderSpec.superclass(FlowLogic::class.asClassName().parameterizedBy(Unit::class.asTypeName()))
                     .addProperty(PropertySpec.builder("otherPartySession", FlowSession::class)
                             .initializer("otherPartySession")
@@ -113,12 +124,11 @@ class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), Processi
                             .addModifiers(OVERRIDE)
                             .addStatement("subFlow(%T(otherPartySession))", baseFlowTypeElement)
                             .build())
-        }
-        else {
+        } else {
             responderSpec.superclass(baseFlowTypeElement.asKotlinTypeName())
                     .addSuperclassConstructorParameter("otherPartySession")
         }
-        if(comment != null) responderSpec.addKdoc(comment.value.toString())
+        if (comment != null) responderSpec.addKdoc(comment.value.toString())
 
         return responderSpec.build()
     }

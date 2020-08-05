@@ -1,3 +1,22 @@
+/*
+ * Vaultaire: query DSL and data access utilities for Corda developers.
+ * Copyright (C) 2018 Manos Batsis
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
+ */
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor
 
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
@@ -16,7 +35,7 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 
 class Util {
-    companion object{
+    companion object {
 
         val CLASSNAME_ACCOUNT_INFO = AccountInfo::class.java.asClassName()
         val CLASSNAME_PARTY = Party::class.java.asClassName()
@@ -31,18 +50,18 @@ class Util {
 
 class AccountInfoHelper(
         val annotatedElementInfo: AnnotatedElementInfo
-): ProcessingEnvironmentAware {
+) : ProcessingEnvironmentAware {
 
     override val processingEnvironment: ProcessingEnvironment = annotatedElementInfo.processingEnvironment
 
     private fun hasAccountInfoFields(): Boolean {
-        with(annotatedElementInfo){
-            val relevantFields = primaryTargetTypeElementFields+ secondaryTargetTypeElementFields
+        with(annotatedElementInfo) {
+            val relevantFields = primaryTargetTypeElementFields + secondaryTargetTypeElementFields
             val result = relevantFields.find {
-                        // Not ignored and mapped to AccountInfo
-                        !annotatedElementInfo.ignoreProperties.contains(it.simpleName.toString())
-                                && isAccountInfo(it)
-                    }
+                // Not ignored and mapped to AccountInfo
+                !annotatedElementInfo.ignoreProperties.contains(it.simpleName.toString())
+                        && isAccountInfo(it)
+            }
             return result != null
         }
     }
@@ -57,7 +76,7 @@ class AccountInfoHelper(
             CLASSNAME_ACCOUNT_INFO == targetTypeElement?.asClassName()
 
 
-    fun isAccountInfo(variableElement: VariableElement): Boolean{
+    fun isAccountInfo(variableElement: VariableElement): Boolean {
         val fieldClassName = variableElement.asType().asTypeElement().asClassName()
         return when {
             Util.CLASSNAME_ACCOUNT_PARTY == fieldClassName -> true

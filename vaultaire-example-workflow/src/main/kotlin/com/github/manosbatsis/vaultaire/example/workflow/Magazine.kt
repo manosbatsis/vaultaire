@@ -129,16 +129,16 @@ abstract class BaseMagazineFlow<IN, OUT>(
         outputConverter: OutputConverter<OUT>?
 ) : PartitureFlow<IN, OUT>(
         input, txStrategy, inputConverter, outputConverter, SKIP
-){
+) {
 
     /** Ignore Corda Account keys, use the defaultnode legal identity
     @Suspendable
     override fun signInitialTransaction(
-            transactionBuilder: TransactionBuilder,
-            signingPubKeys: Iterable<PublicKey>
+    transactionBuilder: TransactionBuilder,
+    signingPubKeys: Iterable<PublicKey>
     ): SignedTransaction? {
-        serviceHub.identityService.wellKnownPartyFromAnonymous(AnonymousParty())
-        return serviceHub.signInitialTransaction(transactionBuilder)
+    serviceHub.identityService.wellKnownPartyFromAnonymous(AnonymousParty())
+    return serviceHub.signInitialTransaction(transactionBuilder)
     }*/
 
     /** Assume all participants are accounts and need a [FlowSession] */
@@ -148,7 +148,7 @@ abstract class BaseMagazineFlow<IN, OUT>(
     ): Set<FlowSession> {
         val parties = (counterParties)
         val sessions = mutableSetOf<FlowSession>()
-        for(party in parties){
+        for (party in parties) {
             sessions.add(initiateFlow(party))
         }
         return sessions
@@ -170,7 +170,7 @@ abstract class BaseMagazineFlow<IN, OUT>(
 
         //super.handleFailedTxStrategy(e)
         val inner = e.cause
-        if(inner is SignaturesMissingException){
+        if (inner is SignaturesMissingException) {
             logger.error("Strategy errored: ${this.javaClass.simpleName} ")
             val accountInfoService = AccountInfoService(serviceHub)
             inner.missing.forEach {
@@ -181,8 +181,7 @@ abstract class BaseMagazineFlow<IN, OUT>(
             }
             inner.printStackTrace()
             throw e
-        }
-        else super.handleFailedTxStrategy(e)
+        } else super.handleFailedTxStrategy(e)
     }
 }
 
@@ -195,10 +194,10 @@ abstract class BaseMagazineFlow<IN, OUT>(
 )
 class CreateMagazineFlow(input: MagazineStateLiteDto) :
         BaseMagazineFlow<MagazineStateLiteDto, List<MagazineState>>(
-        input = input, // Input can be anything
-        inputConverter = CreateMagazineInputConverter(),// Our custom IN converter
-        outputConverter = TypedOutputStatesConverter(MagazineState::class.java)
-)
+                input = input, // Input can be anything
+                inputConverter = CreateMagazineInputConverter(),// Our custom IN converter
+                outputConverter = TypedOutputStatesConverter(MagazineState::class.java)
+        )
 
 /** Create/publish a magazinestate  */
 @InitiatingFlow
@@ -209,11 +208,10 @@ class CreateMagazineFlow(input: MagazineStateLiteDto) :
 )
 class UpdateMagazineFlow(input: MagazineStateLiteDto) :
         BaseMagazineFlow<MagazineStateLiteDto, List<MagazineState>>(
-        input = input, // Input can be anything
-        inputConverter = UpdateMagazineInputConverter(),// Our custom IN converter
-        outputConverter = TypedOutputStatesConverter(MagazineState::class.java)// OUT build-in converter
-)
-
+                input = input, // Input can be anything
+                inputConverter = UpdateMagazineInputConverter(),// Our custom IN converter
+                outputConverter = TypedOutputStatesConverter(MagazineState::class.java)// OUT build-in converter
+        )
 
 
 /** Create/publish a magazinestate  */
@@ -225,7 +223,7 @@ class UpdateMagazineFlow(input: MagazineStateLiteDto) :
 )
 class DeleteMagazineFlow(input: MagazineStateDto) :
         BaseMagazineFlow<MagazineStateDto, List<MagazineState>>(
-        input = input, // Input can be anything
-        inputConverter = DeleteMagazineInputConverter(),// Our custom IN converter
-        outputConverter = TypedOutputStatesConverter(MagazineState::class.java)) // OUT build-in converter
+                input = input, // Input can be anything
+                inputConverter = DeleteMagazineInputConverter(),// Our custom IN converter
+                outputConverter = TypedOutputStatesConverter(MagazineState::class.java)) // OUT build-in converter
 

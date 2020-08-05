@@ -52,6 +52,7 @@ import javax.persistence.Table
 // Contract and state.
 val BOOK_CONTRACT_PACKAGE = BookContract::class.java.`package`.name
 val BOOK_CONTRACT_ID = BookContract::class.java.canonicalName
+
 class BookContract : Contract {
 
     /**
@@ -142,16 +143,16 @@ class BookContract : Contract {
 
         override val participants: List<AbstractParty> =
                 listOfNotNull(author, publisher)
-                        .map{it.party}
+                        .map { it.party }
 
         override fun supportedSchemas() = listOf(PrivateBookDraftSchemaV1)
 
         override fun generateMappedObject(schema: MappedSchema) =
                 PrivateBookDraftSchemaV1.PersistentPrivateBookDraftState(
-                linearId.id.toString(),
-                linearId.externalId,
-                author.name.toString(),
-                publisher?.name?.toString())
+                        linearId.id.toString(),
+                        linearId.externalId,
+                        author.name.toString(),
+                        publisher?.name?.toString())
 
         object PrivateBookDraftSchema
 

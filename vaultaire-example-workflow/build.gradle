@@ -46,7 +46,6 @@ dependencies {
     kapt project(':vaultaire-processor')
 
     testImplementation ("$corda_release_group:corda-node-driver:$corda_release_version")
-    testImplementation "com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_test_version"
 
     testCompile "org.assertj:assertj-core:3.10.0"
     testCompile "com.willowtreeapps.assertk:assertk:0.10"

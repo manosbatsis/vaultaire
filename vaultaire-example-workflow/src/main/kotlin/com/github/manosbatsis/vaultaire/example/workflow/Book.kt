@@ -122,7 +122,6 @@ class UpdateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, List<Boo
         outputConverter = TypedOutputStatesConverter(BookState::class.java)) // OUT build-in converter
 
 
-
 /** Create/publish a bookstate  */
 @InitiatingFlow
 @StartableByRPC

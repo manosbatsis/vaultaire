@@ -19,7 +19,8 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.node
 
-import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
+import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import net.corda.core.contracts.ContractState
@@ -42,12 +43,19 @@ open class BasicAccountsAwareNodeService(
         delegate: AccountsAwareNodeServiceDelegate
 ) : BasicNodeService(delegate), AccountsAwareNodeServiceDelegate by delegate {
 
+    /** [PoolBoyConnection]-based constructor */
+    constructor(
+            poolBoy: PoolBoyConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+    ) : this(AccountsAwareNodeServicePoolBoyDelegate(poolBoy, defaults))
+
     /** [NodeRpcConnection]-based constructor */
+    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             nodeRpcConnection: NodeRpcConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
 
     /** [CordaRPCOps]-based constructor */
+    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults))

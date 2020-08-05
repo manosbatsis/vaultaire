@@ -42,11 +42,11 @@ import java.security.PublicKey
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-interface AccountsAwareStateService<T : ContractState>:
+interface AccountsAwareStateService<T : ContractState> :
         StateService<T>,
         AccountsAwareStateServiceDelegate<T> {
 
-    companion object{
+    companion object {
         private val logger = contextLogger()
     }
 
@@ -167,7 +167,7 @@ interface AccountsAwareStateService<T : ContractState>:
             default: AbstractParty? = null
     ): AbstractParty? {
         val accountInfo = findAccountInfo(accountInfoDto)
-        if(accountInfo == null) return default
+        if (accountInfo == null) return default
         return createPublicKey(accountInfo)
     }
 
@@ -213,14 +213,18 @@ interface AccountsAwareStateService<T : ContractState>:
     fun toAccountPartyOrNull(
             accountInfoLiteDto: AccountInfoLiteDto?,
             default: AccountParty? = null,
-            ignoreMatching: Boolean  = false,
+            ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
     ): AccountParty? {
         logger.debug("toAccountPartyOrNull, accountInfoLiteDto: $accountInfoLiteDto")
-        val accountInfoDto = if(accountInfoLiteDto == null ) {null}
-        else{
-            val host = if(accountInfoLiteDto.host == null ) {null}
-            else {wellKnownPartyFromX500Name(accountInfoLiteDto.host!!)}
+        val accountInfoDto = if (accountInfoLiteDto == null) {
+            null
+        } else {
+            val host = if (accountInfoLiteDto.host == null) {
+                null
+            } else {
+                wellKnownPartyFromX500Name(accountInfoLiteDto.host!!)
+            }
             AccountInfoDto(
                     accountInfoLiteDto.name,
                     host,
@@ -242,34 +246,32 @@ interface AccountsAwareStateService<T : ContractState>:
     fun toAccountPartyOrNull(
             accountInfoDto: AccountInfoDto?,
             default: AccountParty? = null,
-            ignoreMatching: Boolean  = false,
+            ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
     ): AccountParty? {
         logger.debug("toAccountPartyOrNull, accountInfoDto: $accountInfoDto ")
 
         // Return null input as is
-        return if(accountInfoDto == null) {default}
+        return if (accountInfoDto == null) {
+            default
+        }
         // Reuse available if IDs match
         //!ignoreMatching && accountInfoDto.hasMatchingIdentifierAndName(default) -> default
         // Build instance otherwise, try by id first...
-        else if(accountInfoDto.identifier != null && accountInfoDto.host != null)  {
+        else if (accountInfoDto.identifier != null && accountInfoDto.host != null) {
             logger.debug("toAccountPartyOrNull, has identifier")
             val accountInfo = findAccountOrNull(accountInfoDto.identifier!!.id, accountInfoDto.host!!.name)
             if (accountInfo != null) {
                 val anonymousParty = createPublicKey(accountInfo)
                 AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty)
-            }
-            else null
-        }
-        else if(accountInfoDto.identifier != null) {
+            } else null
+        } else if (accountInfoDto.identifier != null) {
             val accountInfo = findStoredAccountOrNull(accountInfoDto.identifier!!.id)?.state?.data
             if (accountInfo != null) {
                 val anonymousParty = createPublicKey(accountInfo)
                 AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty)
-            }
-            else null
-        }
-        else throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
+            } else null
+        } else throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
                 "value: $accountInfoDto to AccountParty")
 
     }
@@ -278,7 +280,7 @@ interface AccountsAwareStateService<T : ContractState>:
     fun toAccountParty(
             accountInfoDto: AccountInfoDto?,
             default: AccountParty? = null,
-            ignoreMatching: Boolean  = false,
+            ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
     ): AccountParty {
         return toAccountPartyOrNull(accountInfoDto, default, ignoreMatching, propertyName)
@@ -290,11 +292,12 @@ interface AccountsAwareStateService<T : ContractState>:
     fun toAccountParty(
             accountInfoDto: AccountInfoLiteDto?,
             default: AccountParty? = null,
-            ignoreMatching: Boolean  = false,
+            ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
     ): AccountParty {
         val account = toAccountPartyOrNull(accountInfoDto, default, ignoreMatching, propertyName)
-        return account ?: throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
+        return account
+                ?: throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
                         "value: $accountInfoDto to AccountParty")
     }
 
@@ -305,7 +308,7 @@ interface AccountsAwareStateService<T : ContractState>:
  * Basic [StateService] implementation, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-open class BasicAccountsAwareStateService<T: ContractState>(
+open class BasicAccountsAwareStateService<T : ContractState>(
         delegate: AccountsAwareStateServiceDelegate<T>
 ) : BasicStateService<T>(delegate),
         AccountsAwareStateServiceDelegate<T> by delegate,
@@ -320,7 +323,7 @@ open class BasicAccountsAwareStateService<T: ContractState>(
  *
  * Subclassed by Vaultaire's annotation processing to generate service components.
  */
-abstract class ExtendedAccountsAwareStateService<T: ContractState, P : StatePersistable, out F: Fields<P>, Q: VaultQueryCriteriaCondition<P, F>>(
+abstract class ExtendedAccountsAwareStateService<T : ContractState, P : StatePersistable, out F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>>(
         delegate: AccountsAwareStateServiceDelegate<T>
 ) : BasicAccountsAwareStateService<T>(delegate), ExtendedStateService<T, P, F, Q> {
 

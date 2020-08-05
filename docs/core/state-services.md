@@ -15,11 +15,11 @@ between cordapps and their clients.
 ## Basic Services
 
 Basic implementations of `NodeService` and `StateService` are more limited and/or
-less easier to use than generated ones but functional nevertheless:
+less easy to use than generated ones but functional nevertheless:
 
 ```kotlin
 val bookStateService = BasicStateService(
-	serviceHubOrRpcOps,
+	serviceHubOrRpcOpsOrPoolBoy,
 	BookContract.BookState::class.java)
 ```
 

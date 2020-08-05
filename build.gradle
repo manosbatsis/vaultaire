@@ -19,13 +19,13 @@ buildscript {
 
         dokka_version = '0.9.18'
         junitVersion = '5.3.2'
-        junit_jupiter_version = '5.3.1' // TODO
+        junit_jupiter_version = '5.3.2'
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
-        kotlinutils_version = '0.20-SNAPSHOT'
-        partiture_version = '0.11-SNAPSHOT'
-        corbeans_test_version = '0.43-SNAPSHOT'
+        kotlinutils_version = '0.20'
+        partiture_version = '0.11'
+        poolboy_version = '0.1'
     }
     repositories {
         mavenLocal()
@@ -86,16 +86,6 @@ allprojects {
 
     apply plugin: 'idea'
 
-    repositories {
-        // For Tokens SDK
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
-        // Auto DSL
-        maven { url "https://dl.bintray.com/juanchosaravia/autodsl" }
-        // Gradle tooling API
-        maven { url 'https://repo.gradle.org/gradle/libs-releases' }
-        maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
-    }
 
     configurations {
         // Adding a configuration that extends existing configuration:

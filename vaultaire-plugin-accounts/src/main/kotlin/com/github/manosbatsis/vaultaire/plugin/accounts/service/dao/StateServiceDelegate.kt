@@ -19,11 +19,13 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.dao
 
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
+import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceDelegate
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServicePoolBoyDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceRpcConnectionDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceRpcDelegate
-import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
@@ -34,26 +36,35 @@ import net.corda.core.node.ServiceHub
 
 
 /** [StateService] delegate for vault operations */
-interface AccountsAwareStateServiceDelegate<T: ContractState>:
+interface AccountsAwareStateServiceDelegate<T : ContractState> :
         AccountsAwareNodeServiceDelegate, StateServiceDelegate<T>
 
+
+open class AccountsAwareStateServicePoolBoyDelegate<T : ContractState>(
+        poolBoy: PoolBoyConnection,
+        override val contractStateType: Class<T>,
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+) : AccountsAwareNodeServicePoolBoyDelegate(poolBoy, defaults), AccountsAwareStateServiceDelegate<T>
+
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
-open class AccountsAwareStateServiceRpcDelegate<T: ContractState>(
+@Deprecated(message = "Use [com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServicePoolBoyDelegate] with a pool boy connection pool instead")
+open class AccountsAwareStateServiceRpcDelegate<T : ContractState>(
         rpcOps: CordaRPCOps,
         override val contractStateType: Class<T>,
         defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-): AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults), AccountsAwareStateServiceDelegate<T>
+) : AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults), AccountsAwareStateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
-class AccountsAwareStateServiceRpcConnectionDelegate<T: ContractState>(
+@Deprecated(message = "Use [com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServicePoolBoyDelegate] with a pool boy connection pool instead")
+class AccountsAwareStateServiceRpcConnectionDelegate<T : ContractState>(
         nodeRpcConnection: NodeRpcConnection,
         override val contractStateType: Class<T>,
         defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-): AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), AccountsAwareStateServiceDelegate<T>
+) : AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), AccountsAwareStateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
-abstract class AccountsAwareStateCordaServiceDelegate<T: ContractState>(
+abstract class AccountsAwareStateCordaServiceDelegate<T : ContractState>(
         serviceHub: AppServiceHub,
         override val contractStateType: Class<T>,
         override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-) :  AccountsAwareNodeCordaServiceDelegate(serviceHub), AccountsAwareStateServiceDelegate<T>
+) : AccountsAwareNodeCordaServiceDelegate(serviceHub), AccountsAwareStateServiceDelegate<T>

@@ -124,7 +124,7 @@ class MagazineContract : Contract {
                              val price: BigDecimal,
                              val genre: MagazineGenre,
                              val issues: Int = 1,
-                             val title: String = "Uknown",
+                             val title: String,
                              @DefaultValue("Date()")
                              val published: Date,
                              @DefaultValue("UniqueIdentifier()")
@@ -134,15 +134,15 @@ class MagazineContract : Contract {
         override fun supportedSchemas() = listOf(MagazineSchemaV1)
 
         override fun generateMappedObject(schema: MappedSchema) = MagazineSchemaV1.PersistentMagazineState(
-                linearId.id.toString(),
-                linearId.externalId,
-                publisher?.name,
-                author.name,
-                price,
-                genre,
-                issues,
-                title,
-                published)
+                id = linearId.id.toString(),
+                externalId = linearId.externalId,
+                publisher = publisher?.name,
+                author = author.name,
+                price = price,
+                genre = genre,
+                issues = issues,
+                title = title,
+                published = published)
 
         object MagazineSchema
 

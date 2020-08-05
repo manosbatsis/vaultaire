@@ -47,25 +47,26 @@ class VaultaireDtoAnnotationProcessor : AbstractAnnotatedModelInfoProcessor(
     /** Get a list of DTO strategies to apply per annotated element */
     private fun getDtoStrategies(annotatedElementInfo: AnnotatedElementInfo): Map<String, DtoStrategy> {
         val pluginServiceLoader = AnnotationProcessorPluginService.getInstance()
-        val strategyKeys =  annotatedElementInfo.annotation
-                .findAnnotationValueListEnum("strategies", VaultaireDtoStrategyKeys::class.java)?: error("Could not find annotation member: strategies")
+        val strategyKeys = annotatedElementInfo.annotation
+                .findAnnotationValueListEnum("strategies", VaultaireDtoStrategyKeys::class.java)
+                ?: error("Could not find annotation member: strategies")
         return strategyKeys.map {
-                    val strategy = it.toString() //.toString()
-                    strategy to pluginServiceLoader.getPlugin(
-                            DtoStrategyFactoryProcessorPlugin::class.java,
-                            annotatedElementInfo, strategy)
-                            .createStrategy(annotatedElementInfo, strategy)
-                }.toMap()
+            val strategy = it.toString() //.toString()
+            strategy to pluginServiceLoader.getPlugin(
+                    DtoStrategyFactoryProcessorPlugin::class.java,
+                    annotatedElementInfo, strategy)
+                    .createStrategy(annotatedElementInfo, strategy)
+        }.toMap()
     }
 
     override fun processElementInfos(elementInfos: List<AnnotatedElementInfo>) =
-            elementInfos.forEach{processElementInfo(it)}
-    
+            elementInfos.forEach { processElementInfo(it) }
+
     private fun processElementInfo(elementInfo: AnnotatedElementInfo) {
         println("processElementInfo, elementInfo: $elementInfo")
         getDtoStrategies(elementInfo).map { (suffix, strategy) ->
 
-            val  dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
+            val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
             println("processElementInfo, suffix: ${suffix}")
             val dto = dtoStrategyBuilder.build()
             val packageName = elementInfo.generatedPackageName

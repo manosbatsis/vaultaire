@@ -33,7 +33,7 @@ import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.accountInfoQuery
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
-import com.github.manosbatsis.vaultaire.service.node.StateNotFoundException
+import com.github.manosbatsis.vaultaire.service.node.NotFoundException
 import com.r3.corda.lib.accounts.contracts.AccountInfoContract
 import com.r3.corda.lib.accounts.workflows.flows.CreateAccount
 import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount
@@ -67,7 +67,7 @@ import kotlin.test.assertTrue
 @Suppress("DEPRECATION")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
 class BookMockTests {
-    companion object{
+    companion object {
         val logger = loggerFor<BookMockTests>()
     }
 
@@ -106,17 +106,17 @@ class BookMockTests {
     }
 
     @AfterAll
-    fun tearDown(){
+    fun tearDown() {
         network.stopNodes()
     }
 
     @Test
-    fun `Test @DefaultValue`(){
+    fun `Test @DefaultValue`() {
         assertEquals(1, BookStateDto().editions)
     }
 
     @Test
-    fun `Test AccountInfo`(){
+    fun `Test AccountInfo`() {
         // Create account
         val accountUuid = UUID.randomUUID()
         val accountName = "vaultaire"
@@ -363,10 +363,10 @@ class BookMockTests {
 
         // Ensure a StateNotFoundException is thrown when no match is found in getXxxx methods
         val random = UUID.randomUUID().toString()
-        assertThrows<StateNotFoundException> {
+        assertThrows<NotFoundException> {
             stateService.getByLinearId(random)
         }
-        assertThrows<StateNotFoundException> {
+        assertThrows<NotFoundException> {
             stateService.getByExternalId(random)
         }
     }
@@ -436,8 +436,7 @@ class BookMockTests {
 
 
     inline fun <reified OUT> flowWorksCorrectly(node: StartedMockNode, flow: FlowLogic<OUT>): OUT {
-        val future = node.startFlow(flow)
-        val result = future.getOrThrow()
+        val result = node.startFlow(flow).getOrThrow()
         // Ask nodes to process any queued up inbound messages
         network.waitQuiescent()
         return result

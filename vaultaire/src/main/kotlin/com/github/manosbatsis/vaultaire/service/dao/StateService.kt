@@ -20,12 +20,13 @@
 package com.github.manosbatsis.vaultaire.service.dao
 
 import co.paralleluniverse.fibers.Suspendable
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
+import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
-import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeService
-import com.github.manosbatsis.vaultaire.service.node.StateNotFoundException
+import com.github.manosbatsis.vaultaire.service.node.NotFoundException
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
@@ -48,11 +49,11 @@ import java.util.UUID
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-interface StateService<T : ContractState>:
+interface StateService<T : ContractState> :
         NodeService,
         StateServiceDelegate<T> {
 
-    companion object{
+    companion object {
         private val logger = contextLogger()
     }
 
@@ -61,7 +62,7 @@ interface StateService<T : ContractState>:
 
     /**
      * Find the state of type [T] matching the given [UUID] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
     fun getByLinearId(
@@ -73,7 +74,7 @@ interface StateService<T : ContractState>:
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
     fun getByLinearId(
@@ -85,7 +86,7 @@ interface StateService<T : ContractState>:
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
     fun getByLinearId(
@@ -93,7 +94,7 @@ interface StateService<T : ContractState>:
             relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL
     ): StateAndRef<T> {
         return findByLinearId(contractStateType, linearId, relevancyStatus)
-                ?: throw StateNotFoundException(linearId.id.toString(), contractStateType)
+                ?: throw NotFoundException(linearId.id.toString(), contractStateType)
     }
 
     /**
@@ -132,12 +133,12 @@ interface StateService<T : ContractState>:
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
      * matching the given [UniqueIdentifier.externalId] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
     fun getByExternalId(externalId: String): StateAndRef<T> {
         return findByExternalId(contractStateType, externalId)
-                ?: throw StateNotFoundException(externalId, contractStateType)
+                ?: throw NotFoundException(externalId, contractStateType)
     }
 
     /**
@@ -189,16 +190,23 @@ interface StateService<T : ContractState>:
  * Basic [StateService] implementation, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-open class BasicStateService<T: ContractState>(
+open class BasicStateService<T : ContractState>(
         override val delegate: StateServiceDelegate<T>
 ) : BasicNodeService(delegate), StateServiceDelegate<T> by delegate, StateService<T> {
 
+    /** [PoolBoyConnection]-based constructor */
+    constructor(
+            poolBoy: PoolBoyConnection, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+    ) : this(StateServicePoolBoyDelegate(poolBoy, contractStateType, defaults))
+
     /** [NodeRpcConnection]-based constructor */
+    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcConnectionDelegate(nodeRpcConnection, contractStateType, defaults))
 
     /** [CordaRPCOps]-based constructor */
+    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
@@ -217,11 +225,11 @@ open class BasicStateService<T: ContractState>(
 
 
 interface ExtendedStateService<
-        T: ContractState,
+        T : ContractState,
         P : StatePersistable,
-        out F: Fields<P>,
-        Q: VaultQueryCriteriaCondition<P, F>
-    > : StateServiceDelegate<T> {
+        out F : Fields<P>,
+        Q : VaultQueryCriteriaCondition<P, F>
+        > : StateServiceDelegate<T> {
 
     /** The type of the target state's [StatePersistable] */
     val statePersistableType: Class<P>
@@ -329,7 +337,7 @@ interface ExtendedStateService<
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
         val criteria = condition.toCriteria(true)
         val sort = condition.toSort()
-        return if(sort.columns.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
+        return if (sort.columns.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
         else trackBy(criteria, PageSpecification(pageNumber, pageSize))
     }
 }
@@ -340,7 +348,7 @@ interface ExtendedStateService<
  *
  * Subclassed by Vaultaire's annotation processing to generate service components.
  */
-abstract class DefaultExtendedStateService<T: ContractState, P : StatePersistable, out F: Fields<P>, Q: VaultQueryCriteriaCondition<P, F>>(
+abstract class DefaultExtendedStateService<T : ContractState, P : StatePersistable, out F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>>(
         delegate: StateServiceDelegate<T>
 ) : BasicStateService<T>(delegate), ExtendedStateService<T, P, F, Q> {
 

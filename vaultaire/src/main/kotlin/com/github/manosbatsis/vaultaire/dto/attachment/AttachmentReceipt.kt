@@ -17,15 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.annotation
+package com.github.manosbatsis.vaultaire.dto.attachment
+
+import net.corda.core.serialization.CordaSerializable
+import java.util.Date
 
 /**
- * Marks a [net.corda.core.contracts.ContractState] property as a Corda Account.
- * Supported property types are [java.security.PublicKey], [net.corda.core.identity.AbstractParty]
- * and [net.corda.core.identity.AnonymousParty].
+ * Receipt of an attachment saved to the vault.
+ * Annotated with [CordaSerializable] and thus [ContractState]-embeddable.
  */
-@Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
-annotation class VaultaireAccountInfo(
+@CordaSerializable
+class AttachmentReceipt(
+        /** The datetime of attachment persistence to the vault */
+        var date: Date? = null,
+        /** The attachment [net.corda.core.crypto.SecureHash] string */
+        var hash: String? = null,
+        /** The attached files */
+        var files: List<String> = emptyList(),
+        /** The attachment authoring organization */
+        var author: String? = null,
+        /** Whether an original archive was persisted in the vault, `false` if automatically created  */
+        var savedOriginal: Boolean = false
 )
-

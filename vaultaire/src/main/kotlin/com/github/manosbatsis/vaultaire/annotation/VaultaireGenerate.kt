@@ -25,7 +25,6 @@ import net.corda.core.schemas.PersistentState
 import kotlin.reflect.KClass
 
 
-
 interface VaultaireDependencyAnnotationConvention {
     val contractStateType: KClass<out ContractState>
     val persistentStateType: KClass<out PersistentState>
@@ -60,10 +59,10 @@ enum class VaultaireDtoStrategyKeys(val classNameSuffix: String) {
     LITE("LiteDto");
 
 
-
     override fun toString(): String {
         return this.classNameSuffix
     }
+
     companion object {
         fun findFromString(s: String): VaultaireDtoStrategyKeys? {
             val sUpper = s.toUpperCase()
@@ -73,8 +72,9 @@ enum class VaultaireDtoStrategyKeys(val classNameSuffix: String) {
                                 || it.classNameSuffix.toUpperCase() == sUpper
                     }
         }
+
         fun getFromString(s: String): VaultaireDtoStrategyKeys = findFromString(s)
-                    ?: error("Could not match input $s to VaultaireDtoStrategyKeys entry")
+                ?: error("Could not match input $s to VaultaireDtoStrategyKeys entry")
 
     }
 

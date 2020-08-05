@@ -19,13 +19,14 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
+import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.plugin.BaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.registry.Registry
-import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
@@ -36,8 +37,21 @@ import com.github.manotbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPlugi
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.FunSpec.Builder
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.LambdaTypeName
+import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.WildcardTypeName
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.contracts.ContractState
 import net.corda.core.internal.packageName
 import net.corda.core.messaging.CordaRPCOps
@@ -65,7 +79,7 @@ import javax.lang.model.element.VariableElement
 class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModelInfoProcessor(
         primaryTargetRefAnnotationName = "persistentStateType",
         secondaryTargetRefAnnotationName = "contractStateType"
-){
+) {
 
     companion object {
 
@@ -77,12 +91,12 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
         val TYPE_PARAMETER_STAR = WildcardTypeName.producerOf(Any::class.asTypeName().copy(nullable = true))
         val CONTRACT_STATE_CLASSNAME = ClassName(ContractState::class.packageName, ContractState::class.simpleName!!)
         val STATE_PERSISTABLE_CLASSNAME = ClassName(StatePersistable::class.packageName, StatePersistable::class.simpleName!!)
-        
+
 
     }
 
     override fun processElementInfos(elementInfos: List<AnnotatedElementInfo>) =
-            elementInfos.forEach{processElementInfo(it)}
+            elementInfos.forEach { processElementInfo(it) }
 
     //override val sourcesAnnotation = VaultaireGenerate::class.java
     //override val dependenciesAnnotation = VaultaireGenerateForDependency::class.java
@@ -91,7 +105,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
             AnnotationProcessorPluginService.getInstance()
                     .getPlugin(BaseTypesConfigAnnotationProcessorPlugin::class.java, annotatedElementInfo)
 
-    fun processElementInfo(annotatedElementInfo: AnnotatedElementInfo) { 
+    fun processElementInfo(annotatedElementInfo: AnnotatedElementInfo) {
         val generatedConditionsClassName = ClassName(
                 annotatedElementInfo.generatedPackageName,
                 "${annotatedElementInfo.primaryTargetTypeElementSimpleName}Conditions")
@@ -135,7 +149,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                 .addType(conditionsSpec.build())
                 .addType(stateCordaServiceDelegateSpec)
                 .addType(stateServiceSpecBuilder.build())
-                .addFunction(buildTopLevelDslFunSpec(generatedConditionsClassName, 
+                .addFunction(buildTopLevelDslFunSpec(generatedConditionsClassName,
                         annotatedElementInfo.primaryTargetTypeElement, annotatedElementInfo.secondaryTargetTypeElement!!))
                 .build()
                 .writeTo(sourceRootFile)
@@ -147,9 +161,9 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     ): FunSpec {
 
         var extFunName: String = annotatedElement.findAnnotationMirror(VaultaireGenerate::class.java)?.findAnnotationValue("name").toString()
-        if(extFunName.isNotBlank()) extFunName =
+        if (extFunName.isNotBlank()) extFunName =
                 annotatedElement.findAnnotationMirror(VaultaireGenerateForDependency::class.java)?.findAnnotationValue("name").toString()
-        if(extFunName.isNotBlank()) extFunName = contractStateTypeElement.simpleName.toString().decapitalize() + "Query"
+        if (extFunName.isNotBlank()) extFunName = contractStateTypeElement.simpleName.toString().decapitalize() + "Query"
 
         return buildDslFunSpec(extFunName, generatedConditionsClassName)
     }
@@ -162,12 +176,12 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                 receiver = generatedConditionsClassName,
                 returnType = Unit::class.asTypeName())).build()
 
-        val funSpec =  FunSpec.builder(funcName)
+        val funSpec = FunSpec.builder(funcName)
                 .addParameter(extensionFunParams)
                 .returns(generatedConditionsClassName)
                 .addStatement("return ${generatedConditionsClassName.simpleName}().apply(${AnnotationProcessorBase.BLOCK_FUN_NAME})")
                 .addKdoc("DSL entry point function for [%T]", generatedConditionsClassName)
-        if(modifiers.isNotEmpty())funSpec.addModifiers(*modifiers)
+        if (modifiers.isNotEmpty()) funSpec.addModifiers(*modifiers)
         return funSpec.build()
     }
 
@@ -175,19 +189,19 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     fun buildVaultQueryCriteriaConditionsBuilder(annotatedElementInfo: AnnotatedElementInfo, generatedConditionsName: ClassName, generatedFieldsClassName: ClassName): TypeSpec.Builder {
         val conditionsSpec = TypeSpec.classBuilder(generatedConditionsName)
                 .superclass(VaultQueryCriteriaCondition::class.asClassName()
-                        .parameterizedBy( annotatedElementInfo.primaryTargetTypeElement!!.asKotlinTypeName(), generatedFieldsClassName))
+                        .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement!!.asKotlinTypeName(), generatedFieldsClassName))
         conditionsSpec.addKdoc("Generated helper for creating [%T] query conditions/criteria", annotatedElementInfo.secondaryTargetTypeElement!!)
         // Register
         conditionsSpec.addType(TypeSpec.companionObjectBuilder().addInitializerBlock(
-                        CodeBlock.of("%T.registerQueryDsl(%T::class, %M::class)",
-                                Registry::class,annotatedElementInfo.primaryTargetTypeElement,  MemberName("", generatedConditionsName.simpleName))
-                ).build())
+                CodeBlock.of("%T.registerQueryDsl(%T::class, %M::class)",
+                        Registry::class, annotatedElementInfo.primaryTargetTypeElement, MemberName("", generatedConditionsName.simpleName))
+        ).build())
         // Specify the contractStateType property
         conditionsSpec.addProperty(buildContractStateTypePropertySpec(annotatedElementInfo.secondaryTargetTypeElement!!))
         // Specify the statePersistableType property
         conditionsSpec.addProperty(buildStatePersistableTypePropertySpec(annotatedElementInfo.primaryTargetTypeElement))
         // Specify the fields property
-        conditionsSpec.addProperty(buildFieldsPropertySpec( annotatedElementInfo.primaryTargetTypeElement, generatedFieldsClassName))
+        conditionsSpec.addProperty(buildFieldsPropertySpec(annotatedElementInfo.primaryTargetTypeElement, generatedFieldsClassName))
         return conditionsSpec
     }
 
@@ -207,7 +221,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                         .addParameter("serviceHub", AppServiceHub::class.java.asClassName())
                         .build())
                 .addSuperclassConstructorParameter("serviceHub")
-                .addSuperclassConstructorParameter("contractStateType = %T::class.java", 
+                .addSuperclassConstructorParameter("contractStateType = %T::class.java",
                         annotatedElementInfo.secondaryTargetTypeElement!!)
 
     }
@@ -217,8 +231,12 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
             baseClassesConfig: BaseTypesConfigAnnotationProcessorPlugin,
             annotatedElementInfo: AnnotatedElementInfo, conditionsClassName: ClassName,
             generatedFieldsClassName: ClassName, stateCordaServiceDelegateSpec: TypeSpec
-        ): TypeSpec.Builder {
+    ): TypeSpec.Builder {
         val generatedSimpleName = "${annotatedElementInfo.secondaryTargetTypeElementSimpleName}Service"
+        val legacyRpcDelegateConstructorKdoc = CodeBlock.of("Legacy constructor without pool support")
+        val legacyRpcDelegateConstructorAnnotation = AnnotationSpec
+                .builder(Deprecated::class.java)
+                .addMember("message = %S", "Legacy constructor without pool support, use pool boy constructor instead").build()
         //val conditionsLambda = LambdaTypeName.get(returnType = processingEnv.typeUtils.a.getTypeElement(conditionsSimpleName).asKotlinTypeName())
         val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedSimpleName)
                 .addKdoc("A [%T]-specific [%T]", annotatedElementInfo.secondaryTargetTypeElement!!, baseClassesConfig.stateServiceClassName)
@@ -236,59 +254,81 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                         .build())
                 .addSuperclassConstructorParameter("delegate")
                 .addType(TypeSpec.companionObjectBuilder().addInitializerBlock(
-                                CodeBlock.of("%T.registerService(%T::class, %M::class)",
-                                        Registry::class, annotatedElementInfo.secondaryTargetTypeElement!!,  MemberName("", generatedSimpleName))
-                        ).build())
+                        CodeBlock.of("%T.registerService(%T::class, %M::class)",
+                                Registry::class, annotatedElementInfo.secondaryTargetTypeElement!!, MemberName("", generatedSimpleName))
+                ).build())
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("serviceHub", ServiceHub::class.java)
                         .addParameter(ParameterSpec
                                 .builder("defaults", ServiceDefaults::class.java)
                                 .defaultValue("%T()", SimpleServiceDefaults::class.java).build())
+                        .addKdoc("ServiceHub-based constructor, creates a Corda Service delegate")
                         .callThisConstructor(CodeBlock.builder()
                                 .add("serviceHub.cordaService(%N::class.java)",
                                         stateCordaServiceDelegateSpec).build()).build())
                 .addProperty(buildFieldsPropertySpec(annotatedElementInfo.primaryTargetTypeElement, generatedFieldsClassName))
                 .addProperty(buildStatePersistableTypePropertySpec(annotatedElementInfo.primaryTargetTypeElement))
                 .addInitializerBlock(CodeBlock.of("criteriaConditionsType =  %N::class.java", "${annotatedElementInfo.primaryTargetTypeElementSimpleName}Conditions"))
-                .addFunction(FunSpec.constructorBuilder()
-                        .addParameter("rpcOps", CordaRPCOps::class)
-                        .addParameter(ParameterSpec.builder("defaults", SimpleServiceDefaults::class)
-                                .defaultValue("%T()", SimpleServiceDefaults::class.java)
-                                .build())
-                        .callThisConstructor(CodeBlock.builder()
-                                .add("%T(%N, %T::class.java, %N)",
-                                        baseClassesConfig.rpcDelegateClassName, "rpcOps",
-                                        annotatedElementInfo.secondaryTargetTypeElement!!, "defaults").build()
-                        ).build())
-                .addFunction(FunSpec.constructorBuilder()
-                        .addParameter("nodeRpcConnection", NodeRpcConnection::class)
-                        .addParameter(ParameterSpec.builder("defaults", SimpleServiceDefaults::class)
-                                .defaultValue("%T()", SimpleServiceDefaults::class.java)
-                                .build())
-                        .callThisConstructor(CodeBlock.builder()
-                                .add("%T(%N, %T::class.java, %N)",
-                                        baseClassesConfig.rpcConnectionDelegateClassName, "nodeRpcConnection",
-                                        annotatedElementInfo.secondaryTargetTypeElement!!, "defaults").build()
-                        ).build())
-                //NodeRpcConnection
+                .addFunction(delegateBasedConstructorBuilder(
+                        annotatedElementInfo = annotatedElementInfo,
+                        paramName = "poolBoy",
+                        paramType = PoolBoyConnection::class.java,
+                        delegateClassName = baseClassesConfig.poolBoyDelegateClassName,
+                        kdoc = CodeBlock.of("PoolBopy-based RPC connection pool constructor")).build())
+                .addFunction(delegateBasedConstructorBuilder(
+                        annotatedElementInfo = annotatedElementInfo,
+                        paramName = "rpcOps",
+                        paramType = CordaRPCOps::class.java,
+                        delegateClassName = baseClassesConfig.rpcDelegateClassName,
+                        kdoc = legacyRpcDelegateConstructorKdoc,
+                        annotations = listOf(legacyRpcDelegateConstructorAnnotation)).build())
+                .addFunction(delegateBasedConstructorBuilder(
+                        annotatedElementInfo = annotatedElementInfo,
+                        paramName = "nodeRpcConnection",
+                        paramType = NodeRpcConnection::class.java,
+                        delegateClassName = baseClassesConfig.rpcConnectionDelegateClassName,
+                        kdoc = legacyRpcDelegateConstructorKdoc,
+                        annotations = listOf(legacyRpcDelegateConstructorAnnotation)
+                ).build())
                 .addFunction(buildDslFunSpec("buildQuery", conditionsClassName, KModifier.OVERRIDE))
-
-
         return stateServiceSpecBuilder
+    }
+
+    fun delegateBasedConstructorBuilder(
+            annotatedElementInfo: AnnotatedElementInfo,
+            paramName: String,
+            paramType: Class<*>,
+            delegateClassName: ClassName,
+            kdoc: CodeBlock? = null,
+            annotations: Iterable<AnnotationSpec>? = null
+    ): Builder {
+        val builder = FunSpec.constructorBuilder()
+                .addParameter(paramName, paramType)
+                .addParameter(ParameterSpec.builder("defaults", SimpleServiceDefaults::class)
+                        .defaultValue("%T()", SimpleServiceDefaults::class.java)
+                        .build())
+                .callThisConstructor(CodeBlock.builder()
+                        .add("%T(%N, %T::class.java, %N)",
+                                delegateClassName, paramName,
+                                annotatedElementInfo.secondaryTargetTypeElement!!, "defaults").build()
+                )
+        if(kdoc != null) builder.addKdoc(kdoc)
+        if(annotations != null) builder.addAnnotations(annotations)
+        return builder
     }
 
     /** Create the fields object spec for the annotated element being processed */
     fun buildFieldsObjectSpec(typeElement: TypeElement, fields: List<VariableElement>, fieldsClassName: ClassName): TypeSpec.Builder {
         val fieldsSpec = TypeSpec.objectBuilder(fieldsClassName)
                 .addSuperinterface(FIELDS_CLASSNAME.parameterizedBy(
-                    if(typeElement.typeParameters.isEmpty()) typeElement.asKotlinTypeName()
-                    else typeElement.asKotlinClassName().parameterizedBy(
-                            typeElement.typeParameters.map {
-                                it.bounds.single().asKotlinTypeName()
-                            })
+                        if (typeElement.typeParameters.isEmpty()) typeElement.asKotlinTypeName()
+                        else typeElement.asKotlinClassName().parameterizedBy(
+                                typeElement.typeParameters.map {
+                                    it.bounds.single().asKotlinTypeName()
+                                })
                 ))
                 .addKdoc("Provides easy access to fields of [%T]", typeElement)
-        if(typeElement.typeParameters.isNotEmpty()) {
+        if (typeElement.typeParameters.isNotEmpty()) {
             processingEnv.noteMessage { "typeElement.typeParameters.first: ${typeElement.typeParameters.first()}" }
             processingEnv.noteMessage { "typeElement.typeParameters.first().bounds: ${typeElement.typeParameters.first().bounds}" }
         }
@@ -323,7 +363,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
         val enclosingType = field.enclosingElement.asType()
         val enclosingTypeElement = enclosingType.asTypeElement()
         val enclosingParameterisedType =
-                if(enclosingTypeElement.typeParameters.isNotEmpty())
+                if (enclosingTypeElement.typeParameters.isNotEmpty())
                     enclosingTypeElement.asKotlinClassName()
                             .parameterizedBy(enclosingTypeElement.typeParameters
                                     .map { TYPE_PARAMETER_STAR })

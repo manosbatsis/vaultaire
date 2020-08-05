@@ -37,12 +37,10 @@ data class StateInfo(
         val persistentStateFields: List<VariableElement>?,
         val generatedPackageName: String,
         val sourceRoot: File
-){
-    val persistentStateSimpleName =  persistentStateTypeElement?.simpleName.toString()
-    val contractStateSimpleName =  contractStateTypeElement.simpleName.toString()
+) {
+    val persistentStateSimpleName = persistentStateTypeElement?.simpleName.toString()
+    val contractStateSimpleName = contractStateTypeElement.simpleName.toString()
 }
-
-
 
 
 fun getFileSpecBuilder(packageName: String, fileName: String) =

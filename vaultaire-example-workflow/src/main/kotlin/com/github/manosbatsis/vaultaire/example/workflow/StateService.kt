@@ -35,7 +35,7 @@ import net.corda.core.node.ServiceHub
 
 class CustomBasicBookStateService(
         delegate: StateServiceDelegate<BookContract.BookState>
-) : BasicStateService<BookContract.BookState>(delegate){
+) : BasicStateService<BookContract.BookState>(delegate) {
 
     /** [CordaRPCOps]-based constructor */
     constructor(
@@ -53,7 +53,7 @@ class CustomBasicBookStateService(
 /** Extend the generated [BookStateService] */
 class MyExtendedBookStateService(
         delegate: StateServiceDelegate<BookContract.BookState>
-) : BookStateService(delegate){
+) : BookStateService(delegate) {
 
     // Add the appropriate constructors
     // to initialize per delegate type:

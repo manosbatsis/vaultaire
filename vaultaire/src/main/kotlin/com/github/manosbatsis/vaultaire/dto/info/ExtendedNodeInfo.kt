@@ -17,15 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.annotation
+package com.github.manosbatsis.vaultaire.dto.info
 
-/**
- * Marks a [net.corda.core.contracts.ContractState] property as a Corda Account.
- * Supported property types are [java.security.PublicKey], [net.corda.core.identity.AbstractParty]
- * and [net.corda.core.identity.AnonymousParty].
- */
-@Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
-annotation class VaultaireAccountInfo(
+import net.corda.core.identity.Party
+import net.corda.core.utilities.NetworkHostAndPort
+
+data class ExtendedNodeInfo(
+        val platformVersion: Int,
+
+        val identity: Party,
+        val identities: List<Party>,
+        val notaries: List<Party>,
+
+        val flows: List<String>,
+        val addresses: List<NetworkHostAndPort>
 )
-

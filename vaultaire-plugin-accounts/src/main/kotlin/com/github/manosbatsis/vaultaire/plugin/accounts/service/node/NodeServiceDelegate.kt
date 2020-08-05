@@ -20,12 +20,15 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.node
 
 import co.paralleluniverse.fibers.Suspendable
-import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyNonPooledConnection
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyNonPooledRawRpcConnection
+import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
-import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegateBase
+import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import com.r3.corda.lib.accounts.workflows.accountBaseCriteria
 import com.r3.corda.lib.accounts.workflows.accountHostCriteria
@@ -211,29 +214,38 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
 
     @Suspendable
     fun requestAccount(identifier: UUID, host: Party): AccountInfo?
+
     @Suspendable
     fun toParty(owningKey: PublicKey): Party
 }
 
-/** RPC implementation base */
-abstract class AccountsAwareNodeServiceRpcDelegateBase(
+/** RPC implementation base that uses a [PoolBoyConnection] RPC connection pool */
+open class AccountsAwareNodeServicePoolBoyDelegate(
+        poolBoy: PoolBoyConnection,
         defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceRpcDelegateBase(defaults), AccountsAwareNodeServiceDelegate {
+) : NodeServiceRpcPoolBoyDelegate(poolBoy, defaults), AccountsAwareNodeServiceDelegate {
 
     override fun findStoredAccountOrNull(owningKey: PublicKey?): StateAndRef<AccountInfo>? {
-        return if (owningKey != null) rpcOps.startFlow(::AccountInfoByKey, owningKey).returnValue.get() else null
+        return if (owningKey != null) poolBoy.withConnection { connection ->
+            connection.proxy.startFlow(::AccountInfoByKey, owningKey).returnValue.get()
+        }
+        else null
     }
 
     override fun createPublicKey(accountInfo: AccountInfo): AnonymousParty =
-            rpcOps.startFlow(::RequestKeyForAccount, accountInfo).returnValue.get()
+            poolBoy.withConnection { connection ->
+                connection.proxy.startFlow(::RequestKeyForAccount, accountInfo).returnValue.get()
+            }
 
 
     override fun createAccount(key: String): StateAndRef<AccountInfo> =
-            rpcOps.startFlow(::CreateAccount, key).returnValue.get()
+            poolBoy.withConnection { connection ->
+                connection.proxy.startFlow(::CreateAccount, key).returnValue.get()
+            }
 
     override fun findAccountOrNull(identifier: UUID, host: CordaX500Name): AccountInfo? {
         var account = findStoredAccountOrNull(identifier)?.state?.data
-        if(account == null){
+        if (account == null) {
             val host = wellKnownPartyFromX500Name(host)
                     ?: error("Failed resolving well known party")
             account = requestAccount(identifier, host)
@@ -245,35 +257,38 @@ abstract class AccountsAwareNodeServiceRpcDelegateBase(
             findAccountOrNull(identifier, host) ?: error("Failed resolving well known party")
 
     override fun requestAccount(identifier: UUID, host: Party): AccountInfo? =
-            rpcOps.startFlow(::RequestAccountInfo, identifier, host).returnValue.get()
+            poolBoy.withConnection { connection ->
+                connection.proxy.startFlow(::RequestAccountInfo, identifier, host).returnValue.get()
+            }
 
     override fun toParty(owningKey: PublicKey): Party {
-        return rpcOps.partyFromKey(owningKey)
-                ?: throw IllegalStateException("Could not deanonymise party ${owningKey.toStringShort()}")
+        return poolBoy.withConnection { connection ->
+            connection.proxy.partyFromKey(owningKey)
+        }
+        ?: throw IllegalStateException("Could not deanonymise party ${owningKey.toStringShort()}")
     }
-
 }
 
 /** [CordaRPCOps]-based [NodeServiceDelegate] implementation */
+@Deprecated(message = "Use [AccountsAwareNodeServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareNodeServiceRpcDelegate(
-        override val rpcOps: CordaRPCOps,
+        rpcOps: CordaRPCOps,
         defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-) : AccountsAwareNodeServiceRpcDelegateBase(defaults)
+) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledRawRpcConnection(rpcOps), defaults)
 
 
 /** [NodeRpcConnection]-based [NodeServiceDelegate] implementation */
+@Deprecated(message = "Use [AccountsAwareNodeServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareNodeServiceRpcConnectionDelegate(
-        private val nodeRpcConnection: NodeRpcConnection,
+        nodeRpcConnection: NodeRpcConnection,
         override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
-) : AccountsAwareNodeServiceRpcDelegateBase(defaults) {
-    override val rpcOps: CordaRPCOps by lazy { nodeRpcConnection.proxy }
-}
+) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection), defaults)
 
 /** A [NodeServiceDelegate] with extended Corda Accounts support, implemented as a CordaServicen */
 open class AccountsAwareNodeCordaServiceDelegate(
         serviceHub: AppServiceHub
 ) : NodeCordaServiceDelegate(serviceHub), AccountsAwareNodeServiceDelegate {
-    companion object{
+    companion object {
         val logger = contextLogger()
     }
 
@@ -310,7 +325,7 @@ open class AccountsAwareNodeCordaServiceDelegate(
         logger.debug("findAccountOrNull, partyHost: $partyHost")
         var account = findStoredAccountOrNull(identifier)?.state?.data
         logger.debug("findAccountOrNull, stored account: $partyHost")
-        if(account == null) {
+        if (account == null) {
             logger.debug("findAccountOrNull, requesting account...")
             account = requestAccount(identifier, partyHost)
             logger.debug("findAccountOrNull, requested account: $partyHost")

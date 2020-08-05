@@ -20,7 +20,8 @@
 package com.github.manosbatsis.vaultaire.service.node
 
 import co.paralleluniverse.fibers.Suspendable
-import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
+import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
@@ -37,25 +38,25 @@ import net.corda.core.node.services.vault.Sort
 import net.corda.core.utilities.contextLogger
 import java.util.UUID
 
-class StateNotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.javaClass.simpleName} with id ${id}")
+class NotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.javaClass.simpleName} with id ${id}")
 
 
 /**
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-interface NodeService: NodeServiceDelegate {
+interface NodeService : NodeServiceDelegate {
 
-    companion object{
+    companion object {
         private val logger = contextLogger()
     }
 
     /**
      * Find the state of type [T] matching the given [UUID] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
-    fun <T: ContractState> getByLinearId(
+    fun <T : ContractState> getByLinearId(
             contractStateType: Class<T>,
             linearId: UUID,
             relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL,
@@ -67,10 +68,10 @@ interface NodeService: NodeServiceDelegate {
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
-    fun <T: ContractState> getByLinearId(
+    fun <T : ContractState> getByLinearId(
             contractStateType: Class<T>,
             linearId: String,
             relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> {
@@ -79,22 +80,22 @@ interface NodeService: NodeServiceDelegate {
 
     /**
      * Find the state of type [T] matching the given [UniqueIdentifier] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
-    fun <T: ContractState> getByLinearId(
+    fun <T : ContractState> getByLinearId(
             contractStateType: Class<T>,
             linearId: UniqueIdentifier,
             relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T> {
         return findByLinearId(contractStateType, linearId, relevancyStatus)
-                ?: throw StateNotFoundException(linearId.toString(), contractStateType)
+                ?: throw NotFoundException(linearId.toString(), contractStateType)
     }
 
     /**
      * Find the state of type [T] matching the given [UUID] if any
      */
     @Suspendable
-    fun <T: ContractState> findByLinearId(
+    fun <T : ContractState> findByLinearId(
             contractStateType: Class<T>,
             linearId: UUID,
             relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? {
@@ -105,7 +106,7 @@ interface NodeService: NodeServiceDelegate {
      * Find the state of type [T] matching the given [UniqueIdentifier] if any
      */
     @Suspendable
-    fun <T: ContractState> findByLinearId(
+    fun <T : ContractState> findByLinearId(
             contractStateType: Class<T>,
             linearId: String,
             relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>? {
@@ -116,7 +117,7 @@ interface NodeService: NodeServiceDelegate {
      * Find the state of type [T] matching the given [UniqueIdentifier] if any
      */
     @Suspendable
-    fun <T: ContractState> findByLinearId(
+    fun <T : ContractState> findByLinearId(
             contractStateType: Class<T>,
             linearId: UniqueIdentifier,
             relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL): StateAndRef<T>?
@@ -124,31 +125,31 @@ interface NodeService: NodeServiceDelegate {
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
      * matching the given [UniqueIdentifier.externalId] if any, throw an error otherwise
-     * @throws StateNotFoundException if no match is found
+     * @throws NotFoundException if no match is found
      */
     @Suspendable
-    fun <T: ContractState> getByExternalId(
+    fun <T : ContractState> getByExternalId(
             contractStateType: Class<T>, externalId: String): StateAndRef<T> {
         return findByExternalId(contractStateType, externalId)
-                ?: throw StateNotFoundException(externalId, contractStateType)
+                ?: throw NotFoundException(externalId, contractStateType)
     }
 
     /**
      * Find the [Vault.StateStatus.UNCONSUMED] state of type [T]
      * matching the given [UniqueIdentifier.externalId] if any
      */
-    fun <T: ContractState> findByExternalId(
+    fun <T : ContractState> findByExternalId(
             contractStateType: Class<T>, externalId: String): StateAndRef<T>?
 
     /** Count states of type [T] matching stored in the vault and matching any given criteria */
-    fun <T: ContractState> countBy(
+    fun <T : ContractState> countBy(
             contractStateType: Class<T>, criteria: QueryCriteria = defaults.criteria): Long
 
     /**
      * Query the vault for states of type [T] matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
-    fun <T: ContractState> queryBy(
+    fun <T : ContractState> queryBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria = defaults.criteria,
             pageNumber: Int = defaults.pageNumber,
@@ -160,7 +161,7 @@ interface NodeService: NodeServiceDelegate {
      * Track the vault for events of [T] states matching the given criteria,
      * applying the given page number, size and sorting specifications if any
      */
-    fun <T: ContractState> trackBy(
+    fun <T : ContractState> trackBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria = defaults.criteria,
             pageNumber: Int = defaults.pageNumber,
@@ -170,7 +171,6 @@ interface NodeService: NodeServiceDelegate {
 }
 
 
-
 /**
  * Basic [NodeService] implementation
  */
@@ -178,23 +178,30 @@ open class BasicNodeService(
         open val delegate: NodeServiceDelegate
 ) : NodeServiceDelegate by delegate, NodeService {
 
+    /** [PoolBoyConnection]-based constructor */
+    constructor(
+            poolBoy: PoolBoyConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+    ) : this(NodeServiceRpcPoolBoyDelegate(poolBoy, defaults))
+
     /** [NodeRpcConnection]-based constructor */
+    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             nodeRpcConnection: NodeRpcConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
 
     /** [CordaRPCOps]-based constructor */
+    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(NodeServiceRpcDelegate(rpcOps, defaults))
 
-    /** [ServiceHub]-based constructor, initiaalizes a Corda Service delegate */
+    /** [ServiceHub]-based constructor, initializes a Corda Service delegate */
     constructor(
             serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(serviceHub.cordaService(NodeServiceHubDelegate::class.java))
 
     @Suspendable
-    override fun <T: ContractState> findByLinearId(
+    override fun <T : ContractState> findByLinearId(
             contractStateType: Class<T>, linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? {
         return if (isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
                 linearId = listOf(linearId),
@@ -203,7 +210,7 @@ open class BasicNodeService(
     }
 
     @Suspendable
-    override fun <T: ContractState> findByExternalId(
+    override fun <T : ContractState> findByExternalId(
             contractStateType: Class<T>,
             externalId: String): StateAndRef<T>? {
         return if (isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
@@ -214,13 +221,13 @@ open class BasicNodeService(
     }
 
     @Suspendable
-    override fun <T: ContractState> countBy(
+    override fun <T : ContractState> countBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria): Long =
             queryBy(contractStateType, criteria, 1, 1).totalStatesAvailable
 
     @Suspendable
-    override fun <T: ContractState> queryBy(
+    override fun <T : ContractState> queryBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria,
             pageNumber: Int,
@@ -231,7 +238,7 @@ open class BasicNodeService(
     }
 
     @Suspendable
-    override fun <T: ContractState> trackBy(
+    override fun <T : ContractState> trackBy(
             contractStateType: Class<T>,
             criteria: QueryCriteria,
             pageNumber: Int,

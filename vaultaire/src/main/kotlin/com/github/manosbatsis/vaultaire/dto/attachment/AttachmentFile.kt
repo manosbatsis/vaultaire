@@ -17,15 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.annotation
+package com.github.manosbatsis.vaultaire.dto.attachment
 
-/**
- * Marks a [net.corda.core.contracts.ContractState] property as a Corda Account.
- * Supported property types are [java.security.PublicKey], [net.corda.core.identity.AbstractParty]
- * and [net.corda.core.identity.AnonymousParty].
- */
-@Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
-annotation class VaultaireAccountInfo(
-)
+import net.corda.core.serialization.CordaSerializable
+import java.io.InputStream
 
+/** Data transfer object representing an attachment file to be persisted in the vault */
+@CordaSerializable
+data class AttachmentFile(
+        val name: String,
+        val originalFilename: String,
+        val inputStream: InputStream,
+        val size: Long,
+        val contentType: String?)

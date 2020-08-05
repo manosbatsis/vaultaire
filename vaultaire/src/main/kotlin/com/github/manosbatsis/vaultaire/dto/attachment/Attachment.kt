@@ -17,31 +17,29 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.dto
+package com.github.manosbatsis.vaultaire.dto.attachment
 
-import net.corda.core.identity.AnonymousParty
 import net.corda.core.serialization.CordaSerializable
-import java.util.UUID
+import java.io.Closeable
+import java.io.File
+import java.io.InputStream
 
-/**
- * Convenient "participant" type that combines a known Corda Account ID
- * with a corresponding  anonymous party.
- */
+/** Data transfer object representing an attachment to be persisted in the vault */
 @CordaSerializable
-data class AccountParty(
-        /**
-         * The account ID, maps to
-         * [com.r3.corda.lib.accounts.contracts.states.AccountInfo.identifier]
-         */
-        var identifier: UUID,
-        /**
-         * The account name, maps to
-         * [com.r3.corda.lib.accounts.contracts.states.AccountInfo.name]
-         * */
-        var name: String,
-        /** The account party */
-        var party: AnonymousParty
-) {
-    fun hasMatchingIdentifier(other: AccountParty?): Boolean = identifier == other?.identifier
+data class Attachment(
+        /** The temporary file backing this attachment, if any */
+        val tmpFile: File? = null,
+        /** The attachment input stream to upload */
+        val inputStream: InputStream,
+        /** The files contained in the attachment archive */
+        val filenames: List<String>,
+        /** `true` if an archive as originally uploaded,
+         * `false` if automatically created to save in the vault  */
+        val original: Boolean = false
+) : Closeable {
 
+    override fun close() {
+        // Delete tmp file if it exists
+        if (tmpFile != null && tmpFile.exists()) tmpFile.delete()
+    }
 }
