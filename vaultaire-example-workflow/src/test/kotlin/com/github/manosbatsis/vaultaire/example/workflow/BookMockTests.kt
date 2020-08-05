@@ -19,21 +19,25 @@
  */
 package com.github.manosbatsis.vaultaire.example.workflow
 
+import com.github.manosbatsis.partiture.flow.PartitureFlow
+import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Genre.TECHNOLOGY
-import com.github.manosbatsis.vaultaire.example.generated.BookStateDto
-import com.github.manosbatsis.vaultaire.example.generated.BookStateService
-import com.github.manosbatsis.vaultaire.example.generated.PersistentBookStateConditions
-import com.github.manosbatsis.vaultaire.example.generated.bookStateQuery
-import com.github.manosbatsis.vaultaire.example.workflow.generated.AccountInfoService
-import com.github.manosbatsis.vaultaire.example.workflow.generated.accountInfoQuery
+import com.github.manosbatsis.vaultaire.example.contract.BookStateDto
+import com.github.manosbatsis.vaultaire.example.contract.BookStateService
+import com.github.manosbatsis.vaultaire.example.contract.PersistentBookStateConditions
+import com.github.manosbatsis.vaultaire.example.contract.bookStateQuery
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.accountInfoQuery
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
-import com.github.manosbatsis.vaultaire.service.node.StateNotFoundException
+import com.github.manosbatsis.vaultaire.service.node.NotFoundException
 import com.r3.corda.lib.accounts.contracts.AccountInfoContract
 import com.r3.corda.lib.accounts.workflows.flows.CreateAccount
-import com.r3.corda.lib.accounts.workflows.internal.schemas.AccountsWorkflowsSchema
+import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount
+import com.r3.corda.lib.ci.workflows.RequestKey
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowLogic
 import net.corda.core.node.services.Vault
@@ -62,18 +66,25 @@ import kotlin.test.assertTrue
 
 @Suppress("DEPRECATION")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
-class FlowTests {
-    companion object{
-        val logger = loggerFor<FlowTests>()
+class BookMockTests {
+    companion object {
+        val logger = loggerFor<BookMockTests>()
     }
 
     // Works as long as the main and test package names are  in sync
     val cordappPackages = listOf(
+            // Acounts
             AccountInfoContract::class.java.`package`.name,
-            AccountsWorkflowsSchema::class.java.`package`.name,
+            RequestKeyForAccount::class.java.`package`.name,
+            RequestKey::class.java.`package`.name,
+            // Vaultaire
+            AccountParty::class.java.`package`.name,
+            AccountInfoDto::class.java.`package`.name,
+            // Partiture
+            PartitureFlow::class.java.`package`.name,
+            // Our coprdapp
             BOOK_CONTRACT_PACKAGE,
-            this.javaClass.`package`.name,
-            "com.github.manosbatsis.partiture.flow")
+            this.javaClass.`package`.name)
 
     lateinit var network: MockNetwork
     lateinit var a: StartedMockNode
@@ -95,17 +106,17 @@ class FlowTests {
     }
 
     @AfterAll
-    fun tearDown(){
+    fun tearDown() {
         network.stopNodes()
     }
 
     @Test
-    fun `Test @DefaultValue`(){
+    fun `Test @DefaultValue`() {
         assertEquals(1, BookStateDto().editions)
     }
 
     @Test
-    fun `Test AccountInfo`(){
+    fun `Test AccountInfo`() {
         // Create account
         val accountUuid = UUID.randomUUID()
         val accountName = "vaultaire"
@@ -352,10 +363,10 @@ class FlowTests {
 
         // Ensure a StateNotFoundException is thrown when no match is found in getXxxx methods
         val random = UUID.randomUUID().toString()
-        assertThrows<StateNotFoundException> {
+        assertThrows<NotFoundException> {
             stateService.getByLinearId(random)
         }
-        assertThrows<StateNotFoundException> {
+        assertThrows<NotFoundException> {
             stateService.getByExternalId(random)
         }
     }
@@ -373,7 +384,7 @@ class FlowTests {
         // Update title
         val updatedTitle = "${createdState.title} UPDATED"
         val updatedState: BookState = flowWorksCorrectly(a,
-                UpdateBookFlow(BookStateDto(createdState.copy(
+                UpdateBookFlow(BookStateDto.mapToDto(createdState.copy(
                         title = updatedTitle,
                         editions = 2
                 )))).single()
@@ -382,7 +393,7 @@ class FlowTests {
         // Update title and editions
         val updatedTitle2 = "${createdState.title} UPDATED2"
         val updatedState2: BookState = flowWorksCorrectly(a,
-                UpdateBookFlow(BookStateDto(createdState.copy(
+                UpdateBookFlow(BookStateDto.mapToDto(createdState.copy(
                         title = updatedTitle2,
                         editions = 3
                 )))).single()
@@ -425,8 +436,7 @@ class FlowTests {
 
 
     inline fun <reified OUT> flowWorksCorrectly(node: StartedMockNode, flow: FlowLogic<OUT>): OUT {
-        val future = node.startFlow(flow)
-        val result = future.getOrThrow()
+        val result = node.startFlow(flow).getOrThrow()
         // Ask nodes to process any queued up inbound messages
         network.waitQuiescent()
         return result

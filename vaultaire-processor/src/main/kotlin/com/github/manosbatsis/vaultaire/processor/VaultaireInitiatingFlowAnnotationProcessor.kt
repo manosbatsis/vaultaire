@@ -20,9 +20,9 @@
 package com.github.manosbatsis.vaultaire.processor
 
 import co.paralleluniverse.fibers.Suspendable
+import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
-import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
-import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
@@ -35,6 +35,9 @@ import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatedBy
+import java.io.File
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
@@ -49,31 +52,45 @@ import javax.lang.model.element.TypeElement
  */
 @SupportedAnnotationTypes("com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedOptions(
-        KAPT_KOTLIN_GENERATED_OPTION_NAME,
-        KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
-class VaultaireInitiatingFlowAnnotationProcessor : BaseAnnotationProcessor() {
+@SupportedOptions(AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED)
+class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), ProcessingEnvironmentAware {
+
 
     companion object {
         const val BASE_TYPE = "value"
         const val COMMENT = "comment"
     }
 
+    /** Implement [ProcessingEnvironment] access */
+    override val processingEnvironment by lazy {
+        processingEnv
+    }
     val sourcesAnnotation = VaultaireGenerateResponder::class.java
 
+    val generatedSourcesRoot: String by lazy {
+        processingEnv.options[AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED]
+                ?: processingEnv.options[AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED]
+                ?: throw IllegalStateException("Can't find the target directory for generated Kotlin files.")
+    }
+
+    val sourceRootFile by lazy {
+        val sourceRootFile = File(generatedSourcesRoot)
+        sourceRootFile.mkdir()
+        sourceRootFile
+    }
 
     override fun process(annotations: MutableSet<out TypeElement>?, roundEnv: RoundEnvironment): Boolean {
         // Group any target responders to generate by package name
         val responderTargets = roundEnv.getElementsAnnotatedWith(sourcesAnnotation).groupBy { it.asType().asTypeElement().getPackageName() }
         // Return if nothing to do
-        if(responderTargets.keys.isEmpty()) return false
+        if (responderTargets.keys.isEmpty()) return false
         // Create responders
         responderTargets.entries.forEach { it ->
             val packageName = "${it.key}.generated"
             // Generate the Kotlin file
             val fileSpecBuilder = getFileSpecBuilder(packageName, "VaultaireGeneratedResponders")
             // Add each responder
-            it.value .forEach {
+            it.value.forEach {
                 fileSpecBuilder.addType(generateResponderFlow(packageName, it as TypeElement))
             }
             // Write responders file
@@ -97,7 +114,7 @@ class VaultaireInitiatingFlowAnnotationProcessor : BaseAnnotationProcessor() {
                         .addParameter("otherPartySession", FlowSession::class.asClassName())
                         .build())
         // extend or inline based on open/final base responder
-        if(baseFlowTypeElement.modifiers.contains(FINAL)){
+        if (baseFlowTypeElement.modifiers.contains(FINAL)) {
             responderSpec.superclass(FlowLogic::class.asClassName().parameterizedBy(Unit::class.asTypeName()))
                     .addProperty(PropertySpec.builder("otherPartySession", FlowSession::class)
                             .initializer("otherPartySession")
@@ -107,12 +124,11 @@ class VaultaireInitiatingFlowAnnotationProcessor : BaseAnnotationProcessor() {
                             .addModifiers(OVERRIDE)
                             .addStatement("subFlow(%T(otherPartySession))", baseFlowTypeElement)
                             .build())
-        }
-        else {
+        } else {
             responderSpec.superclass(baseFlowTypeElement.asKotlinTypeName())
                     .addSuperclassConstructorParameter("otherPartySession")
         }
-        if(comment != null) responderSpec.addKdoc(comment.value.toString())
+        if (comment != null) responderSpec.addKdoc(comment.value.toString())
 
         return responderSpec.build()
     }

@@ -59,9 +59,10 @@ import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.SortAttribute
 import net.corda.core.schemas.StatePersistable
 import java.time.Instant
+import java.util.LinkedHashSet
+import java.util.UUID
 import kotlin.reflect.KProperty1
 import kotlin.Suppress as supress
-
 
 /** Condition interface */
 interface Condition {
@@ -70,7 +71,7 @@ interface Condition {
     fun toCriteria(): QueryCriteria?
 }
 
-interface RootCondition<P : StatePersistable>: Condition{
+interface RootCondition<P : StatePersistable> : Condition {
     var status: Vault.StateStatus
     var stateRefs: List<StateRef>?
     var notary: List<AbstractParty>?
@@ -80,15 +81,18 @@ interface RootCondition<P : StatePersistable>: Condition{
     var constraintTypes: Set<Vault.ConstraintInfo.Type>
     var constraints: Set<Vault.ConstraintInfo>
     var participants: List<AbstractParty>?
+    var externalIds: List<UUID>
 }
 
 /** A [Condition] that contains other conditions. Allows for nested and/or condition groups */
-abstract class ConditionsCondition<P : StatePersistable, out F: Fields<P>>(): Condition {
+abstract class ConditionsCondition<P : StatePersistable, out F : Fields<P>>() : Condition {
 
     /** The root condition */
     internal abstract val rootCondition: RootCondition<P>
+
     /** The fields of the target [StatePersistable] type `P` */
     abstract val fields: F
+
     /** The child conditions*/
     internal val conditions: MutableList<Condition> = mutableListOf()
 
@@ -106,7 +110,7 @@ abstract class ConditionsCondition<P : StatePersistable, out F: Fields<P>>(): Co
  * A [ConditionsCondition], base implementation for and/or condition group containers.
  *  Allows for query criteria conditions.
  */
-abstract class CompositeCondition<P : StatePersistable, out F: Fields<P>>(
+abstract class CompositeCondition<P : StatePersistable, out F : Fields<P>>(
         override val fields: F,
         override val rootCondition: RootCondition<P>
 ) : ConditionsCondition<P, F>() {
@@ -236,7 +240,7 @@ abstract class CompositeCondition<P : StatePersistable, out F: Fields<P>>(
 }
 
 /** Defines a set of conditions where all items must be matched */
-class AndCondition<P : StatePersistable, out F: Fields<P>>(
+class AndCondition<P : StatePersistable, out F : Fields<P>>(
         fields: F,
         rootCondition: RootCondition<P>
 ) : CompositeCondition<P, F>(fields, rootCondition) {
@@ -246,8 +250,8 @@ class AndCondition<P : StatePersistable, out F: Fields<P>>(
         var criteria: QueryCriteria? = null
         this.conditions.forEach {
             val childCriteria = it.toCriteria()
-            if(childCriteria != null) {
-                if(criteria == null ) criteria = childCriteria
+            if (childCriteria != null) {
+                if (criteria == null) criteria = childCriteria
                 else criteria = criteria!!.and(childCriteria)
             }
         }
@@ -256,7 +260,7 @@ class AndCondition<P : StatePersistable, out F: Fields<P>>(
 }
 
 /** Defines a set of conditions where at least a single item must be matched */
-class OrCondition<P : StatePersistable, out F: Fields<P>>(
+class OrCondition<P : StatePersistable, out F : Fields<P>>(
         fields: F,
         rootCondition: RootCondition<P>
 ) : CompositeCondition<P, F>(fields, rootCondition) {
@@ -265,8 +269,8 @@ class OrCondition<P : StatePersistable, out F: Fields<P>>(
         var criteria: QueryCriteria? = null
         this.conditions.forEach {
             val childCriteria = it.toCriteria()
-            if(childCriteria != null) {
-                if(criteria == null ) criteria = childCriteria
+            if (childCriteria != null) {
+                if (criteria == null) criteria = childCriteria
                 else criteria = criteria!!.or(childCriteria)
             }
         }
@@ -292,7 +296,7 @@ class Aggregates<P : StatePersistable>(val rootCondition: RootCondition<P>) {
 
     internal val aggregates: MutableList<Condition> = mutableListOf()
 
-    private fun addAggregate(condition: Condition)  = aggregates.add(condition)
+    private fun addAggregate(condition: Condition) = aggregates.add(condition)
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.sum(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
@@ -325,7 +329,7 @@ class Aggregates<P : StatePersistable>(val rootCondition: RootCondition<P>) {
 }
 
 /** Used to define [Sort.SortColumn]s */
-class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>){
+class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>) {
 
     val ASC = Sort.Direction.ASC
     val DESC = Sort.Direction.DESC
@@ -334,6 +338,7 @@ class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>){
     val stateRef = Sort.CommonStateAttribute.STATE_REF
     val stateRefTxnId = Sort.CommonStateAttribute.STATE_REF_TXN_ID
     val stateRefIndex = Sort.CommonStateAttribute.STATE_REF_INDEX
+
     // VaultStateAttribute entries
     val notaryName = Sort.VaultStateAttribute.NOTARY_NAME
     val contractStateType = Sort.VaultStateAttribute.CONTRACT_STATE_TYPE
@@ -342,9 +347,11 @@ class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>){
     val consumedTime = Sort.VaultStateAttribute.CONSUMED_TIME
     val lockId = Sort.VaultStateAttribute.LOCK_ID
     val constraintType = Sort.VaultStateAttribute.CONSTRAINT_TYPE
+
     // LinearStateAttribute entries
     val uuid = Sort.LinearStateAttribute.UUID
     val externalId = Sort.LinearStateAttribute.EXTERNAL_ID
+
     // FungibleStateAttribute entries
     val quantity = Sort.FungibleStateAttribute.QUANTITY
     val issuerRef = Sort.FungibleStateAttribute.ISSUER_REF
@@ -352,16 +359,16 @@ class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>){
     val entries: LinkedHashSet<Sort.SortColumn> = linkedSetOf()
 
     infix fun Sort.CommonStateAttribute.sort(value: Sort.Direction) =
-        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
+            entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
 
     infix fun Sort.FungibleStateAttribute.sort(value: Sort.Direction) =
-        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
+            entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
 
     infix fun Sort.LinearStateAttribute.sort(value: Sort.Direction) =
-        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
+            entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
 
     infix fun Sort.VaultStateAttribute.sort(value: Sort.Direction) =
-        entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
+            entries.add(Sort.SortColumn(SortAttribute.Standard(this), value))
 
     infix fun FieldWrapper<P>.sort(value: Sort.Direction) {
         entries.add(Sort.SortColumn(SortAttribute.Custom(statePersistableType, this.property.name), value))
@@ -369,16 +376,15 @@ class SortColumns<P : StatePersistable>(val statePersistableType: Class<P>){
 }
 
 abstract class TimeInstantTypeCondition(internal val type: TimeInstantType)
-class TimeRecordedCondition: TimeInstantTypeCondition(TimeInstantType.RECORDED)
-class TimeConsumedCondition: TimeInstantTypeCondition(TimeInstantType.CONSUMED)
-
+class TimeRecordedCondition : TimeInstantTypeCondition(TimeInstantType.RECORDED)
+class TimeConsumedCondition : TimeInstantTypeCondition(TimeInstantType.CONSUMED)
 
 
 /**
  * A [ConditionsCondition] extended by Vaultaire's annotation processing to create a condition DSL specific to a [ContractState] type.
  * Defines a root [QueryCriteria.VaultQueryCriteria]. Allows for defining `and`/`or` condition groups, as well as a [Sort]
  */
-abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P>>(
+abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<P>>(
         override var status: Vault.StateStatus = Vault.StateStatus.UNCONSUMED,
         override var stateRefs: List<StateRef>? = null,
         override var notary: List<AbstractParty>? = null,
@@ -387,10 +393,12 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
         override var relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL,
         override var constraintTypes: Set<Vault.ConstraintInfo.Type> = emptySet(),
         override var constraints: Set<Vault.ConstraintInfo> = emptySet(),
+        override var externalIds: List<UUID> = emptyList(),
         override var participants: List<AbstractParty>? = null
 ) : ConditionsCondition<P, F>(), RootCondition<P> {
     override val rootCondition: RootCondition<P>
         get() = this
+
     /** The target [ContractState] type */
     abstract val contractStateType: Class<out ContractState>
 
@@ -403,7 +411,7 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
     val timeRecorded = TimeRecordedCondition()
     val timeConsumed = TimeConsumedCondition()
 
-    private fun setTimeCondition(instantType: TimeInstantType, operator: BinaryComparisonOperator, instant: Instant){
+    private fun setTimeCondition(instantType: TimeInstantType, operator: BinaryComparisonOperator, instant: Instant) {
         timeCondition = TimeCondition(instantType, BinaryComparison(operator, instant))
     }
 
@@ -425,10 +433,11 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
         sortColumns = SortColumns(statePersistableType).apply(initializer)
     }
 
-    fun toSort() = Sort( if(::sortColumns.isInitialized) sortColumns.entries else emptySet() )
+    fun toSort() = Sort(if (::sortColumns.isInitialized) sortColumns.entries else emptySet())
 
     override fun toCriteria(): QueryCriteria {
         var criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(
+                externalIds = externalIds,
                 status = status,
                 contractStateTypes = setOf(contractStateType),
                 stateRefs = stateRefs,
@@ -442,7 +451,7 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
 
         this.conditions.forEach {
             val childCriteria = it.toCriteria()
-            if(childCriteria != null) criteria = criteria.and(childCriteria)
+            if (childCriteria != null) criteria = criteria.and(childCriteria)
         }
 
         return criteria
@@ -455,10 +464,10 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F: Fields<P
      */
     fun toCriteria(ignoreAggregates: Boolean = false): QueryCriteria {
         var criteria: QueryCriteria = toCriteria()
-        if(!ignoreAggregates && ::aggregates.isInitialized) {
+        if (!ignoreAggregates && ::aggregates.isInitialized) {
             aggregates.aggregates.forEach {
                 val childCriteria = it.toCriteria()
-                if(childCriteria != null) criteria = criteria.and(childCriteria)
+                if (childCriteria != null) criteria = criteria.and(childCriteria)
             }
         }
         return criteria

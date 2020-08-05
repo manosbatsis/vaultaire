@@ -14,21 +14,8 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 .idea/
-temp-clone/.gitignore
-temp-clone/.travis.yml
-temp-clone/LICENSE.md
-temp-clone/README.md
-temp-clone/build.gradle
-temp-clone/deploy_website.sh
-temp-clone/docs/
-temp-clone/etc/
-temp-clone/gradle.properties
-temp-clone/gradle/
-temp-clone/gradlew
-temp-clone/gradlew.bat
-temp-clone/mkdocs.yml
-temp-clone/settings.gradle
-temp-clone/vaultaire-example/build.gradle
-temp-clone/vaultaire-example/src/
-temp-clone/vaultaire-processor/
-temp-clone/vaultaire/
+temp-clone/
+
+# For mkdoc
+site/
+docs/index.md

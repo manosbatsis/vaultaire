@@ -8,6 +8,7 @@ and can be helpful with version upgrades.
 
 - Bumped Corda to OS 4.4
 - Added support for "lite" DTO strategy
+- Added Query DSL root `externalIds` property to  support querying the vault by Corda Account(s)
 
 ## 0.24
 

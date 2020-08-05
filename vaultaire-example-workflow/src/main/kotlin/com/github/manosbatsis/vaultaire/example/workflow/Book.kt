@@ -33,8 +33,8 @@ import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_ID
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
-import com.github.manosbatsis.vaultaire.example.generated.BookStateDto
-import com.github.manosbatsis.vaultaire.example.generated.BookStateService
+import com.github.manosbatsis.vaultaire.example.contract.BookStateDto
+import com.github.manosbatsis.vaultaire.example.contract.BookStateService
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatingFlow
@@ -63,7 +63,7 @@ class CreateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<Boo
 class UpdateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
     override fun convert(input: BookStateDto): CallContext {
         // Load existing state
-        val existing = BookStateService(serviceHub = clientFlow.serviceHub).getByLinearId(input.linearId!!)
+        val existing = BookStateService(clientFlow.serviceHub).getByLinearId(input.linearId!!)
         val updated = input.toPatched(existing.state.data)
         // Prepare a TX builder
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
@@ -120,7 +120,6 @@ class UpdateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, List<Boo
         input = input, // Input can be anything
         inputConverter = UpdateBookInputConverter(),// Our custom IN converter
         outputConverter = TypedOutputStatesConverter(BookState::class.java)) // OUT build-in converter
-
 
 
 /** Create/publish a bookstate  */

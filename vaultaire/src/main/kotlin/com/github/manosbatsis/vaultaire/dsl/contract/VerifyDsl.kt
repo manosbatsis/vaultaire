@@ -23,19 +23,19 @@ import com.github.manosbatsis.vaultaire.util.Fields
 import net.corda.core.contracts.ContractState
 import net.corda.core.transactions.LedgerTransaction
 
-class When(vararg conditions: Boolean){
+class When(vararg conditions: Boolean) {
 }
 
 abstract class ContractConditions(
         val tx: LedgerTransaction
-){
+) {
     abstract val commandTypes: Any
     abstract val stateTypes: Any
     abstract val stateTypeFields: Any
     abstract val groups: Any
     abstract val roles: Any
 
-    abstract val <T: ContractState> LedgerTransaction.InOutGroup<T, *>.fields: Fields<T>
+    abstract val <T : ContractState> LedgerTransaction.InOutGroup<T, *>.fields: Fields<T>
 
 
 }

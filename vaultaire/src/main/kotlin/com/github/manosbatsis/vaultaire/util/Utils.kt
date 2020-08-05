@@ -20,7 +20,7 @@
 package com.github.manosbatsis.vaultaire.util
 
 import net.corda.core.contracts.UniqueIdentifier
-import java.util.*
+import java.util.UUID
 
 fun String.asUniqueIdentifier(): UniqueIdentifier {
     // Is an external ID included?

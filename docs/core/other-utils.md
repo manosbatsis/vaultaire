@@ -51,32 +51,7 @@ class CreateBookFlowResponder(
   }
 }
 ```
- 
 
-## Generated DTOs
-
-Maintaining Data Transfer Objects (e.g. for REST) of your contract states can be a very mundane task.
-You can have Vaultaire generate those for you either using `@VaultaireGenerateDto` 
-on the contract state class directly:
-
-```kotlin
-@VaultaireGenerateDto(
-    // optional: properties to ignore
-    ignoreProperties = ["participants"]
-)
-data class BookState(
-    val publisher: Party,
-    val author: Party,
-    val price: BigDecimal,
-    val genre: Genre,
-    @DefaultValue("1")
-    val editions: Int = 1,
-    val title: String = "Uknown",
-    val published: Date = Date(),
-    @field:JsonProperty("alias")
-    val alternativeTitle: String? = null,
-    override val linearId: UniqueIdentifier = UniqueIdentifier()
-) : LinearState, QueryableState {/* ... */}
 ```
 
 ... or `@VaultaireGenerateDtoForDependency` when targetting a contract state within your dependencies
@@ -88,7 +63,7 @@ e.g. from your contract states module or a third party class:
     persistentStateType = PersistentBookState::class,
     contractStateType = BookState::class,
     // optional: properties to ignore
-    ignoreProperties = ["participants"]
+    ignoreProperties = ["foo"]
 )
 class Dummy // just a placeholder for our annotation
 ```
@@ -185,7 +160,7 @@ By default the strategy used is `VaultaireDtoStrategyKeys.DEFAULT`.
 ```kotlin
 @VaultaireGenerateDto(
     // optional: properties to ignore
-    ignoreProperties = ["participants"],
+    ignoreProperties = ["foo"],
     // Default is [VaultaireDtoStrategyKeys.DEFAULT]
     strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
 )

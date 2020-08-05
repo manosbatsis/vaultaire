@@ -4,6 +4,9 @@ dependencies {
     implementation "$corda_release_group:corda-core:$corda_release_version"
     implementation "$corda_release_group:corda:$corda_release_version"
     compile("com.github.manosbatsis.kotlin-utils:kotlin-utils-api:$kotlinutils_version")
+    compile("com.github.manosbatsis.corda.rpc.poolboy:corda-rpc-poolboy:$poolboy_version")
     api "com.juanchosaravia.autodsl:annotation:$autodsl_version"
     kapt "com.juanchosaravia.autodsl:processor:$autodsl_version"
+    kapt project(':vaultaire-plugin-accounts')
+//    kapt project(':vaultaire-example-contract')
 }

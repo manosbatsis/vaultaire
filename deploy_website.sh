@@ -20,13 +20,15 @@ git clone $REPO $DIR
 # Move working directory into temp folder
 cd $DIR
 
-# Remove redundant link
-sed -i '/See complete documentation at/d' README.md
-
 # Generate the API docs
 ./gradlew :vaultaire:dokkaForGhPages
 
+# Add readme as index
 cat README.md > docs/index.md
+# Remove redundant link
+sed -i '/See complete documentation at/d' docs/index.md
+sed -i 's~](docs/~](~g' docs/index.md
+sed -i 's~.md)~)~g' docs/index.md
 
 # Build the site and push the new files up to GitHub
 mkdocs gh-deploy

@@ -19,24 +19,35 @@
  */
 package com.github.manosbatsis.vaultaire.service.dao
 
-import com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection
+import co.paralleluniverse.fibers.Suspendable
+import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
+import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
+import com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceHubDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcConnectionDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegate
+import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate
 import net.corda.core.contracts.ContractState
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
+import net.corda.core.node.AppServiceHub
 import net.corda.core.node.ServiceHub
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
+import net.corda.core.utilities.contextLogger
 
 
 /** [StateService] delegate for vault operations */
-interface StateServiceDelegate<T: ContractState>: NodeServiceDelegate {
+interface StateServiceDelegate<T : ContractState> : NodeServiceDelegate {
+
+    companion object {
+        private val logger = contextLogger()
+    }
 
     val contractStateType: Class<T>
 
@@ -44,42 +55,61 @@ interface StateServiceDelegate<T: ContractState>: NodeServiceDelegate {
      * Query the vault for [T] states matching the given criteria,
      * applying the given paging and sorting specifications if any
      */
+
+    @Suspendable
     fun queryBy(
             criteria: QueryCriteria = defaults.criteria,
             paging: PageSpecification = defaults.paging,
             sort: Sort = defaults.sort
-    ): Vault.Page<T> = queryBy(contractStateType, criteria, paging, sort)
+    ): Vault.Page<T> {
+        return queryBy(contractStateType, criteria, paging, sort)
+    }
 
     /**
      * Track the vault for events of [T] states matching the given criteria,
      * applying the given paging and sorting specifications if any
      */
+    @Suspendable
     fun trackBy(
             criteria: QueryCriteria = defaults.criteria,
             paging: PageSpecification = defaults.paging,
             sort: Sort = defaults.sort
-    ): DataFeed<Vault.Page<T>, Vault.Update<T>> =
-            trackBy(contractStateType, criteria, paging, sort)
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        return trackBy(contractStateType, criteria, paging, sort)
+    }
 }
 
+open class StateServicePoolBoyDelegate<T : ContractState>(
+        poolBoy: PoolBoyConnection,
+        override val contractStateType: Class<T>,
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+) : NodeServiceRpcPoolBoyDelegate(poolBoy, defaults), StateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
-open class StateServiceRpcDelegate<T: ContractState>(
+@Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.dao.StateServicePoolBoyDelegate] with a pool boy connection pool instead")
+open class StateServiceRpcDelegate<T : ContractState>(
         rpcOps: CordaRPCOps,
         override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
-): NodeServiceRpcDelegate(rpcOps, defaults), StateServiceDelegate<T>
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+) : NodeServiceRpcDelegate(rpcOps, defaults), StateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
-open class StateServiceRpcConnectionDelegate<T: ContractState>(
+open class StateServiceRpcConnectionDelegate<T : ContractState>(
         nodeRpcConnection: NodeRpcConnection,
         override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
-): NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), StateServiceDelegate<T>
+        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+) : NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), StateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
-open class StateServiceHubDelegate<T: ContractState>(
+open class StateServiceHubDelegate<T : ContractState>(
         serviceHub: ServiceHub,
         override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = ServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceHubDelegate(serviceHub, defaults), StateServiceDelegate<T>
+
+/** Implementation of [StateServiceDelegate] as a CordaService */
+abstract class StateCordaServiceDelegate<T : ContractState>(
+        serviceHub: AppServiceHub,
+        override val contractStateType: Class<T>,
+        defaults: ServiceDefaults = SimpleServiceDefaults()
+) : NodeCordaServiceDelegate(serviceHub), StateServiceDelegate<T>

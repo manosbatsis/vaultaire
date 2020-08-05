@@ -1,13 +1,15 @@
 buildscript {
     ext {
         autodsl_version = '0.0.9'
+        autoservice_version = '1.0-rc7'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.4'
-        corda_gradle_plugins_version = '5.0.6'
-        corda_platform_version = '5'
+        corda_release_version = '4.5'
+        corda_gradle_plugins_version = '5.0.8'
+        corda_platform_version = '7'
 
         tokens_release_version = '1.1'
         tokens_release_group = 'com.r3.corda.lib.tokens'
+
 
         accounts_release_group = 'com.r3.corda.lib.accounts'
         accounts_release_version = '1.0'
@@ -17,12 +19,13 @@ buildscript {
 
         dokka_version = '0.9.18'
         junitVersion = '5.3.2'
-        junit_jupiter_version = '5.3.1' // TODO
+        junit_jupiter_version = '5.3.2'
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
-        kotlinutils_version = '0.18'
-        partiture_version = '0.10'
+        kotlinutils_version = '0.20'
+        partiture_version = '0.11'
+        poolboy_version = '0.1'
     }
     repositories {
         mavenLocal()
@@ -30,6 +33,8 @@ buildscript {
         jcenter()
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
     }
+    apply from: "${rootProject.projectDir}/repositories.gradle"
+
 
     dependencies {
 
@@ -81,16 +86,6 @@ allprojects {
 
     apply plugin: 'idea'
 
-    repositories {
-        // For Tokens SDK
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
-        // Auto DSL
-        maven { url "https://dl.bintray.com/juanchosaravia/autodsl" }
-        // Gradle tooling API
-        maven { url 'https://repo.gradle.org/gradle/libs-releases' }
-        maven { url 'http://repo.gradle.org/gradle/libs-releases-local' }
-    }
 
     configurations {
         // Adding a configuration that extends existing configuration:
@@ -122,7 +117,7 @@ subprojects {
             languageVersion = "1.2"
             apiVersion = "1.2"
             jvmTarget = "1.8"
-            freeCompilerArgs = ["-Xjsr305=strict"]
+            freeCompilerArgs = ["-Xjsr305=strict","-Xnormalize-constructor-calls=enable"]
             javaParameters = true   // Useful for reflection.
         }
     }
@@ -150,8 +145,7 @@ subprojects {
             testLogging {
                 events "passed", "skipped", "failed", "standardOut", "standardError"
             }
-            include '**/*IntegrationTest.class'
-
+            include '**/*IT.class', '**/*DriverTests.class'
         }
     }
     dependencies {
@@ -179,7 +173,10 @@ subprojects {
     }
 }
 
-configure([project(':vaultaire'), project(':vaultaire-processor')]) {
+configure([project(':vaultaire'),
+           project(':vaultaire-processor'),
+           project(':vaultaire-processor-plugin'),
+           project(':vaultaire-plugin-accounts')]) {
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'

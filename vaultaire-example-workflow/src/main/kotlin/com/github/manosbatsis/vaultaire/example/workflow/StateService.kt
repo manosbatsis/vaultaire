@@ -21,8 +21,10 @@ package com.github.manosbatsis.vaultaire.example.workflow
 
 
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
-import com.github.manosbatsis.vaultaire.example.generated.BookStateService
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
+import com.github.manosbatsis.vaultaire.example.contract.BookStateCordaServiceDelegate
+import com.github.manosbatsis.vaultaire.example.contract.BookStateService
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcDelegate
+import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceHubDelegate
@@ -33,16 +35,16 @@ import net.corda.core.node.ServiceHub
 
 class CustomBasicBookStateService(
         delegate: StateServiceDelegate<BookContract.BookState>
-) : BasicStateService<BookContract.BookState>(delegate){
+) : BasicStateService<BookContract.BookState>(delegate) {
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = ServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = ServiceDefaults()
+            serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
 
     // Custom business methods...
@@ -51,20 +53,20 @@ class CustomBasicBookStateService(
 /** Extend the generated [BookStateService] */
 class MyExtendedBookStateService(
         delegate: StateServiceDelegate<BookContract.BookState>
-) : BookStateService(delegate){
+) : BookStateService(delegate) {
 
     // Add the appropriate constructors
     // to initialize per delegate type:
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = ServiceDefaults()
-    ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
+            rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+    ) : this(AccountsAwareStateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = ServiceDefaults()
-    ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
+            serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+    ) : this(serviceHub.cordaService(BookStateCordaServiceDelegate::class.java))
 
     // Custom business methods...
 }

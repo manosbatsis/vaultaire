@@ -20,20 +20,16 @@
 package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
-import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_GENERATED_OPTION_NAME
-import com.github.manosbatsis.vaultaire.processor.BaseAnnotationProcessor.Companion.KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDefaultDtoStrategy
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDtoStrategy
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireLiteDtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.DtoInputContext
-import net.corda.core.contracts.ContractState
+import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
+import com.github.manotbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
+import com.github.manotbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.TypeElement
 
 /**
  * Kapt processor for generating (Corda) state-based DTOs.
@@ -42,50 +38,50 @@ import javax.lang.model.element.TypeElement
         "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto",
         "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedOptions(
-        KAPT_KOTLIN_GENERATED_OPTION_NAME,
-        KAPT_KOTLIN_VAULTAIRE_GENERATED_OPTION_NAME)
-class VaultaireDtoAnnotationProcessor : BaseStateInfoAnnotationProcessor() {
+@SupportedOptions(AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED)
+class VaultaireDtoAnnotationProcessor : AbstractAnnotatedModelInfoProcessor(
+        primaryTargetRefAnnotationName = "contractStateType",
+        secondaryTargetRefAnnotationName = "persistentStateType"
+) {
 
-    override val sourcesAnnotation = VaultaireGenerateDto::class.java
-    override val dependenciesAnnotation = VaultaireGenerateDtoForDependency::class.java
-
-    val profileStrategies = mapOf(
-            VaultaireDtoStrategyKeys.DEFAULT to VaultaireDefaultDtoStrategy::class.java,
-            VaultaireDtoStrategyKeys.LITE to VaultaireLiteDtoStrategy::class.java
-    )
-
-    private fun getDtoStrategies(stateInfo: StateInfo): List<Class<out VaultaireDtoStrategy>> {
-        return stateInfo.annotation.findAnnotationValueList("strategies")?.map {
-            profileStrategies[it.value.toString()] ?: throw IllegalArgumentException("Not a valid strategy: $it")
-        } ?: listOf(VaultaireDtoStrategy::class.java)
+    /** Get a list of DTO strategies to apply per annotated element */
+    private fun getDtoStrategies(annotatedElementInfo: AnnotatedElementInfo): Map<String, DtoStrategy> {
+        val pluginServiceLoader = AnnotationProcessorPluginService.getInstance()
+        val strategyKeys = annotatedElementInfo.annotation
+                .findAnnotationValueListEnum("strategies", VaultaireDtoStrategyKeys::class.java)
+                ?: error("Could not find annotation member: strategies")
+        return strategyKeys.map {
+            val strategy = it.toString() //.toString()
+            strategy to pluginServiceLoader.getPlugin(
+                    DtoStrategyFactoryProcessorPlugin::class.java,
+                    annotatedElementInfo, strategy)
+                    .createStrategy(annotatedElementInfo, strategy)
+        }.toMap()
     }
 
-    /** Write a DTO for the given [ContractState] . */
-    override fun process(stateInfo: StateInfo) {
-        getDtoStrategies(stateInfo).toSet().forEach {
-            val copyAnnotationPackages: List<String> = getStringValuesList(stateInfo.annotation, "copyAnnotationPackages")
-            val ignoredProperties: List<String> = getStringValuesList(stateInfo.annotation, "ignoreProperties")
+    override fun processElementInfos(elementInfos: List<AnnotatedElementInfo>) =
+            elementInfos.forEach { processElementInfo(it) }
 
-            processingEnv.noteMessage { "Ignoring properties: $ignoredProperties" }
-            val dtoInputContext =  DtoInputContext(
-                    processingEnvironment,
-                    stateInfo.contractStateTypeElement as TypeElement,
-                    stateInfo.contractStateFields.filterNot { ignoredProperties.contains(it.simpleName.toString()) },
-                    copyAnnotationPackages,
-                    it)
+    private fun processElementInfo(elementInfo: AnnotatedElementInfo) {
+        println("processElementInfo, elementInfo: $elementInfo")
+        getDtoStrategies(elementInfo).map { (suffix, strategy) ->
 
-            val dtoStrategy = dtoInputContext.dtoStrategy as VaultaireDtoStrategy
-                    //.builder()
+            val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
+            println("processElementInfo, suffix: ${suffix}")
+            val dto = dtoStrategyBuilder.build()
+            val packageName = elementInfo.generatedPackageName
+            val fileName = "${elementInfo.primaryTargetTypeElementSimpleName}${suffix}"
+            println("processElementInfo, dto: ${dto}")
+            println("processElementInfo, packageName: ${packageName}")
+            println("processElementInfo, fileName: ${fileName}")
+            println("processElementInfo, sourceRootFile: ${sourceRootFile}")
             // Generate the Kotlin file
-            getFileSpecBuilder(stateInfo.generatedPackageName, "${stateInfo.contractStateTypeElement.simpleName}VaultaireGenerated${dtoStrategy.nameSuffix}")
-                    .addType(dtoInputContext.builder().build())
+            getFileSpecBuilder(packageName, fileName)
+                    .addType(dto)
                     .build()
                     .writeTo(sourceRootFile)
         }
-
     }
-
 
 }
 

@@ -44,10 +44,14 @@ markdown_extensions:
 nav:
   - 'Overview': index.md
   - 'Installation': installation.md
-  - 'Query DSL': query-dsl.md
-  - 'State Services': state-services.md
-  - 'Other Utilities': other-utils.md
-  - 'API': /vaultaire/0.x/index.html
+  - 'Core Features':
+    - 'Query DSL': core/query-dsl.md
+    - 'State Services': core/state-services.md
+    - 'State DTOs': core/state-dtos.md
+    - 'Other Utilities': core/other-utils.md
+  - 'Plugins':
+    - 'Corda Accounts': plugins/corda-accounts.md
+  - 'API Reference': /vaultaire/0.x/index.html
   - 'FAQ': faq.md
   - 'Change Log': changelog.md
   - 'Credits': credits.md

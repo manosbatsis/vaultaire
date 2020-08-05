@@ -17,19 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.service
+package com.github.manosbatsis.vaultaire.annotation
 
-import net.corda.core.node.services.Vault
-import net.corda.core.node.services.vault.PageSpecification
-import net.corda.core.node.services.vault.QueryCriteria
-import net.corda.core.node.services.vault.Sort
+/**
+ * Marks a [net.corda.core.contracts.ContractState] property as a Corda Account.
+ * Supported property types are [java.security.PublicKey], [net.corda.core.identity.AbstractParty]
+ * and [net.corda.core.identity.AnonymousParty].
+ */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
+annotation class VaultaireAccountInfo(
+)
 
-/** Define option defaults for [StateService] instances */
-data class ServiceDefaults(
-        val criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED),
-        val pageNumber: Int = 1,
-        val pageSize: Int = 10,
-        val sort: Sort = Sort(emptySet())
-){
-    val paging = PageSpecification(pageNumber, pageSize)
-}
