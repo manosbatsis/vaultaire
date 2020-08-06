@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -274,34 +274,106 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Core Features
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Core Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../../query-dsl/" title="Query DSL" class="md-nav__link">
+    <a href="../../../core/query-dsl/" title="Query DSL" class="md-nav__link">
       Query DSL
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
-    <a href="../../../state-services/" title="State Services" class="md-nav__link">
+    <a href="../../../core/state-services/" title="State Services" class="md-nav__link">
       State Services
     </a>
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/state-dtos/" title="State DTOs" class="md-nav__link">
+      State DTOs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/other-utils/" title="Other Utilities" class="md-nav__link">
+      Other Utilities
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
     
       
       
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Plugins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Plugins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../../other-utils/" title="Other Utilities" class="md-nav__link">
-      Other Utilities
+    <a href="../../../plugins/corda-accounts/" title="Corda Accounts" class="md-nav__link">
+      Corda Accounts
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -311,8 +383,8 @@
 
 
   <li class="md-nav__item">
-    <a href="/vaultaire/0.x/index.html" title="API" class="md-nav__link">
-      API
+    <a href="/vaultaire/0.x/index.html" title="API Reference" class="md-nav__link">
+      API Reference
     </a>
   </li>
 
@@ -374,35 +446,35 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#properties" class="md-nav__link">
+  <a href="#properties" title="Properties" class="md-nav__link">
     Properties
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inherited-properties" class="md-nav__link">
+  <a href="#inherited-properties" title="Inherited Properties" class="md-nav__link">
     Inherited Properties
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#functions" class="md-nav__link">
+  <a href="#functions" title="Functions" class="md-nav__link">
     Functions
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inherited-functions" class="md-nav__link">
+  <a href="#inherited-functions" title="Inherited Functions" class="md-nav__link">
     Inherited Functions
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inheritors" class="md-nav__link">
+  <a href="#inheritors" title="Inheritors" class="md-nav__link">
     Inheritors
   </a>
   
@@ -502,12 +574,36 @@
 </thead>
 <tbody>
 <tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/addresses/">addresses</a></td>
+<td><code>abstract fun addresses(): List&lt;NetworkHostAndPort&gt;</code></td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/create-state-service/">createStateService</a></td>
+<td><code>abstract fun &lt;T : ContractState, S :</code><a href="../-state-service/"><code>StateService</code></a><code>&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/create-state-service/#T"><code>T</code></a><code>&gt;&gt; createStateService(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/create-state-service/#T"><code>T</code></a><code>&gt;):</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/create-state-service/#S"><code>S</code></a><br>Get a state service targeting the given <code>ContractState</code> type</td>
+</tr>
+<tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/find-party-from-name/">findPartyFromName</a></td>
 <td><code>open fun findPartyFromName(query: String): Party?</code><br>Returns a <a href="#">Party</a> match for the given name string, trying exact and if needed fuzzy matching.</td>
 </tr>
 <tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/flows/">flows</a></td>
+<td><code>abstract fun flows(): List&lt;String&gt;</code></td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/get-extended-info/">getExtendedInfo</a></td>
+<td><code>open fun getExtendedInfo():</code><a href="../../com.github.manosbatsis.vaultaire.dto.info/-extended-node-info/"><code>ExtendedNodeInfo</code></a><br>Get information about the node in context as an <a href="../../com.github.manosbatsis.vaultaire.dto.info/-extended-node-info/">ExtendedNodeInfo</a></td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/get-node-info/">getNodeInfo</a></td>
+<td><code>abstract fun getNodeInfo(): NodeInfo</code><br>Get information about the node in context as an <a href="#">NodeInfo</a></td>
+</tr>
+<tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/get-party-from-name/">getPartyFromName</a></td>
 <td><code>open fun getPartyFromName(query: String): Party</code><br>Returns a <a href="#">Party</a> match for the given name string, trying exact and if needed fuzzy matching. If not exactly one match is found an error will be thrown.</td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/identities/">identities</a></td>
+<td><code>abstract fun identities(): List&lt;Party&gt;</code></td>
 </tr>
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/is-linear-state/">isLinearState</a></td>
@@ -518,12 +614,40 @@
 <td><code>open fun &lt;T : ContractState&gt; isQueryableState(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/is-queryable-state/#T"><code>T</code></a><code>&gt;): Boolean</code></td>
 </tr>
 <tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/nodes/">nodes</a></td>
+<td><code>abstract fun nodes(): List&lt;Party&gt;</code><br>Get a list of nodes in the network, including self and notaries.</td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/notaries/">notaries</a></td>
+<td><code>abstract fun notaries(): List&lt;Party&gt;</code></td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/open-attachment/">openAttachment</a></td>
+<td><code>abstract fun openAttachment(hash: SecureHash): InputStream</code><br>Retrieve the attachment matching the given secure hash from the vault<code>open fun openAttachment(hash: String): InputStream</code><br>Retrieve the attachment matching the given hash string from the vault</td>
+</tr>
+<tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/parties-from-name/">partiesFromName</a></td>
 <td><code>abstract fun partiesFromName(query: String, exactMatch: Boolean): Set&lt;Party&gt;</code><br>Returns a list of candidate matches for a given string, with optional fuzzy(ish) matching. Fuzzy matching may get smarter with time e.g. to correct spelling errors, so you should not hard-code indexes into the results but rather show them via a user interface and let the user pick the one they wanted.</td>
 </tr>
 <tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/peers/">peers</a></td>
+<td><code>abstract fun peers(): List&lt;Party&gt;</code><br>Returns the node&rsquo;s network peers, excluding self and notaries.</td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/platform-version/">platformVersion</a></td>
+<td><code>abstract fun platformVersion(): Int</code></td>
+</tr>
+<tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/query-by/">queryBy</a></td>
 <td><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): Page&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states matching the given criteria, applying the given paging and sorting specifications if any</td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/save-attachment/">saveAttachment</a></td>
+<td><code>open fun saveAttachment(attachment:</code><a href="../../com.github.manosbatsis.vaultaire.dto.attachment/-attachment/"><code>Attachment</code></a><code>):</code><a href="../../com.github.manosbatsis.vaultaire.dto.attachment/-attachment-receipt/"><code>AttachmentReceipt</code></a><br>Persist the given attachment to the vault</td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/server-time/">serverTime</a></td>
+<td><code>abstract fun serverTime(): LocalDateTime</code></td>
 </tr>
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/to-corda-x500-name/">toCordaX500Name</a></td>
@@ -532,6 +656,10 @@
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/track-by/">trackBy</a></td>
 <td><code>abstract fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/track-by/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+</tr>
+<tr>
+<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/upload-attachment/">uploadAttachment</a></td>
+<td><code>abstract fun uploadAttachment(inputStream: InputStream): SecureHash</code><br>Uploads a jar to the node, returns it&rsquo;s hash.<code>abstract fun uploadAttachment(inputStream: InputStream, uploader: String, filename: String): SecureHash</code><br>Uploads a jar including metadata to the node, returns it&rsquo;s hash.</td>
 </tr>
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/well-known-party-from-x500-name/">wellKnownPartyFromX500Name</a></td>
@@ -553,20 +681,28 @@
 <td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-basic-node-service/"><code>BasicNodeService</code></a><code>,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="../-state-service/"><code>StateService</code></a><code>&lt;</code><a href="../-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Basic <a href="../-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
+<td><a href="../-extended-state-service/">ExtendedStateService</a></td>
+<td><code>interface ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="../-extended-state-service/#P"><code>P</code></a><code>&gt;, Q :</code><a href="../../com.github.manosbatsis.vaultaire.dsl.query/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="../-extended-state-service/#P"><code>P</code></a><code>,</code><a href="../-extended-state-service/#F"><code>F</code></a><code>&gt;&gt; :</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-extended-state-service/#T"><code>T</code></a><code>&gt;</code></td>
+</tr>
+<tr>
+<td><a href="../-state-corda-service-delegate/">StateCordaServiceDelegate</a></td>
+<td><code>abstract class StateCordaServiceDelegate&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-corda-service-delegate/"><code>NodeCordaServiceDelegate</code></a><code>,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-corda-service-delegate/#T"><code>T</code></a><code>&gt;</code><br>Implementation of <a href="./">StateServiceDelegate</a> as a CordaService</td>
+</tr>
+<tr>
 <td><a href="../-state-service/">StateService</a></td>
 <td><code>interface StateService&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/"><code>NodeService</code></a><code>,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service/#T"><code>T</code></a><code>&gt;</code><br>Short-lived helper, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
 <td><a href="../-state-service-hub-delegate/">StateServiceHubDelegate</a></td>
-<td><code>open class StateServiceHubDelegate&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-hub-delegate/"><code>NodeServiceHubDelegate</code></a><code>,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service-hub-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">ServiceHub</a>-based <a href="./">StateServiceDelegate</a> implementation</td>
+<td><code>open class StateServiceHubDelegate&lt;T : ContractState&gt; : NodeServiceHubDelegate,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service-hub-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">ServiceHub</a>-based <a href="./">StateServiceDelegate</a> implementation</td>
+</tr>
+<tr>
+<td><a href="../-state-service-pool-boy-delegate/">StateServicePoolBoyDelegate</a></td>
+<td><code>open class StateServicePoolBoyDelegate&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-pool-boy-delegate/"><code>NodeServiceRpcPoolBoyDelegate</code></a><code>,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service-pool-boy-delegate/#T"><code>T</code></a><code>&gt;</code></td>
 </tr>
 <tr>
 <td><a href="../-state-service-rpc-connection-delegate/">StateServiceRpcConnectionDelegate</a></td>
-<td><code>open class StateServiceRpcConnectionDelegate&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-connection-delegate/"><code>NodeServiceRpcConnectionDelegate</code></a><code>,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service-rpc-connection-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="../../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="./">StateServiceDelegate</a> implementation</td>
-</tr>
-<tr>
-<td><a href="../-state-service-rpc-delegate/">StateServiceRpcDelegate</a></td>
-<td><code>open class StateServiceRpcDelegate&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-delegate/"><code>NodeServiceRpcDelegate</code></a><code>,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service-rpc-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">CordaRPCOps</a>-based <a href="./">StateServiceDelegate</a> implementation</td>
+<td><code>open class StateServiceRpcConnectionDelegate&lt;T : ContractState&gt; : NodeServiceRpcConnectionDelegate,</code><a href="./"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="../-state-service-rpc-connection-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">NodeRpcConnection</a>-based <a href="./">StateServiceDelegate</a> implementation</td>
 </tr>
 </tbody>
 </table>
@@ -608,7 +744,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
       

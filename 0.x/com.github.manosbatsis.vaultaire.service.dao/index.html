@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -274,34 +274,106 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Core Features
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Core Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../query-dsl/" title="Query DSL" class="md-nav__link">
+    <a href="../../core/query-dsl/" title="Query DSL" class="md-nav__link">
       Query DSL
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
-    <a href="../../state-services/" title="State Services" class="md-nav__link">
+    <a href="../../core/state-services/" title="State Services" class="md-nav__link">
       State Services
     </a>
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../core/state-dtos/" title="State DTOs" class="md-nav__link">
+      State DTOs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../core/other-utils/" title="Other Utilities" class="md-nav__link">
+      Other Utilities
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
     
       
       
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Plugins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Plugins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../other-utils/" title="Other Utilities" class="md-nav__link">
-      Other Utilities
+    <a href="../../plugins/corda-accounts/" title="Corda Accounts" class="md-nav__link">
+      Corda Accounts
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -311,8 +383,8 @@
 
 
   <li class="md-nav__item">
-    <a href="/vaultaire/0.x/index.html" title="API" class="md-nav__link">
-      API
+    <a href="/vaultaire/0.x/index.html" title="API Reference" class="md-nav__link">
+      API Reference
     </a>
   </li>
 
@@ -372,7 +444,7 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#package-comgithubmanosbatsisvaultaireservicedao" class="md-nav__link">
+  <a href="#package-comgithubmanosbatsisvaultaireservicedao" title="Package com.github.manosbatsis.vaultaire.service.dao" class="md-nav__link">
     Package com.github.manosbatsis.vaultaire.service.dao
   </a>
   
@@ -380,7 +452,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#types" class="md-nav__link">
+  <a href="#types" title="Types" class="md-nav__link">
     Types
   </a>
   
@@ -428,8 +500,16 @@
 <td><code>open class BasicStateService&lt;T : ContractState&gt; :</code><a href="../com.github.manosbatsis.vaultaire.service.node/-basic-node-service/"><code>BasicNodeService</code></a><code>,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="-state-service/"><code>StateService</code></a><code>&lt;</code><a href="-basic-state-service/#T"><code>T</code></a><code>&gt;</code><br>Basic <a href="-state-service/">StateService</a> implementation, used for vault operations on a specific <a href="#">ContractState</a> type</td>
 </tr>
 <tr>
+<td><a href="-default-extended-state-service/">DefaultExtendedStateService</a></td>
+<td><code>abstract class DefaultExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-default-extended-state-service/#P"><code>P</code></a><code>&gt;, Q :</code><a href="../com.github.manosbatsis.vaultaire.dsl.query/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="-default-extended-state-service/#P"><code>P</code></a><code>,</code><a href="-default-extended-state-service/#F"><code>F</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-default-extended-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="-extended-state-service/"><code>ExtendedStateService</code></a><code>&lt;</code><a href="-default-extended-state-service/#T"><code>T</code></a><code>,</code><a href="-default-extended-state-service/#P"><code>P</code></a><code>,</code><a href="-default-extended-state-service/#F"><code>F</code></a><code>,</code><a href="-default-extended-state-service/#Q"><code>Q</code></a><code>&gt;</code><br>Extends <a href="-basic-state-service/">BasicStateService</a> to provide a <a href="-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
+</tr>
+<tr>
 <td><a href="-extended-state-service/">ExtendedStateService</a></td>
-<td><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>&gt;, Q :</code><a href="../com.github.manosbatsis.vaultaire.dsl.query/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>,</code><a href="-extended-state-service/#F"><code>F</code></a><code>&gt;&gt; :</code><a href="-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="-extended-state-service/#T"><code>T</code></a><code>&gt;</code><br>Extends <a href="-basic-state-service/">BasicStateService</a> to provide a <a href="-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
+<td><code>interface ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>&gt;, Q :</code><a href="../com.github.manosbatsis.vaultaire.dsl.query/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="-extended-state-service/#P"><code>P</code></a><code>,</code><a href="-extended-state-service/#F"><code>F</code></a><code>&gt;&gt; :</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-extended-state-service/#T"><code>T</code></a><code>&gt;</code></td>
+</tr>
+<tr>
+<td><a href="-state-corda-service-delegate/">StateCordaServiceDelegate</a></td>
+<td><code>abstract class StateCordaServiceDelegate&lt;T : ContractState&gt; :</code><a href="../com.github.manosbatsis.vaultaire.service.node/-node-corda-service-delegate/"><code>NodeCordaServiceDelegate</code></a><code>,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-corda-service-delegate/#T"><code>T</code></a><code>&gt;</code><br>Implementation of <a href="-state-service-delegate/">StateServiceDelegate</a> as a CordaService</td>
 </tr>
 <tr>
 <td><a href="-state-service/">StateService</a></td>
@@ -441,15 +521,15 @@
 </tr>
 <tr>
 <td><a href="-state-service-hub-delegate/">StateServiceHubDelegate</a></td>
-<td><code>open class StateServiceHubDelegate&lt;T : ContractState&gt; :</code><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-hub-delegate/"><code>NodeServiceHubDelegate</code></a><code>,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-hub-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">ServiceHub</a>-based <a href="-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+<td><code>open class StateServiceHubDelegate&lt;T : ContractState&gt; : NodeServiceHubDelegate,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-hub-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">ServiceHub</a>-based <a href="-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+</tr>
+<tr>
+<td><a href="-state-service-pool-boy-delegate/">StateServicePoolBoyDelegate</a></td>
+<td><code>open class StateServicePoolBoyDelegate&lt;T : ContractState&gt; :</code><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-pool-boy-delegate/"><code>NodeServiceRpcPoolBoyDelegate</code></a><code>,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-pool-boy-delegate/#T"><code>T</code></a><code>&gt;</code></td>
 </tr>
 <tr>
 <td><a href="-state-service-rpc-connection-delegate/">StateServiceRpcConnectionDelegate</a></td>
-<td><code>open class StateServiceRpcConnectionDelegate&lt;T : ContractState&gt; :</code><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-connection-delegate/"><code>NodeServiceRpcConnectionDelegate</code></a><code>,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-rpc-connection-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="-state-service-delegate/">StateServiceDelegate</a> implementation</td>
-</tr>
-<tr>
-<td><a href="-state-service-rpc-delegate/">StateServiceRpcDelegate</a></td>
-<td><code>open class StateServiceRpcDelegate&lt;T : ContractState&gt; :</code><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-delegate/"><code>NodeServiceRpcDelegate</code></a><code>,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-rpc-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">CordaRPCOps</a>-based <a href="-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+<td><code>open class StateServiceRpcConnectionDelegate&lt;T : ContractState&gt; : NodeServiceRpcConnectionDelegate,</code><a href="-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="-state-service-rpc-connection-delegate/#T"><code>T</code></a><code>&gt;</code><br><a href="#">NodeRpcConnection</a>-based <a href="-state-service-delegate/">StateServiceDelegate</a> implementation</td>
 </tr>
 </tbody>
 </table>
@@ -491,7 +571,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       

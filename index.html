@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -278,21 +278,21 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#query-dsl" class="md-nav__link">
+  <a href="#query-dsl" title="Query DSL" class="md-nav__link">
     Query DSL
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#state-services" class="md-nav__link">
+  <a href="#state-services" title="State Services" class="md-nav__link">
     State Services
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#other-utils" class="md-nav__link">
+  <a href="#other-utils" title="Other Utils" class="md-nav__link">
     Other Utils
   </a>
   
@@ -326,34 +326,106 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Core Features
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Core Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="query-dsl/" title="Query DSL" class="md-nav__link">
+    <a href="core/query-dsl/" title="Query DSL" class="md-nav__link">
       Query DSL
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
-    <a href="state-services/" title="State Services" class="md-nav__link">
+    <a href="core/state-services/" title="State Services" class="md-nav__link">
       State Services
     </a>
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="core/state-dtos/" title="State DTOs" class="md-nav__link">
+      State DTOs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="core/other-utils/" title="Other Utilities" class="md-nav__link">
+      Other Utilities
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
     
       
       
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Plugins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Plugins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="other-utils/" title="Other Utilities" class="md-nav__link">
-      Other Utilities
+    <a href="plugins/corda-accounts/" title="Corda Accounts" class="md-nav__link">
+      Corda Accounts
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -363,8 +435,8 @@
 
 
   <li class="md-nav__item">
-    <a href="/vaultaire/0.x/index.html" title="API" class="md-nav__link">
-      API
+    <a href="/vaultaire/0.x/index.html" title="API Reference" class="md-nav__link">
+      API Reference
     </a>
   </li>
 
@@ -426,21 +498,21 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#query-dsl" class="md-nav__link">
+  <a href="#query-dsl" title="Query DSL" class="md-nav__link">
     Query DSL
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#state-services" class="md-nav__link">
+  <a href="#state-services" title="State Services" class="md-nav__link">
     State Services
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#other-utils" class="md-nav__link">
+  <a href="#other-utils" title="Other Utils" class="md-nav__link">
     Other Utils
   </a>
   
@@ -469,9 +541,10 @@
 <p>Query DSL and data access utilities for Corda developers.   </p>
 <h2 id="query-dsl">Query DSL<a class="headerlink" href="#query-dsl" title="Permanent link">&para;</a></h2>
 <p>Use DSL will make your queries much easier to read and maintain. 
-Each query DSL is automatically generated and maintaind for you 
-based on your states.</p>
-<div class="codehilite"><pre><span></span><span class="n">al</span> <span class="n">query</span> <span class="p">=</span> <span class="n">booksQuery</span> <span class="p">{</span>
+Each query DSL is automatically (re)generated at build time using annotation
+processing.</p>
+<p>Usage example:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">queryCriteria</span><span class="p">:</span> <span class="n">QueryCriteria</span> <span class="p">=</span> <span class="n">booksQuery</span> <span class="p">{</span>
     <span class="n">and</span> <span class="p">{</span>
         <span class="c1">// Check publisher?</span>
         <span class="k">if</span><span class="p">(</span><span class="n">checkPublisher</span><span class="p">)</span> <span class="n">fields</span><span class="p">.</span><span class="n">publisher</span> <span class="err">`</span><span class="p">==</span><span class="err">`</span> <span class="s">&quot;Corda Books Ltd.&quot;</span>
@@ -486,27 +559,15 @@ based on your states.</p>
 <span class="p">}.</span><span class="n">toCriteria</span><span class="p">()</span>
 </pre></div>
 
-<p>For more info on query DSL, checkout <a href="https://manosbatsis.github.io/vaultaire/query-dsl/">https://manosbatsis.github.io/vaultaire/query-dsl/</a></p>
+<p>For more details see <a href="query-dsl">Query DSL</a>.</p>
 <h2 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h2>
-<p>Vaultaire&rsquo;s annotation processor  will automatically subclass <code>ExtendedStateService</code> to generate
-an <code>Fields</code> aware state service service per annotated element. The generated service name
-is &ldquo;${contractStateTypeName}Service&rdquo;. Usage example:</p>
-<div class="codehilite"><pre><span></span><span class="c1">// Create an instance of the generated service type</span>
-<span class="k">val</span> <span class="py">bookStateService</span> <span class="p">=</span> <span class="n">BookStateService</span><span class="p">(</span>
-    <span class="n">serviceHub</span><span class="p">,</span>        <span class="c1">// Service hub or RPC ops</span>
-    <span class="n">serviceDefaults</span><span class="p">)</span>   <span class="c1">// Optional: criteria, paging, sort defaults</span>
-
-<span class="c1">// Load a book</span>
-<span class="n">bookStateService</span><span class="p">.</span><span class="n">getByLinearId</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
-<span class="c1">// Try finding one by ISBN</span>
-<span class="n">bookStateService</span><span class="p">.</span><span class="n">findByExternalId</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
-
-<span class="c1">// query the vault for books</span>
-<span class="k">val</span> <span class="py">searchResults</span> <span class="p">=</span> <span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span>
-    <span class="n">criteria</span><span class="p">,</span> <span class="n">paging</span><span class="p">,</span> <span class="n">Pair</span><span class="p">(</span><span class="s">&quot;published&quot;</span><span class="p">,</span> <span class="n">DESC</span><span class="p">),</span> <span class="n">Pair</span><span class="p">(</span><span class="s">&quot;title&quot;</span><span class="p">,</span> <span class="n">DESC</span><span class="p">))</span>
-</pre></div>
-
-<p>For more info on state services, checkout <a href="https://manosbatsis.github.io/vaultaire/state-services/">https://manosbatsis.github.io/vaultaire/state-services/</a></p>
+<p>Vaultaire&rsquo;s <code>StateService</code> interface provide a simple, consistent API to
+load, query and track vault states.</p>
+<p><code>StateService</code> implementations are usually auto-generated at build time
+and specific to a single <code>ContractState</code> type.</p>
+<p>State Services can also decouple you code from <code>ServiceHub</code> and <code>CordaRPCOps</code>
+amd help increase code reuse between cordapps and their clients.</p>
+<p>For more details see <a href="https://manosbatsis.github.io/vaultaire/query-dsl">State Services</a>.</p>
 <h2 id="other-utils">Other Utils<a class="headerlink" href="#other-utils" title="Permanent link">&para;</a></h2>
 <p>Vaultaire includes a few other utilities like annotations to generate Data Transfer Objects for 
 your contract states and responding flows from commonly used supertypes.</p>
@@ -570,7 +631,7 @@ your contract states and responding flows from commonly used supertypes.</p>
       
     </div>
     
-      <script src="assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
       

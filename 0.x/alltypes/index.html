@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -274,34 +274,106 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Core Features
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Core Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../query-dsl/" title="Query DSL" class="md-nav__link">
+    <a href="../../core/query-dsl/" title="Query DSL" class="md-nav__link">
       Query DSL
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
-    <a href="../../state-services/" title="State Services" class="md-nav__link">
+    <a href="../../core/state-services/" title="State Services" class="md-nav__link">
       State Services
     </a>
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../core/state-dtos/" title="State DTOs" class="md-nav__link">
+      State DTOs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../core/other-utils/" title="Other Utilities" class="md-nav__link">
+      Other Utilities
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
     
       
       
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Plugins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Plugins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../other-utils/" title="Other Utilities" class="md-nav__link">
-      Other Utilities
+    <a href="../../plugins/corda-accounts/" title="Corda Accounts" class="md-nav__link">
+      Corda Accounts
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -311,8 +383,8 @@
 
 
   <li class="md-nav__item">
-    <a href="/vaultaire/0.x/index.html" title="API" class="md-nav__link">
-      API
+    <a href="/vaultaire/0.x/index.html" title="API Reference" class="md-nav__link">
+      API Reference
     </a>
   </li>
 
@@ -372,7 +444,7 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#all-types" class="md-nav__link">
+  <a href="#all-types" title="All Types" class="md-nav__link">
     All Types
   </a>
   
@@ -409,12 +481,32 @@
 </thead>
 <tbody>
 <tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-abstract-node-service-hub-delegate/">com.github.manosbatsis.vaultaire.service.node.AbstractNodeServiceHubDelegate</a></td>
+<td><a href="#">ServiceHub</a>-based <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> implementation</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dto/-account-party/">com.github.manosbatsis.vaultaire.dto.AccountParty</a></td>
+<td>Convenient &ldquo;participant&rdquo; type that combines a known Corda Account ID with a corresponding  anonymous party.</td>
+</tr>
+<tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl.query/-aggregates/">com.github.manosbatsis.vaultaire.dsl.query.Aggregates</a></td>
 <td>Used to define aggregation criteria</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl.query/-and-condition/">com.github.manosbatsis.vaultaire.dsl.query.AndCondition</a></td>
 <td>Defines a set of conditions where all items must be matched</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dto.attachment/-attachment/">com.github.manosbatsis.vaultaire.dto.attachment.Attachment</a></td>
+<td>Data transfer object representing an attachment to be persisted in the vault</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dto.attachment/-attachment-file/">com.github.manosbatsis.vaultaire.dto.attachment.AttachmentFile</a></td>
+<td>Data transfer object representing an attachment file to be persisted in the vault</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dto.attachment/-attachment-receipt/">com.github.manosbatsis.vaultaire.dto.attachment.AttachmentReceipt</a></td>
+<td>Receipt of an attachment saved to the vault. Annotated with <a href="#">CordaSerializable</a> and thus <a href="#">ContractState</a>-embeddable.</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.service.node/-basic-node-service/">com.github.manosbatsis.vaultaire.service.node.BasicNodeService</a></td>
@@ -441,8 +533,16 @@
 <td></td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-extended-state-service/">com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-default-extended-state-service/">com.github.manosbatsis.vaultaire.service.dao.DefaultExtendedStateService</a></td>
 <td>Extends <a href="../com.github.manosbatsis.vaultaire.service.dao/-basic-state-service/">BasicStateService</a> to provide a <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dto.info/-extended-node-info/">com.github.manosbatsis.vaultaire.dto.info.ExtendedNodeInfo</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-extended-state-service/">com.github.manosbatsis.vaultaire.service.dao.ExtendedStateService</a></td>
+<td></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.annotation/-extended-state-service-bean/">com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean</a></td>
@@ -461,8 +561,12 @@
 <td>Wraps a non-nullable <a href="#">KProperty1</a> of a class to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">com.github.manosbatsis.vaultaire.rpc.NodeRpcConnection</a></td>
-<td>Wraps a Corda Node RPC connection proxy</td>
+<td><a href="../com.github.manosbatsis.vaultaire.dto.info/-network-info/">com.github.manosbatsis.vaultaire.dto.info.NetworkInfo</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-corda-service-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate</a></td>
+<td>Abstract <a href="#">AppServiceHub</a>-based implementation of <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> as a CordaService</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service/">com.github.manosbatsis.vaultaire.service.node.NodeService</a></td>
@@ -473,20 +577,12 @@
 <td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service/">NodeService</a> delegate for vault operations</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-hub-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceHubDelegate</a></td>
-<td><a href="#">ServiceHub</a>-based <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> implementation</td>
-</tr>
-<tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-connection-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcConnectionDelegate</a></td>
-<td><a href="../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> implementation</td>
-</tr>
-<tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegate</a></td>
-<td><a href="#">CordaRPCOps</a>-based <a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-delegate/">NodeServiceDelegate</a> implementation</td>
-</tr>
-<tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-delegate-base/">com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegateBase</a></td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-pool-boy-delegate/">com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate</a></td>
 <td>RPC implementation base</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service.node/-not-found-exception/">com.github.manosbatsis.vaultaire.service.node.NotFoundException</a></td>
+<td></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/">com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper</a></td>
@@ -506,6 +602,10 @@
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.service/-service-defaults/">com.github.manosbatsis.vaultaire.service.ServiceDefaults</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.service/-simple-service-defaults/">com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults</a></td>
 <td>Define option defaults for <a href="#">StateService</a> instances</td>
 </tr>
 <tr>
@@ -513,8 +613,8 @@
 <td>Used to define <a href="#">Sort.SortColumn</a>s</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.node/-state-not-found-exception/">com.github.manosbatsis.vaultaire.service.node.StateNotFoundException</a></td>
-<td></td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-corda-service-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateCordaServiceDelegate</a></td>
+<td>Implementation of <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> as a CordaService</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">com.github.manosbatsis.vaultaire.service.dao.StateService</a></td>
@@ -529,12 +629,12 @@
 <td><a href="#">ServiceHub</a>-based <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-rpc-connection-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcConnectionDelegate</a></td>
-<td><a href="../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-pool-boy-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServicePoolBoyDelegate</a></td>
+<td></td>
 </tr>
 <tr>
-<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-rpc-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcDelegate</a></td>
-<td><a href="#">CordaRPCOps</a>-based <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+<td><a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-rpc-connection-delegate/">com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcConnectionDelegate</a></td>
+<td><a href="#">NodeRpcConnection</a>-based <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service-delegate/">StateServiceDelegate</a> implementation</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/kotlin.-string/">kotlin.String</a> (extensions in package com.github.manosbatsis.vaultaire.util)</td>
@@ -555,6 +655,14 @@
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/">com.github.manosbatsis.vaultaire.util.TypedFieldWrapper</a></td>
 <td>Wraps a <a href="#">KProperty1</a> of a class to provide for cleaner operators, i.e. without conflicting <a href="#">net.corda.core.node.services.vault.Builder</a></td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-account-info/">com.github.manosbatsis.vaultaire.annotation.VaultaireAccountInfo</a></td>
+<td>Marks a <a href="#">net.corda.core.contracts.ContractState</a> property as a Corda Account. Supported property types are <a href="#">java.security.PublicKey</a>, <a href="#">net.corda.core.identity.AbstractParty</a> and <a href="#">net.corda.core.identity.AnonymousParty</a>.</td>
+</tr>
+<tr>
+<td><a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-base-lite-dto/">com.github.manosbatsis.vaultaire.dto.VaultaireBaseLiteDto</a></td>
+<td>Modeled after <a href="#">com.github.manosbatsis.kotlin.utils.api.Dto</a> only bringing a <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">StateService</a> in-context for <a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-base-lite-dto/to-target-type/">toTargetType</a> and <a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-base-lite-dto/to-patched/">toPatched</a>.</td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.annotation/-vaultaire-dependency-annotation-convention/">com.github.manosbatsis.vaultaire.annotation.VaultaireDependencyAnnotationConvention</a></td>
@@ -586,7 +694,7 @@
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-lite-dto/">com.github.manosbatsis.vaultaire.dto.VaultaireLiteDto</a></td>
-<td>Modeled after <a href="#">com.github.manosbatsis.kotlin.utils.api.Dto</a> only bringing a <a href="../com.github.manosbatsis.vaultaire.service.dao/-state-service/">StateService</a> in-context for <a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-lite-dto/to-target-type/">toTargetType</a> and <a href="../com.github.manosbatsis.vaultaire.dto/-vaultaire-lite-dto/to-patched/">toPatched</a>.</td>
+<td></td>
 </tr>
 <tr>
 <td><a href="../com.github.manosbatsis.vaultaire.dsl.query/-vault-custom-query-criteria-wrapper-condition/">com.github.manosbatsis.vaultaire.dsl.query.VaultCustomQueryCriteriaWrapperCondition</a></td>
@@ -640,7 +748,7 @@
       
     </div>
     
-      <script src="../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       

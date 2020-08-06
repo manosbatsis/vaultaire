@@ -5,8 +5,9 @@ com.github.manosbatsis.vaultaire.annotation
 com.github.manosbatsis.vaultaire.dsl.contract
 com.github.manosbatsis.vaultaire.dsl.query
 com.github.manosbatsis.vaultaire.dto
+com.github.manosbatsis.vaultaire.dto.attachment
+com.github.manosbatsis.vaultaire.dto.info
 com.github.manosbatsis.vaultaire.registry
-com.github.manosbatsis.vaultaire.rpc
 com.github.manosbatsis.vaultaire.service
 com.github.manosbatsis.vaultaire.service.dao
 com.github.manosbatsis.vaultaire.service.node

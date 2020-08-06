@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -274,34 +274,106 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Core Features
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Core Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../../query-dsl/" title="Query DSL" class="md-nav__link">
+    <a href="../../../core/query-dsl/" title="Query DSL" class="md-nav__link">
       Query DSL
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
-    <a href="../../../state-services/" title="State Services" class="md-nav__link">
+    <a href="../../../core/state-services/" title="State Services" class="md-nav__link">
       State Services
     </a>
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/state-dtos/" title="State DTOs" class="md-nav__link">
+      State DTOs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/other-utils/" title="Other Utilities" class="md-nav__link">
+      Other Utilities
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
     
       
       
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Plugins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Plugins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../../other-utils/" title="Other Utilities" class="md-nav__link">
-      Other Utilities
+    <a href="../../../plugins/corda-accounts/" title="Corda Accounts" class="md-nav__link">
+      Corda Accounts
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -311,8 +383,8 @@
 
 
   <li class="md-nav__item">
-    <a href="/vaultaire/0.x/index.html" title="API" class="md-nav__link">
-      API
+    <a href="/vaultaire/0.x/index.html" title="API Reference" class="md-nav__link">
+      API Reference
     </a>
   </li>
 
@@ -374,28 +446,21 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#constructors" class="md-nav__link">
+  <a href="#constructors" title="Constructors" class="md-nav__link">
     Constructors
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#properties" class="md-nav__link">
+  <a href="#properties" title="Properties" class="md-nav__link">
     Properties
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inherited-properties" class="md-nav__link">
-    Inherited Properties
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inherited-functions" class="md-nav__link">
+  <a href="#inherited-functions" title="Inherited Functions" class="md-nav__link">
     Inherited Functions
   </a>
   
@@ -422,8 +487,8 @@
                 
                 <p><a href="../">com.github.manosbatsis.vaultaire.service.dao</a> / <a href="./">StateServiceRpcConnectionDelegate</a></p>
 <h1 id="stateservicerpcconnectiondelegate">StateServiceRpcConnectionDelegate<a class="headerlink" href="#stateservicerpcconnectiondelegate" title="Permanent link">&para;</a></h1>
-<p><code>open class StateServiceRpcConnectionDelegate&lt;T : ContractState&gt; :</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-connection-delegate/"><code>NodeServiceRpcConnectionDelegate</code></a><code>,</code><a href="../-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
-<p><a href="../../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="../-state-service-delegate/">StateServiceDelegate</a> implementation</p>
+<p><code>open class StateServiceRpcConnectionDelegate&lt;T : ContractState&gt; : NodeServiceRpcConnectionDelegate,</code><a href="../-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
+<p><a href="#">NodeRpcConnection</a>-based <a href="../-state-service-delegate/">StateServiceDelegate</a> implementation</p>
 <h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -435,7 +500,7 @@
 <tbody>
 <tr>
 <td><a href="-init-/">&lt;init&gt;</a></td>
-<td><code>StateServiceRpcConnectionDelegate(nodeRpcConnection:</code><a href="../../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/"><code>NodeRpcConnection</code></a><code>, contractStateType: Class&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, defaults:</code><a href="../../com.github.manosbatsis.vaultaire.service/-service-defaults/"><code>ServiceDefaults</code></a><code>= ServiceDefaults())</code><br><a href="../../com.github.manosbatsis.vaultaire.rpc/-node-rpc-connection/">NodeRpcConnection</a>-based <a href="../-state-service-delegate/">StateServiceDelegate</a> implementation</td>
+<td><code>StateServiceRpcConnectionDelegate(nodeRpcConnection: NodeRpcConnection, contractStateType: Class&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, defaults:</code><a href="../../com.github.manosbatsis.vaultaire.service/-simple-service-defaults/"><code>SimpleServiceDefaults</code></a><code>= SimpleServiceDefaults())</code><br><a href="#">NodeRpcConnection</a>-based <a href="../-state-service-delegate/">StateServiceDelegate</a> implementation</td>
 </tr>
 </tbody>
 </table>
@@ -451,25 +516,6 @@
 <tr>
 <td><a href="contract-state-type/">contractStateType</a></td>
 <td><code>open val contractStateType: Class&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></td>
-</tr>
-</tbody>
-</table>
-<h3 id="inherited-properties">Inherited Properties<a class="headerlink" href="#inherited-properties" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Summary</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-connection-delegate/defaults/">defaults</a></td>
-<td><code>open val defaults:</code><a href="../../com.github.manosbatsis.vaultaire.service/-service-defaults/"><code>ServiceDefaults</code></a></td>
-</tr>
-<tr>
-<td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service-rpc-connection-delegate/rpc-ops/">rpcOps</a></td>
-<td><code>open val rpcOps: CordaRPCOps</code></td>
 </tr>
 </tbody>
 </table>
@@ -530,7 +576,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
       

@@ -36,7 +36,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -44,9 +44,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.a8b3c06d.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -206,7 +206,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -274,34 +274,106 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Core Features
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Core Features
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../../query-dsl/" title="Query DSL" class="md-nav__link">
+    <a href="../../../core/query-dsl/" title="Query DSL" class="md-nav__link">
       Query DSL
     </a>
   </li>
 
-    
-      
-      
-      
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
-    <a href="../../../state-services/" title="State Services" class="md-nav__link">
+    <a href="../../../core/state-services/" title="State Services" class="md-nav__link">
       State Services
     </a>
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/state-dtos/" title="State DTOs" class="md-nav__link">
+      State DTOs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../../core/other-utils/" title="Other Utilities" class="md-nav__link">
+      Other Utilities
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
     
       
       
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Plugins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Plugins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
-    <a href="../../../other-utils/" title="Other Utilities" class="md-nav__link">
-      Other Utilities
+    <a href="../../../plugins/corda-accounts/" title="Corda Accounts" class="md-nav__link">
+      Corda Accounts
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -311,8 +383,8 @@
 
 
   <li class="md-nav__item">
-    <a href="/vaultaire/0.x/index.html" title="API" class="md-nav__link">
-      API
+    <a href="/vaultaire/0.x/index.html" title="API Reference" class="md-nav__link">
+      API Reference
     </a>
   </li>
 
@@ -374,29 +446,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#constructors" class="md-nav__link">
-    Constructors
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#properties" class="md-nav__link">
+  <a href="#properties" title="Properties" class="md-nav__link">
     Properties
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#inherited-properties" class="md-nav__link">
+  <a href="#inherited-properties" title="Inherited Properties" class="md-nav__link">
     Inherited Properties
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#functions" class="md-nav__link">
+  <a href="#functions" title="Functions" class="md-nav__link">
     Functions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inherited-functions" title="Inherited Functions" class="md-nav__link">
+    Inherited Functions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inheritors" title="Inheritors" class="md-nav__link">
+    Inheritors
   </a>
   
 </li>
@@ -422,25 +501,7 @@
                 
                 <p><a href="../">com.github.manosbatsis.vaultaire.service.dao</a> / <a href="./">ExtendedStateService</a></p>
 <h1 id="extendedstateservice">ExtendedStateService<a class="headerlink" href="#extendedstateservice" title="Permanent link">&para;</a></h1>
-<p><code>abstract class ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;, Q :</code><a href="../../com.github.manosbatsis.vaultaire.dsl.query/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="./#F"><code>F</code></a><code>&gt;&gt; :</code><a href="../-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
-<p>Extends <a href="../-basic-state-service/">BasicStateService</a> to provide a <a href="../-state-service/">StateService</a> aware of the target
-<a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</p>
-<p>Subclassed by Vaultaire&rsquo;s annotation processing to generate service components.</p>
-<h3 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Summary</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="-init-/">&lt;init&gt;</a></td>
-<td><code>ExtendedStateService(delegate:</code><a href="../-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;)</code><br>Extends <a href="../-basic-state-service/">BasicStateService</a> to provide a <a href="../-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
-</tr>
-</tbody>
-</table>
+<p><code>interface ExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;, Q :</code><a href="../../com.github.manosbatsis.vaultaire.dsl.query/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="./#F"><code>F</code></a><code>&gt;&gt; :</code><a href="../-state-service-delegate/"><code>StateServiceDelegate</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
 <h3 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -452,7 +513,7 @@
 <tbody>
 <tr>
 <td><a href="criteria-conditions-type/">criteriaConditionsType</a></td>
-<td><code>lateinit var criteriaConditionsType: Class&lt;</code><a href="./#Q"><code>Q</code></a><code>&gt;</code><br>The fields of the target <a href="#">StatePersistable</a> type <code>P</code></td>
+<td><code>abstract var criteriaConditionsType: Class&lt;</code><a href="./#Q"><code>Q</code></a><code>&gt;</code><br>The fields of the target <a href="#">StatePersistable</a> type <code>P</code></td>
 </tr>
 <tr>
 <td><a href="fields/">fields</a></td>
@@ -474,12 +535,8 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="../-basic-state-service/of-linear-state/">ofLinearState</a></td>
-<td><code>open val ofLinearState: Boolean</code></td>
-</tr>
-<tr>
-<td><a href="../-basic-state-service/of-queryable-state/">ofQueryableState</a></td>
-<td><code>open val ofQueryableState: Boolean</code></td>
+<td><a href="../-state-service-delegate/contract-state-type/">contractStateType</a></td>
+<td><code>abstract val contractStateType: Class&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;</code></td>
 </tr>
 </tbody>
 </table>
@@ -498,15 +555,49 @@
 </tr>
 <tr>
 <td><a href="query-by/">queryBy</a></td>
-<td><code>fun queryBy(condition:</code><a href="./#Q"><code>Q</code></a><code>, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, ignoreAggregates: Boolean = false): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given DSL query, applying the given page number, size and aggregates flag<code>fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br><code>fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>open fun queryBy(condition:</code><a href="./#Q"><code>Q</code></a><code>, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, ignoreAggregates: Boolean = false): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given DSL query, applying the given page number, size and aggregates flag<code>open fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br><code>open fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort: Pair&lt;String, Direction&gt;): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="to-sort/">toSort</a></td>
-<td><code>fun toSort(vararg sort: Pair&lt;String, Direction&gt;): Sort</code><br>Build a sort from the given string/direction pairs</td>
+<td><code>open fun toSort(vararg sort: Pair&lt;String, Direction&gt;): Sort</code><br>Build a sort from the given string/direction pairs</td>
 </tr>
 <tr>
 <td><a href="track-by/">trackBy</a></td>
-<td><code>fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, vararg sort: Pair&lt;String, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br><code>fun trackBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort: Pair&lt;String, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any<code>fun trackBy(condition:</code><a href="./#Q"><code>Q</code></a><code>, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for states of type <a href="./#T">T</a> matching the given DSL query, applying the given page number and size, ignoring any aggregates.</td>
+<td><code>open fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, vararg sort: Pair&lt;String, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br><code>open fun trackBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, vararg sort: Pair&lt;String, Direction&gt;): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any<code>open fun trackBy(condition:</code><a href="./#Q"><code>Q</code></a><code>, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for states of type <a href="./#T">T</a> matching the given DSL query, applying the given page number and size, ignoring any aggregates.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inherited-functions">Inherited Functions<a class="headerlink" href="#inherited-functions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../-state-service-delegate/query-by/">queryBy</a></td>
+<td><code>open fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for <a href="../-state-service-delegate/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+</tr>
+<tr>
+<td><a href="../-state-service-delegate/track-by/">trackBy</a></td>
+<td><code>open fun trackBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-state-service-delegate/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inheritors">Inheritors<a class="headerlink" href="#inheritors" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../-default-extended-state-service/">DefaultExtendedStateService</a></td>
+<td><code>abstract class DefaultExtendedStateService&lt;T : ContractState, P : StatePersistable, out F :</code><a href="../../com.github.manosbatsis.vaultaire.util/-fields/"><code>Fields</code></a><code>&lt;</code><a href="../-default-extended-state-service/#P"><code>P</code></a><code>&gt;, Q :</code><a href="../../com.github.manosbatsis.vaultaire.dsl.query/-vault-query-criteria-condition/"><code>VaultQueryCriteriaCondition</code></a><code>&lt;</code><a href="../-default-extended-state-service/#P"><code>P</code></a><code>,</code><a href="../-default-extended-state-service/#F"><code>F</code></a><code>&gt;&gt; :</code><a href="../-basic-state-service/"><code>BasicStateService</code></a><code>&lt;</code><a href="../-default-extended-state-service/#T"><code>T</code></a><code>&gt;,</code><a href="./"><code>ExtendedStateService</code></a><code>&lt;</code><a href="../-default-extended-state-service/#T"><code>T</code></a><code>,</code><a href="../-default-extended-state-service/#P"><code>P</code></a><code>,</code><a href="../-default-extended-state-service/#F"><code>F</code></a><code>,</code><a href="../-default-extended-state-service/#Q"><code>Q</code></a><code>&gt;</code><br>Extends <a href="../-basic-state-service/">BasicStateService</a> to provide a <a href="../-state-service/">StateService</a> aware of the target <a href="#">ContractState</a> type&rsquo;s <a href="#">StatePersistable</a> and <a href="../../com.github.manosbatsis.vaultaire.util/-fields/">Fields</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -548,7 +639,7 @@
       
     </div>
     
-      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../../assets/javascripts/application.245445c6.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
       
