@@ -25,7 +25,7 @@ buildscript {
         kotlinpoet_version = '1.5.0'
         kotlinutils_version = '0.20'
         partiture_version = '0.11'
-        poolboy_version = '0.1'
+        poolboy_version = '0.2'
     }
     repositories {
         mavenLocal()

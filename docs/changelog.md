@@ -4,6 +4,12 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.26-27
+
+- Bumped Corda to OS 4.5
+- Refactored to support RPC connection pooling based on 
+[Corda RPC PoolBoy](https://github.com/manosbatsis/corda-rpc-poolboy)
+
 ## 0.25
 
 - Bumped Corda to OS 4.4
