@@ -11,7 +11,7 @@ and specific to a single `ContractState` type.
 State Services can also decouple you code from `ServiceHub` and `CordaRPCOps`
 by providing constructors for either, thus helping increase code reuse 
 between cordapps and their clients. They also support RPC connection pooling, 
-i.e. provide a constructor that accepts a [PoolBoy](https://github.com/manosbatsis/corda-rpc-poolboy) 
+i.e. provide a constructor that accepts a [PoolBoy](https://manosbatsis.github.io/corda-rpc-poolboy/) 
 `PoolBoyConnection`. 
 
 ## Basic Services
