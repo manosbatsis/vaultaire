@@ -4,6 +4,13 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.28
+
+- Fixed generated DTOs missing `@CordaSerializable`
+- (Service) Registry is now more accessible
+- Fixed service defaults parameter type from SimpleServiceDefaults to interface ServiceDefaults in NodeService, StateService and delegates
+- Fixed pool-based initialization of services from network service
+
 ## 0.26-27
 
 - Bumped Corda to OS 4.5
