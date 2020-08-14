@@ -24,6 +24,7 @@ import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyNonPooledConnection
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyNonPooledRawRpcConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeService
@@ -222,7 +223,7 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
 /** RPC implementation base that uses a [PoolBoyConnection] RPC connection pool */
 open class AccountsAwareNodeServicePoolBoyDelegate(
         poolBoy: PoolBoyConnection,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcPoolBoyDelegate(poolBoy, defaults), AccountsAwareNodeServiceDelegate {
 
     override fun findStoredAccountOrNull(owningKey: PublicKey?): StateAndRef<AccountInfo>? {
@@ -273,7 +274,7 @@ open class AccountsAwareNodeServicePoolBoyDelegate(
 @Deprecated(message = "Use [AccountsAwareNodeServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareNodeServiceRpcDelegate(
         rpcOps: CordaRPCOps,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledRawRpcConnection(rpcOps), defaults)
 
 
@@ -281,7 +282,7 @@ open class AccountsAwareNodeServiceRpcDelegate(
 @Deprecated(message = "Use [AccountsAwareNodeServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareNodeServiceRpcConnectionDelegate(
         nodeRpcConnection: NodeRpcConnection,
-        override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        override val defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection), defaults)
 
 /** A [NodeServiceDelegate] with extended Corda Accounts support, implemented as a CordaServicen */

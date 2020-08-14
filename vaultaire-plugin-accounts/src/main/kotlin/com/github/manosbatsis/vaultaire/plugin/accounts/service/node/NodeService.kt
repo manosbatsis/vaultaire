@@ -21,6 +21,7 @@ package com.github.manosbatsis.vaultaire.plugin.accounts.service.node
 
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import net.corda.core.contracts.ContractState
@@ -45,23 +46,23 @@ open class BasicAccountsAwareNodeService(
 
     /** [PoolBoyConnection]-based constructor */
     constructor(
-            poolBoy: PoolBoyConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            poolBoy: PoolBoyConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareNodeServicePoolBoyDelegate(poolBoy, defaults))
 
     /** [NodeRpcConnection]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            nodeRpcConnection: NodeRpcConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
 
     /** [CordaRPCOps]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(serviceHub.cordaService(AccountsAwareNodeCordaServiceDelegate::class.java))
 }

@@ -26,6 +26,7 @@ import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwa
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServicePoolBoyDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceRpcConnectionDelegate
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeServiceRpcDelegate
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
@@ -43,7 +44,7 @@ interface AccountsAwareStateServiceDelegate<T : ContractState> :
 open class AccountsAwareStateServicePoolBoyDelegate<T : ContractState>(
         poolBoy: PoolBoyConnection,
         override val contractStateType: Class<T>,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : AccountsAwareNodeServicePoolBoyDelegate(poolBoy, defaults), AccountsAwareStateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
@@ -51,7 +52,7 @@ open class AccountsAwareStateServicePoolBoyDelegate<T : ContractState>(
 open class AccountsAwareStateServiceRpcDelegate<T : ContractState>(
         rpcOps: CordaRPCOps,
         override val contractStateType: Class<T>,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults), AccountsAwareStateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
@@ -59,12 +60,12 @@ open class AccountsAwareStateServiceRpcDelegate<T : ContractState>(
 class AccountsAwareStateServiceRpcConnectionDelegate<T : ContractState>(
         nodeRpcConnection: NodeRpcConnection,
         override val contractStateType: Class<T>,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), AccountsAwareStateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
 abstract class AccountsAwareStateCordaServiceDelegate<T : ContractState>(
         serviceHub: AppServiceHub,
         override val contractStateType: Class<T>,
-        override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        override val defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : AccountsAwareNodeCordaServiceDelegate(serviceHub), AccountsAwareStateServiceDelegate<T>

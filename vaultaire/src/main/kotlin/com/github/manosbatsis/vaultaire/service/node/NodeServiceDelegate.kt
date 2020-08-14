@@ -125,7 +125,10 @@ interface NodeServiceDelegate {
         )
     }
 
-    /** Get a state service targeting the given `ContractState` type */
+    /**
+     * Get a state service targeting the given `ContractState` type.
+     * Default implementations assume a [Registry] has been properly initialized.
+      */
     fun <T : ContractState, S : StateService<T>> createStateService(
             contractStateType: Class<T>
     ): S
@@ -321,9 +324,13 @@ open class NodeServiceRpcPoolBoyDelegate(
     override fun <T : ContractState, S : StateService<T>> createStateService(
             contractStateType: Class<T>
     ): S {
-        return Registry.getStateServiceType(contractStateType)
-                ?.getConstructor(ServiceHub::class.java)
-                ?.newInstance(poolBoy) as S?
+        val stateServiceType = Registry.getStateServiceType(contractStateType)
+        stateServiceType!!.constructors.forEach { constructor ->
+            println("createStateService constructor: ${constructor.parameterTypes.joinToString(",") { it.canonicalName } }")
+        }
+        return stateServiceType
+                ?.getConstructor(PoolBoyConnection::class.java, ServiceDefaults::class.java)
+                ?.newInstance(poolBoy, SimpleServiceDefaults()) as S?
                 ?: error("No state service type found for type ${contractStateType.canonicalName}")
     }
 
@@ -365,7 +372,7 @@ open class NodeServiceRpcDelegate(
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate] with a pool boy connection pool instead")
 open class NodeServiceRpcConnectionDelegate(
         nodeRpcConnection: NodeRpcConnection,
-        override val defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        override val defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcPoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection), defaults)
 
 /**

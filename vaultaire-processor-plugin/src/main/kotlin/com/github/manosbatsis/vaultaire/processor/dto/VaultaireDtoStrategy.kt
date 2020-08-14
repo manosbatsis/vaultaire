@@ -22,7 +22,7 @@ package com.github.manosbatsis.vaultaire.processor.dto
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.CompositeDtoStrategy
 import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategyComposition
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoStrategyComposition
+import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoNameStrategy
 import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import javax.lang.model.element.VariableElement
 
@@ -68,23 +68,21 @@ class LiteDtoStrategy(
 )
 
 open class VaultaireDefaultDtoStrategyComposition(
-        annotatedElementInfo: AnnotatedElementInfo
-) : SimpleDtoStrategyComposition(annotatedElementInfo) {
+        override val annotatedElementInfo: AnnotatedElementInfo
+) : DtoStrategyComposition {
 
+    override val dtoNameStrategy = SimpleDtoNameStrategy(annotatedElementInfo)
+    override val dtoTypeStrategy = DtoTypeStrategy(annotatedElementInfo)
     override val dtoMembersStrategy = VaultaireDtoMemberStrategy(
-            annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-    )
+            annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy)
 }
 
 open class VaultaireLiteDtoStrategyComposition(
         override val annotatedElementInfo: AnnotatedElementInfo
 ) : DtoStrategyComposition {
 
-    override val dtoNameStrategy = LiteDtoNameStrategy(
-            annotatedElementInfo
-    )
+    override val dtoNameStrategy = LiteDtoNameStrategy(annotatedElementInfo)
     override val dtoTypeStrategy = LiteDtoTypeStrategy(annotatedElementInfo)
     override val dtoMembersStrategy = LiteDtoMemberStrategy(
-            annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-    )
+            annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy)
 }

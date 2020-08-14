@@ -304,7 +304,7 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     ): Builder {
         val builder = FunSpec.constructorBuilder()
                 .addParameter(paramName, paramType)
-                .addParameter(ParameterSpec.builder("defaults", SimpleServiceDefaults::class)
+                .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
                         .defaultValue("%T()", SimpleServiceDefaults::class.java)
                         .build())
                 .callThisConstructor(CodeBlock.builder()

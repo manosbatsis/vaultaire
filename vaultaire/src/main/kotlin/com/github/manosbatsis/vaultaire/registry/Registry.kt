@@ -30,16 +30,25 @@ import kotlin.reflect.KClass
 
 object Registry {
 
-    private val services: MutableMap<Class<*>, KClass<*>> = ConcurrentHashMap()
-    private val queryDsls: MutableMap<KClass<*>, KClass<*>> = ConcurrentHashMap()
+    private val services: MutableMap<Class<*>, Class<*>> = ConcurrentHashMap()
+    private val queryDsls: MutableMap<KClass<*>, Class<*>> = ConcurrentHashMap()
 
-    fun <T : ContractState, P : StatePersistable, F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>, S : ExtendedStateService<T, P, F, Q>> registerService(
-            keyType: KClass<T>, serviceType: KClass<S>
-    ) = services.put(keyType.java, serviceType)
+    fun <T : ContractState,
+            P : StatePersistable,
+            F : Fields<P>,
+            Q : VaultQueryCriteriaCondition<P, F>,
+            S : ExtendedStateService<T, P, F, Q>> registerService(
+                keyType: KClass<T>, serviceType: KClass<S>
+    ) = services.put(keyType.java, serviceType.java)
+
+    fun registerService(
+            keyType: Class<out ContractState>,
+            serviceType: Class<out ExtendedStateService<*, *, *, *>>
+    ) = services.put(keyType, serviceType)
 
     fun <P : StatePersistable, F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>> registerQueryDsl(
             keyType: KClass<P>, queryCriteriaType: KClass<Q>
-    ) = queryDsls.put(keyType, queryCriteriaType)
+    ) = queryDsls.put(keyType, queryCriteriaType.java)
 
     fun <T : ContractState, S : StateService<T>>
             getStateServiceType(
@@ -48,4 +57,5 @@ object Registry {
         return services[contractStateType] as Class<S>?
     }
 
+    fun getServices(): Map<Class<*>, Class<*>> = services.map { it.key to it.value }.toMap()
 }

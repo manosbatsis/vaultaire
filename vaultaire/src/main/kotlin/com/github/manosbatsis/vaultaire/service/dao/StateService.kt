@@ -23,6 +23,7 @@ import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeService
@@ -196,24 +197,24 @@ open class BasicStateService<T : ContractState>(
 
     /** [PoolBoyConnection]-based constructor */
     constructor(
-            poolBoy: PoolBoyConnection, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            poolBoy: PoolBoyConnection, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServicePoolBoyDelegate(poolBoy, contractStateType, defaults))
 
     /** [NodeRpcConnection]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcConnectionDelegate(nodeRpcConnection, contractStateType, defaults))
 
     /** [CordaRPCOps]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, contractStateType: Class<T>, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
 
 

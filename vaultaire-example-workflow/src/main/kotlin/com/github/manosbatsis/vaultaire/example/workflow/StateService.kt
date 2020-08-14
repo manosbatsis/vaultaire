@@ -24,6 +24,7 @@ import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookStateCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.example.contract.BookStateService
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcDelegate
+import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
@@ -39,12 +40,12 @@ class CustomBasicBookStateService(
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
 
     // Custom business methods...
@@ -60,12 +61,12 @@ class MyExtendedBookStateService(
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(AccountsAwareStateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
     ) : this(serviceHub.cordaService(BookStateCordaServiceDelegate::class.java))
 
     // Custom business methods...

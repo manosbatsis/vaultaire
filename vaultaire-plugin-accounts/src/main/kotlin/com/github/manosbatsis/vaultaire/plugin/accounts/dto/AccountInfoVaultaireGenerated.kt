@@ -181,21 +181,21 @@ open class AccountInfoService(
     /**
      * PoolBopy-based RPC connection pool constructor
      */
-    constructor(poolBoy: PoolBoyConnection, defaults: SimpleServiceDefaults = SimpleServiceDefaults()) :
+    constructor(poolBoy: PoolBoyConnection, defaults: ServiceDefaults = SimpleServiceDefaults()) :
             this(AccountsAwareStateServicePoolBoyDelegate(poolBoy, AccountInfo::class.java, defaults))
 
     /**
      * Legacy constructor without pool support
      */
     @Deprecated(message = "Legacy constructor without pool support, use pool boy constructor instead")
-    constructor(rpcOps: CordaRPCOps, defaults: SimpleServiceDefaults = SimpleServiceDefaults()) :
+    constructor(rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()) :
             this(AccountsAwareStateServiceRpcDelegate(rpcOps, AccountInfo::class.java, defaults))
 
     /**
      * Legacy constructor without pool support
      */
     @Deprecated(message = "Legacy constructor without pool support, use pool boy constructor instead")
-    constructor(nodeRpcConnection: NodeRpcConnection, defaults: SimpleServiceDefaults =
+    constructor(nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults =
             SimpleServiceDefaults()) :
             this(AccountsAwareStateServiceRpcConnectionDelegate(nodeRpcConnection,
                     AccountInfo::class.java, defaults))

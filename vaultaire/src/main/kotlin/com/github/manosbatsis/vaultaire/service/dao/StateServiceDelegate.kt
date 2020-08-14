@@ -82,7 +82,7 @@ interface StateServiceDelegate<T : ContractState> : NodeServiceDelegate {
 open class StateServicePoolBoyDelegate<T : ContractState>(
         poolBoy: PoolBoyConnection,
         override val contractStateType: Class<T>,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcPoolBoyDelegate(poolBoy, defaults), StateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
@@ -90,14 +90,14 @@ open class StateServicePoolBoyDelegate<T : ContractState>(
 open class StateServiceRpcDelegate<T : ContractState>(
         rpcOps: CordaRPCOps,
         override val contractStateType: Class<T>,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcDelegate(rpcOps, defaults), StateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
 open class StateServiceRpcConnectionDelegate<T : ContractState>(
         nodeRpcConnection: NodeRpcConnection,
         override val contractStateType: Class<T>,
-        defaults: SimpleServiceDefaults = SimpleServiceDefaults()
+        defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), StateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
