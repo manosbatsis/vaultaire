@@ -2,8 +2,8 @@
 
 ## Overview
 
-Maintaining Data Transfer Objects for your contract states can be a very mundane task.
-Vaultaire's annotation processing automates this task by (re)generating those for you.
+Maintaining Data Transfer Objects for your contract states can be a mundane, error-prone task. 
+Vaultaire’s annotation processing automates this by (re)generating those DTOs for you.
 
 ## Usage Patterns
 
