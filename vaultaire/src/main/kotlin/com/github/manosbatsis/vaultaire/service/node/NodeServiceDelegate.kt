@@ -325,9 +325,6 @@ open class NodeServiceRpcPoolBoyDelegate(
             contractStateType: Class<T>
     ): S {
         val stateServiceType = Registry.getStateServiceType(contractStateType)
-        stateServiceType!!.constructors.forEach { constructor ->
-            println("createStateService constructor: ${constructor.parameterTypes.joinToString(",") { it.canonicalName } }")
-        }
         return stateServiceType
                 ?.getConstructor(PoolBoyConnection::class.java, ServiceDefaults::class.java)
                 ?.newInstance(poolBoy, SimpleServiceDefaults()) as S?

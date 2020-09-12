@@ -54,7 +54,6 @@ import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.utilities.contextLogger
 import net.corda.core.utilities.getOrThrow
-import org.slf4j.LoggerFactory
 import java.security.PublicKey
 import java.util.UUID
 
@@ -63,7 +62,7 @@ import java.util.UUID
 interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
 
     companion object {
-        val logger = LoggerFactory.getLogger(AccountsAwareNodeServiceDelegate::class.java)
+        val logger = contextLogger()
     }
 
     /** Find accounts that are already stored locally and hosted by the node matching the given [host] */
@@ -308,7 +307,6 @@ open class AccountsAwareNodeCordaServiceDelegate(
     override fun createPublicKey(accountInfo: AccountInfo): AnonymousParty {
         val requestAccountKeyFlow = RequestKeyForAccount(accountInfo)
         val future = flowAwareStartFlow(requestAccountKeyFlow)
-        logger.debug("createPublicKey, return value")
         return future.get()
     }
 
@@ -320,18 +318,12 @@ open class AccountsAwareNodeCordaServiceDelegate(
 
     @Suspendable
     override fun findAccountOrNull(identifier: UUID, host: CordaX500Name): AccountInfo? {
-        logger.debug("findAccountOrNull, identifier: $identifier, host: $host")
         val partyHost = serviceHub.identityService.wellKnownPartyFromX500Name(host)
                 ?: throw IllegalArgumentException("Could not map name to party: ${host}")
-        logger.debug("findAccountOrNull, partyHost: $partyHost")
         var account = findStoredAccountOrNull(identifier)?.state?.data
-        logger.debug("findAccountOrNull, stored account: $partyHost")
         if (account == null) {
-            logger.debug("findAccountOrNull, requesting account...")
             account = requestAccount(identifier, partyHost)
-            logger.debug("findAccountOrNull, requested account: $partyHost")
         }
-        logger.debug("findAccountOrNull, returns: $account")
         return account
     }
 

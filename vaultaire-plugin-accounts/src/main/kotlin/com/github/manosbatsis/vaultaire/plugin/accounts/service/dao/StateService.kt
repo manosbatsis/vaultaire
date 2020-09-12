@@ -216,7 +216,6 @@ interface AccountsAwareStateService<T : ContractState> :
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
     ): AccountParty? {
-        logger.debug("toAccountPartyOrNull, accountInfoLiteDto: $accountInfoLiteDto")
         val accountInfoDto = if (accountInfoLiteDto == null) {
             null
         } else {
@@ -231,13 +230,11 @@ interface AccountsAwareStateService<T : ContractState> :
                     accountInfoLiteDto.identifier?.let { UniqueIdentifier(null, it) }
             )
         }
-        logger.debug("toAccountPartyOrNull, accountInfoDto: $accountInfoDto")
         val accountParty = toAccountPartyOrNull(
                 accountInfoDto,
                 default,
                 ignoreMatching,
                 propertyName)
-        logger.debug("toAccountPartyOrNull, accountParty: $accountParty")
         return accountParty
     }
 
@@ -249,7 +246,6 @@ interface AccountsAwareStateService<T : ContractState> :
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
     ): AccountParty? {
-        logger.debug("toAccountPartyOrNull, accountInfoDto: $accountInfoDto ")
 
         // Return null input as is
         return if (accountInfoDto == null) {
@@ -259,7 +255,6 @@ interface AccountsAwareStateService<T : ContractState> :
         //!ignoreMatching && accountInfoDto.hasMatchingIdentifierAndName(default) -> default
         // Build instance otherwise, try by id first...
         else if (accountInfoDto.identifier != null && accountInfoDto.host != null) {
-            logger.debug("toAccountPartyOrNull, has identifier")
             val accountInfo = findAccountOrNull(accountInfoDto.identifier!!.id, accountInfoDto.host!!.name)
             if (accountInfo != null) {
                 val anonymousParty = createPublicKey(accountInfo)

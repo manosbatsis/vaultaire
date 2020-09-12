@@ -43,8 +43,8 @@ import com.r3.corda.lib.ci.workflows.RequestKey
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowLogic
 import net.corda.core.node.services.Vault
-import net.corda.core.node.services.Vault.RelevancyStatus.ALL
-import net.corda.core.node.services.Vault.StateStatus
+import net.corda.core.node.services.Vault.RelevancyStatus.RELEVANT
+import net.corda.core.node.services.Vault.StateStatus.ALL
 import net.corda.core.node.services.Vault.StateStatus.CONSUMED
 import net.corda.core.node.services.Vault.StateStatus.UNCONSUMED
 import net.corda.core.node.services.vault.QueryCriteria
@@ -234,7 +234,7 @@ class MagazineMockTests {
                             contractStateTypes = setOf(MagazineState::class.java))
                             .and(LinearStateQueryCriteria(
                                     linearId = listOf(identifier),
-                                    relevancyStatus = ALL,
+                                    relevancyStatus = RELEVANT,
                                     contractStateTypes = setOf(MagazineState::class.java))),
                     pageNumber = 1,
                     pageSize = 1).states.singleOrNull()?.state?.data
@@ -338,7 +338,7 @@ class MagazineMockTests {
             and {  }
         }
 
-        val resultsAll = extendedService.queryBy(all.toCriteria())
+        assertTrue(extendedService.queryBy(all.toCriteria()).states.isNotEmpty())
         logger.info("testFindWithStatusesAndService consumed")
 
         val consumed = extendedService.buildQuery {
@@ -358,10 +358,7 @@ class MagazineMockTests {
             }
         }
         val criteria = consumed.toCriteria()
-        println("Test find consumed, criteria: ${criteria}")
         val results = extendedService.queryBy(criteria)
-        println("Test find consumed, results: $results")
-        println("Test find consumed, results.states: ${results.states}")
         // Get/find by external ID
         assertEquals(2, results.totalStatesAvailable.toInt())
         assertTrue(results.states.first().state.data.issues < 3)
@@ -401,6 +398,23 @@ class MagazineMockTests {
 
         assertEquals(1, defaultResults.totalStatesAvailable.toInt())
         assertTrue(defaultResults.states.single().state.data.issues == 3)
+
+        logger.info("testFindWithStatusesAndService all")
+        val allCriteria = extendedService.buildQuery {
+            status = ALL
+            externalIds = listOfNotNull(bPublisherDto.identifier)
+            and {
+                fields.price `==` createdState.price
+                fields.genre `==` createdState.genre
+                fields.author `==` createdState.author.name
+                fields.issues `in` listOf(1, 2, 3)
+                fields.title `like` "%${createdState.title}%"
+            }
+        }
+
+        val allResults = extendedService.queryBy(allCriteria.toCriteria())
+
+        assertEquals(3, allResults.totalStatesAvailable.toInt())
     }
 
     private fun testStateServiceQueryByForSingleResult(
@@ -412,11 +426,7 @@ class MagazineMockTests {
         val magazineSearchPage = stateService.queryBy(
                 criteria, 1, 10, sort
         )
-        println("magazineSearchPage otherResults: ${magazineSearchPage.otherResults}")
-        println("magazineSearchPage statesMetadata: ${magazineSearchPage.statesMetadata}")
-        println("magazineSearchPage states: ${magazineSearchPage.states}")
-        println("magazineSearchPage totalStatesAvailable: ${magazineSearchPage.totalStatesAvailable}")
-        assertEquals(StateStatus.UNCONSUMED, magazineSearchPage.stateTypes,
+        assertEquals(UNCONSUMED, magazineSearchPage.stateTypes,
         "Result states must be unconsumed1")
         assertEquals(1, magazineSearchPage.states.size, "Number of states must be 1")
         assertEquals(1, magazineSearchPage.totalStatesAvailable,
@@ -425,7 +435,6 @@ class MagazineMockTests {
         assertEquals(magazineState.title, magazineSearchResult.title)
         assertEquals(1, stateService.countBy(criteria),
                 "Result of countBy must be 1")
-        print("$magazineSearchResult == $magazineState\n")
     }
 
 

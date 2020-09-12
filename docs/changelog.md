@@ -4,6 +4,12 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.30
+
+- Reverted to forcing root state status to criteria as Corda seems to 
+have an issue with `StateStatus.ALL`
+
+
 ## 0.29
 
 - Added `ResultsPage` as a REST-friendly alternative to `Vault.Page` combined
