@@ -40,7 +40,7 @@
     
     
       
-        <title>To criteria - Vaultaire</title>
+        <title>From - Vaultaire</title>
       
     
     
@@ -114,7 +114,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#tocriteria" tabindex="1" class="md-skip">
+      <a href="#from" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -140,7 +140,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                To criteria
+                From
               
             </span>
           
@@ -452,14 +452,15 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/0.x/com.github.manosbatsis.vaultaire.dsl.query/-vault-custom-query-criteria-wrapper-condition/to-criteria.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/0.x/com.github.manosbatsis.vaultaire.util/-results-page/from.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <p><a href="../../">com.github.manosbatsis.vaultaire.dsl.query</a> / <a href="../">VaultCustomQueryCriteriaWrapperCondition</a> / <a href="./">toCriteria</a></p>
-<h1 id="tocriteria">toCriteria<a class="headerlink" href="#tocriteria" title="Permanent link">&para;</a></h1>
-<p><code>fun toCriteria(): QueryCriteria</code></p>
-<p>Overrides <a href="../../-condition/to-criteria/">Condition.toCriteria</a></p>
-<p>Obtain the internal state as <a href="#">QueryCriteria</a> if any, <code>null</code> otherwise</p>
+                <p><a href="../../">com.github.manosbatsis.vaultaire.util</a> / <a href="../">ResultsPage</a> / <a href="./">from</a></p>
+<h1 id="from">from<a class="headerlink" href="#from" title="Permanent link">&para;</a></h1>
+<p><code>fun &lt;C : ContractState&gt; from(vaultPage: Page&lt;</code><a href="./#C"><code>C</code></a><code>&gt;, pageSpecification: PageSpecification, sort: Sort):</code><a href="../"><code>ResultsPage</code></a><code>&lt;</code><a href="./#C"><code>C</code></a><code>&gt;</code></p>
+<p>Build a ResultsPage using the states from the given <a href="#">Vault.Page</a></p>
+<p><code>fun &lt;C : ContractState, T&gt; from(vaultPage: Page&lt;</code><a href="./#C"><code>C</code></a><code>&gt;, pageSpecification: PageSpecification, sort: Sort, mapper: (original: Iterable&lt;StateAndRef&lt;</code><a href="./#C"><code>C</code></a><code>&gt;&gt;) -&gt; List&lt;</code><a href="./#T"><code>T</code></a><code>&gt;):</code><a href="../"><code>ResultsPage</code></a><code>&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
+<p>Build a ResultsPage by applying the <a href="./#com.github.manosbatsis.vaultaire.util.ResultsPage.Companion$from(net.corda.core.node.services.Vault.Page((com.github.manosbatsis.vaultaire.util.ResultsPage.Companion.from.C)), net.corda.core.node.services.vault.PageSpecification, net.corda.core.node.services.vault.Sort, kotlin.Function1((kotlin.collections.Iterable((net.corda.core.contracts.StateAndRef((com.github.manosbatsis.vaultaire.util.ResultsPage.Companion.from.C)))), kotlin.collections.List((com.github.manosbatsis.vaultaire.util.ResultsPage.Companion.from.T)))))/mapper">mapper</a> to the given <a href="#">Vault.Page</a>s states</p>
                 
                   
                 

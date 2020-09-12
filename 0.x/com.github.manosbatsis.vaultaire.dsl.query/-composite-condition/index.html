@@ -545,31 +545,31 @@ Allows for query criteria conditions.</p>
 <tbody>
 <tr>
 <td><a href="!=/">!=</a></td>
-<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="!=/#S"><code>S</code></a><code>&gt;.!=(value:</code><a href="!=/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="!=/#S"><code>S</code></a><code>&gt;.!=(value:</code><a href="!=/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="!in/">!in</a></td>
-<td><code>fun &lt;S : Comparable&lt;</code><a href="!in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="!in/#S"><code>S</code></a><code>&gt;.!in(value: Collection&lt;</code><a href="!in/#S"><code>S</code></a><code>&gt;): Unit</code></td>
+<td><code>fun &lt;S : Comparable&lt;</code><a href="!in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="!in/#S"><code>S</code></a><code>&gt;.!in(value: Collection&lt;</code><a href="!in/#S"><code>S</code></a><code>&gt;): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="==/">==</a></td>
-<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="==/#S"><code>S</code></a><code>&gt;.==(value:</code><a href="==/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="==/#S"><code>S</code></a><code>&gt;.==(value:</code><a href="==/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="_equal/">_equal</a></td>
-<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._equal(value: Any): Unit</code></td>
+<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._equal(value: Any): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="_like/">_like</a></td>
-<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._like(value: String): Unit</code></td>
+<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._like(value: String): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="_not-equal/">_notEqual</a></td>
-<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._notEqual(value: Any): Unit</code></td>
+<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._notEqual(value: Any): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="_not-like/">_notLike</a></td>
-<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._notLike(value: String): Unit</code></td>
+<td><code>infix fun</code><a href="../../com.github.manosbatsis.vaultaire.util/-field-wrapper/"><code>FieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>&gt;._notLike(value: String): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="as-string-property/">asStringProperty</a></td>
@@ -577,51 +577,51 @@ Allows for query criteria conditions.</p>
 </tr>
 <tr>
 <td><a href="between/">between</a></td>
-<td><code>fun &lt;S : Comparable&lt;</code><a href="between/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="between/#S"><code>S</code></a><code>&gt;.between(from:</code><a href="between/#S"><code>S</code></a><code>, to:</code><a href="between/#S"><code>S</code></a><code>): Unit</code><br><code>infix fun &lt;S : Comparable&lt;</code><a href="between/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="between/#S"><code>S</code></a><code>&gt;.between(value: Pair&lt;</code><a href="between/#S"><code>S</code></a><code>,</code><a href="between/#S"><code>S</code></a><code>&gt;): Unit</code></td>
+<td><code>fun &lt;S : Comparable&lt;</code><a href="between/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="between/#S"><code>S</code></a><code>&gt;.between(from:</code><a href="between/#S"><code>S</code></a><code>, to:</code><a href="between/#S"><code>S</code></a><code>): Boolean</code><br><code>infix fun &lt;S : Comparable&lt;</code><a href="between/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="between/#S"><code>S</code></a><code>&gt;.between(value: Pair&lt;</code><a href="between/#S"><code>S</code></a><code>,</code><a href="between/#S"><code>S</code></a><code>&gt;): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="btw/">btw</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="btw/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="btw/#S"><code>S</code></a><code>&gt;.btw(value: Pair&lt;</code><a href="btw/#S"><code>S</code></a><code>,</code><a href="btw/#S"><code>S</code></a><code>&gt;): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="btw/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="btw/#S"><code>S</code></a><code>&gt;.btw(value: Pair&lt;</code><a href="btw/#S"><code>S</code></a><code>,</code><a href="btw/#S"><code>S</code></a><code>&gt;): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="equal/">equal</a></td>
-<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="equal/#S"><code>S</code></a><code>&gt;.equal(value:</code><a href="equal/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="equal/#S"><code>S</code></a><code>&gt;.equal(value:</code><a href="equal/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="greater-than/">greaterThan</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="greater-than/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="greater-than/#S"><code>S</code></a><code>&gt;.greaterThan(value:</code><a href="greater-than/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="greater-than/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="greater-than/#S"><code>S</code></a><code>&gt;.greaterThan(value:</code><a href="greater-than/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="greater-than-or-equal/">greaterThanOrEqual</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="greater-than-or-equal/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="greater-than-or-equal/#S"><code>S</code></a><code>&gt;.greaterThanOrEqual(value:</code><a href="greater-than-or-equal/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="greater-than-or-equal/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="greater-than-or-equal/#S"><code>S</code></a><code>&gt;.greaterThanOrEqual(value:</code><a href="greater-than-or-equal/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="gt/">gt</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="gt/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="gt/#S"><code>S</code></a><code>&gt;.gt(value:</code><a href="gt/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="gt/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="gt/#S"><code>S</code></a><code>&gt;.gt(value:</code><a href="gt/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="gte/">gte</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="gte/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="gte/#S"><code>S</code></a><code>&gt;.gte(value:</code><a href="gte/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="gte/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="gte/#S"><code>S</code></a><code>&gt;.gte(value:</code><a href="gte/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="in/">in</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="in/#S"><code>S</code></a><code>&gt;.in(value: Collection&lt;</code><a href="in/#S"><code>S</code></a><code>&gt;): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="in/#S"><code>S</code></a><code>&gt;.in(value: Collection&lt;</code><a href="in/#S"><code>S</code></a><code>&gt;): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="is-in/">isIn</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="is-in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="is-in/#S"><code>S</code></a><code>&gt;.isIn(value: Collection&lt;</code><a href="is-in/#S"><code>S</code></a><code>&gt;): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="is-in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="is-in/#S"><code>S</code></a><code>&gt;.isIn(value: Collection&lt;</code><a href="is-in/#S"><code>S</code></a><code>&gt;): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="is-null/">isNull</a></td>
-<td><code>fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/"><code>NullableGenericFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="is-null/#S"><code>S</code></a><code>&gt;.isNull(): Unit</code></td>
+<td><code>fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/"><code>NullableGenericFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="is-null/#S"><code>S</code></a><code>&gt;.isNull(): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="less-than/">lessThan</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="less-than/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="less-than/#S"><code>S</code></a><code>&gt;.lessThan(value:</code><a href="less-than/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="less-than/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="less-than/#S"><code>S</code></a><code>&gt;.lessThan(value:</code><a href="less-than/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="less-than-or-equal/">lessThanOrEqual</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="less-than-or-equal/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="less-than-or-equal/#S"><code>S</code></a><code>&gt;.lessThanOrEqual(value:</code><a href="less-than-or-equal/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="less-than-or-equal/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="less-than-or-equal/#S"><code>S</code></a><code>&gt;.lessThanOrEqual(value:</code><a href="less-than-or-equal/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="like/">like</a></td>
@@ -629,19 +629,19 @@ Allows for query criteria conditions.</p>
 </tr>
 <tr>
 <td><a href="lt/">lt</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="lt/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="lt/#S"><code>S</code></a><code>&gt;.lt(value:</code><a href="lt/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="lt/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="lt/#S"><code>S</code></a><code>&gt;.lt(value:</code><a href="lt/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="lte/">lte</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="lte/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="lte/#S"><code>S</code></a><code>&gt;.lte(value:</code><a href="lte/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="lte/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="lte/#S"><code>S</code></a><code>&gt;.lte(value:</code><a href="lte/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="not-equal/">notEqual</a></td>
-<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="not-equal/#S"><code>S</code></a><code>&gt;.notEqual(value:</code><a href="not-equal/#S"><code>S</code></a><code>): Unit</code></td>
+<td><code>infix fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="not-equal/#S"><code>S</code></a><code>&gt;.notEqual(value:</code><a href="not-equal/#S"><code>S</code></a><code>): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="not-in/">notIn</a></td>
-<td><code>infix fun &lt;S : Comparable&lt;</code><a href="not-in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="not-in/#S"><code>S</code></a><code>&gt;.notIn(value: Collection&lt;</code><a href="not-in/#S"><code>S</code></a><code>&gt;): Unit</code></td>
+<td><code>infix fun &lt;S : Comparable&lt;</code><a href="not-in/#S"><code>S</code></a><code>&gt;&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-typed-field-wrapper/"><code>TypedFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="not-in/#S"><code>S</code></a><code>&gt;.notIn(value: Collection&lt;</code><a href="not-in/#S"><code>S</code></a><code>&gt;): Boolean</code></td>
 </tr>
 <tr>
 <td><a href="not-like/">notLike</a></td>
@@ -649,7 +649,7 @@ Allows for query criteria conditions.</p>
 </tr>
 <tr>
 <td><a href="not-null/">notNull</a></td>
-<td><code>fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/"><code>NullableGenericFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="not-null/#S"><code>S</code></a><code>&gt;.notNull(): Unit</code></td>
+<td><code>fun &lt;S&gt;</code><a href="../../com.github.manosbatsis.vaultaire.util/-nullable-generic-field-wrapper/"><code>NullableGenericFieldWrapper</code></a><code>&lt;</code><a href="./#P"><code>P</code></a><code>,</code><a href="not-null/#S"><code>S</code></a><code>&gt;.notNull(): Boolean</code></td>
 </tr>
 </tbody>
 </table>

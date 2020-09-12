@@ -366,8 +366,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dto-strategies" title="DTO Strategies" class="md-nav__link">
-    DTO Strategies
+  <a href="#results-page" title="Results Page" class="md-nav__link">
+    Results Page
   </a>
   
 </li>
@@ -500,8 +500,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#dto-strategies" title="DTO Strategies" class="md-nav__link">
-    DTO Strategies
+  <a href="#results-page" title="Results Page" class="md-nav__link">
+    Results Page
   </a>
   
 </li>
@@ -660,119 +660,27 @@ mapping/patching utility methods:</p>
 <span class="p">}</span>
 </pre></div>
 
-<h2 id="dto-strategies">DTO Strategies<a class="headerlink" href="#dto-strategies" title="Permanent link">&para;</a></h2>
-<p>Both <code>@VaultaireGenerateDto</code> and <code>@VaultaireGenerateDtoForDependency</code> support generation strategies.
-By default the strategy used is <code>VaultaireDtoStrategyKeys.DEFAULT</code>.</p>
-<div class="codehilite"><pre><span></span><span class="n">@VaultaireGenerateDto</span><span class="p">(</span>
-    <span class="c1">// optional: properties to ignore</span>
-    <span class="n">ignoreProperties</span> <span class="p">=</span> <span class="p">[</span><span class="s">&quot;foo&quot;</span><span class="p">],</span>
-    <span class="c1">// Default is [VaultaireDtoStrategyKeys.DEFAULT]</span>
-    <span class="n">strategies</span> <span class="p">=</span> <span class="p">[</span><span class="n">VaultaireDtoStrategyKeys</span><span class="p">.</span><span class="n">DEFAULT</span><span class="p">,</span> <span class="n">VaultaireDtoStrategyKeys</span><span class="p">.</span><span class="n">LITE</span><span class="p">])</span>
-<span class="p">)</span>
-<span class="k">data</span> <span class="k">class</span> <span class="nc">BookState</span><span class="p">(</span>
-        <span class="k">val</span> <span class="py">publisher</span><span class="p">:</span> <span class="n">Party</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">author</span><span class="p">:</span> <span class="n">Party</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">price</span><span class="p">:</span> <span class="n">BigDecimal</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">genre</span><span class="p">:</span> <span class="n">Genre</span><span class="p">,</span>
-        <span class="n">@DefaultValue</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">)</span>
-        <span class="k">val</span> <span class="py">editions</span><span class="p">:</span> <span class="n">Int</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">title</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s">&quot;Uknown&quot;</span><span class="p">,</span>
-        <span class="k">val</span> <span class="py">published</span><span class="p">:</span> <span class="n">Date</span> <span class="p">=</span> <span class="n">Date</span><span class="p">(),</span>
-        <span class="n">@field</span><span class="p">:</span><span class="n">JsonProperty</span><span class="p">(</span><span class="s">&quot;alias&quot;</span><span class="p">)</span>
-        <span class="k">val</span> <span class="py">alternativeTitle</span><span class="p">:</span> <span class="n">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-        <span class="k">override</span> <span class="k">val</span> <span class="py">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier</span> <span class="p">=</span> <span class="n">UniqueIdentifier</span><span class="p">())</span> <span class="p">:</span> <span class="n">LinearState</span><span class="p">,</span> <span class="n">QueryableState</span><span class="p">{</span>
+<h2 id="results-page">Results Page<a class="headerlink" href="#results-page" title="Permanent link">&para;</a></h2>
+<p>The <code>ResultsPage</code> is a more REST-friendly alternative to <code>Vault.Page</code>. 
+While it can be used to carry any type of results, it mainly focuses<br />
+on mapping <code>StateAndRef</code> query results to either contract states or DTOs.</p>
+<p>Sample use:</p>
+<div class="codehilite"><pre><span></span><span class="c1">// Use a generated state service to query</span>
+<span class="k">val</span> <span class="py">vaultPage</span><span class="p">:</span> <span class="n">Vault</span><span class="p">.</span><span class="n">Page</span><span class="p">&lt;</span><span class="n">MyState</span><span class="p">&gt;</span> <span class="p">=</span> <span class="n">stateService</span>
+    <span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">pageSpecification</span><span class="p">,</span> <span class="n">sort</span><span class="p">)</span>
 
-        <span class="c1">//...</span>
-<span class="p">}</span>
-</pre></div>
+<span class="c1">// As states</span>
+<span class="k">val</span> <span class="py">statesPage</span> <span class="p">=</span> <span class="n">ResultsPage</span><span class="p">.</span><span class="n">from</span><span class="p">(</span>
+    <span class="n">vaultPage</span><span class="p">,</span> <span class="n">pageSpecification</span><span class="p">,</span> <span class="n">sort</span><span class="p">)</span>
 
-<p>The &ldquo;lite&rdquo; strategy is provided to help where deserialization would normally require
-either a <code>ServiceHub</code> or <code>RpcOps</code>, e.g. when the target property is a <code>Party</code>,
-in which case the DTO will use a more accessible type like <code>CordaX500Name</code>,
-and require a service to convert to or patch a <code>ContractState</code> instance.
-Note that &ldquo;lite&rdquo; DTO classname also have a <code>LiteDto</code> suffix. Here&rsquo;s the &ldquo;lite&rdquo;
-DTO generated for the above example:</p>
-<div class="codehilite"><pre><span></span><span class="cm">/**</span>
-<span class="cm"> * A [BookContract.BookState]-specific [com.github.manotbatsis.kotlin.utils.api.Dto] implementation</span>
-<span class="cm"> */</span>
-<span class="k">data</span> <span class="k">class</span> <span class="nc">BookStateLiteDto</span><span class="p">(</span>
-  <span class="k">var</span> <span class="py">publisher</span><span class="p">:</span> <span class="n">CordaX500Name</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">author</span><span class="p">:</span> <span class="n">CordaX500Name</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">price</span><span class="p">:</span> <span class="n">BigDecimal</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">genre</span><span class="p">:</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">Genre</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">editions</span><span class="p">:</span> <span class="n">Int</span><span class="p">?</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">title</span><span class="p">:</span> <span class="n">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">published</span><span class="p">:</span> <span class="n">Date</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="n">@field</span><span class="p">:</span><span class="n">JsonProperty</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="s">&quot;alias&quot;</span><span class="p">)</span>
-  <span class="k">var</span> <span class="py">alternativeTitle</span><span class="p">:</span> <span class="n">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-  <span class="k">var</span> <span class="py">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span>
-<span class="p">)</span> <span class="p">:</span> <span class="n">VaultaireDto</span><span class="p">&lt;</span><span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span><span class="p">&gt;</span> <span class="p">{</span>
-  <span class="cm">/**</span>
-<span class="cm">   * Alternative constructor, used to map</span>
-<span class="cm">   * from the given [BookContract.BookState] instance.</span>
-<span class="cm">   */</span>
-  <span class="k">constructor</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span>
-        <span class="n">publisher</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">publisher</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">author</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">author</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
-        <span class="n">price</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">price</span><span class="p">,</span>
-        <span class="n">genre</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">genre</span><span class="p">,</span>
-        <span class="n">editions</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">editions</span><span class="p">,</span>
-        <span class="n">title</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">title</span><span class="p">,</span>
-        <span class="n">published</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">published</span><span class="p">,</span>
-        <span class="n">alternativeTitle</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">alternativeTitle</span><span class="p">,</span>
-        <span class="n">linearId</span> <span class="p">=</span> <span class="n">original</span><span class="p">.</span><span class="n">linearId</span>
-  <span class="p">)</span>
-
-  <span class="cm">/**</span>
-<span class="cm">   * Create a patched copy of the given [BookContract.BookState] instance,</span>
-<span class="cm">   * updated using this DTO&#39;s non-null properties.</span>
-<span class="cm">   */</span>
-  <span class="k">override</span> <span class="k">fun</span> <span class="nf">toPatched</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span><span class="p">,</span>
-      <span class="n">stateService</span><span class="p">:</span> <span class="n">StateService</span><span class="p">&lt;</span><span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span><span class="p">&gt;):</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span> <span class="p">{</span>
-    <span class="k">val</span> <span class="py">patched</span> <span class="p">=</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span><span class="p">(</span>
-          <span class="n">publisher</span> <span class="p">=</span> <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">publisher</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
-        <span class="n">stateService</span><span class="p">.</span><span class="n">wellKnownPartyFromX500Name</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">publisher</span><span class="o">!!</span><span class="p">)</span><span class="o">!!</span> <span class="k">else</span> <span class="n">original</span><span class="p">.</span><span class="n">publisher</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">author</span> <span class="p">=</span> <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">author</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="n">stateService</span><span class="p">.</span><span class="n">wellKnownPartyFromX500Name</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">author</span><span class="o">!!</span><span class="p">)</span><span class="o">!!</span>
-        <span class="k">else</span> <span class="n">original</span><span class="p">.</span><span class="n">author</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">price</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">price</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">genre</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">genre</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">editions</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">editions</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">title</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">title</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">published</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">published</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">alternativeTitle</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">alternativeTitle</span><span class="p">,</span>
-          <span class="n">linearId</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">linearId</span><span class="o">!!</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">patched</span>
-  <span class="p">}</span>
-
-  <span class="cm">/**</span>
-<span class="cm">   * Create an instance of [BookContract.BookState], using this DTO&#39;s properties.</span>
-<span class="cm">   * May throw a [DtoInsufficientStateMappingException]</span>
-<span class="cm">   * if there is mot enough information to do so.</span>
-<span class="cm">   */</span>
-  <span class="k">override</span> <span class="k">fun</span> <span class="nf">toTargetType</span><span class="p">(</span><span class="n">stateService</span><span class="p">:</span> <span class="n">StateService</span><span class="p">&lt;</span><span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span><span class="p">&gt;):</span>
-      <span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span> <span class="p">{</span>
-    <span class="k">try</span> <span class="p">{</span>
-       <span class="k">val</span> <span class="py">originalTypeInstance</span> <span class="p">=</span> <span class="n">BookContract</span><span class="p">.</span><span class="n">BookState</span><span class="p">(</span>
-          <span class="n">publisher</span> <span class="p">=</span> <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">publisher</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
-        <span class="n">stateService</span><span class="p">.</span><span class="n">wellKnownPartyFromX500Name</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">publisher</span><span class="o">!!</span><span class="p">)</span><span class="o">!!</span> <span class="k">else</span> <span class="k">throw</span>
-        <span class="n">DtoInsufficientMappingException</span><span class="p">(</span><span class="s">&quot;No value given for property publisher&quot;</span><span class="p">),</span>
-          <span class="n">author</span> <span class="p">=</span> <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">author</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="n">stateService</span><span class="p">.</span><span class="n">wellKnownPartyFromX500Name</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">author</span><span class="o">!!</span><span class="p">)</span><span class="o">!!</span>
-        <span class="k">else</span> <span class="k">throw</span> <span class="n">DtoInsufficientMappingException</span><span class="p">(</span><span class="s">&quot;No value given for property author&quot;</span><span class="p">),</span>
-          <span class="n">price</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">price</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">genre</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">genre</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">editions</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">editions</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">title</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">title</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">published</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">published</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">alternativeTitle</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">alternativeTitle</span><span class="p">,</span>
-          <span class="n">linearId</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">linearId</span><span class="o">!!</span>
-       <span class="p">)</span>
-       <span class="k">return</span> <span class="n">originalTypeInstance</span>
+<span class="c1">// As DTOs</span>
+<span class="k">val</span> <span class="py">dtosPage</span> <span class="p">=</span> <span class="n">ResultsPage</span><span class="p">.</span><span class="n">from</span><span class="p">(</span>
+    <span class="n">vaultPage</span><span class="p">,</span> <span class="n">pageSpecification</span><span class="p">,</span> <span class="n">sort</span>
+<span class="p">)</span> <span class="p">{</span> <span class="n">stateAndRefs</span> <span class="p">-&gt;</span>
+    <span class="n">stateAndRefs</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span>
+        <span class="n">MyStateLiteDto</span>
+            <span class="p">.</span><span class="n">mapToDto</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">state</span><span class="p">.</span><span class="k">data</span><span class="p">,</span> <span class="n">stateService</span><span class="p">)</span>
     <span class="p">}</span>
-    <span class="k">catch</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
-       <span class="k">throw</span> <span class="n">DtoInsufficientMappingException</span><span class="p">(</span><span class="n">exception</span> <span class="p">=</span> <span class="n">e</span><span class="p">)</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
                 
