@@ -51,6 +51,7 @@ import net.corda.core.node.services.vault.Builder.notLike
 import net.corda.core.node.services.vault.Builder.notNull
 import net.corda.core.node.services.vault.Builder.sum
 import net.corda.core.node.services.vault.ColumnPredicate.BinaryComparison
+import net.corda.core.node.services.vault.CriteriaExpression
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.QueryCriteria.TimeCondition
 import net.corda.core.node.services.vault.QueryCriteria.TimeInstantType
@@ -115,124 +116,88 @@ abstract class CompositeCondition<P : StatePersistable, out F : Fields<P>>(
         override val rootCondition: RootCondition<P>
 ) : ConditionsCondition<P, F>() {
 
+    private fun addCondition(expression: CriteriaExpression<P, Boolean>) =
+            conditions.add(VaultCustomQueryCondition<P>(expression))
+
     fun <S> NullableGenericFieldWrapper<P, S>.isNull() =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.isNull())))
+            addCondition(property.isNull())
 
     fun <S> NullableGenericFieldWrapper<P, S>.notNull() =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.notNull())))
+            addCondition(property.notNull())
 
     infix fun <S> TypedFieldWrapper<P, S>.equal(value: S) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.equal(value))))
+            addCondition(property.equal(value))
 
     infix fun <S> TypedFieldWrapper<P, S>.`==`(value: S) = equal(value)
 
     infix fun <S> TypedFieldWrapper<P, S>.notEqual(value: S) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.notEqual(value))))
+            addCondition(property.notEqual(value))
 
     infix fun <S> TypedFieldWrapper<P, S>.`!=`(value: S) = notEqual(value)
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.lessThan(value: S) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.lessThan(value))))
+            addCondition(property.lessThan(value))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.lt(value: S) = lessThan(value)
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.lessThanOrEqual(value: S) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.lessThanOrEqual(value))))
+            addCondition(property.lessThanOrEqual(value))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.lte(value: S) = lessThanOrEqual(value)
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.greaterThan(value: S) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.greaterThan(value))))
+            addCondition(property.greaterThan(value))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.gt(value: S) = greaterThan(value)
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.greaterThanOrEqual(value: S) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.greaterThanOrEqual(value))))
+            addCondition(property.greaterThanOrEqual(value))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.gte(value: S) = greaterThanOrEqual(value)
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.between(from: S, to: S) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.between(from, to))))
+            addCondition(property.between(from, to))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.between(value: Pair<S, S>) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.between(value.first, value.second))))
+            addCondition(property.between(value.first, value.second))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.btw(value: Pair<S, S>) = between(value)
 
     infix fun <T : StatePersistable> TypedFieldWrapper<T, String>.like(value: String) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.like(value))))
+            addCondition(VaultCustomQueryCondition(property.like(value)))
 
     fun <T : StatePersistable> TypedFieldWrapper<T, String>.like(value: String, exactMatch: Boolean = true) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.like(value, exactMatch))))
+            addCondition(VaultCustomQueryCondition(property.like(value, exactMatch)))
+
 
     infix fun <T : StatePersistable> TypedFieldWrapper<T, String>.notLike(value: String) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.notLike(value))))
+            addCondition(VaultCustomQueryCondition(property.notLike(value)))
 
     fun <T : StatePersistable> TypedFieldWrapper<T, String>.notLike(value: String, exactMatch: Boolean = true) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.notLike(value, exactMatch))))
+            addCondition(VaultCustomQueryCondition(property.notLike(value, exactMatch)))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.isIn(value: Collection<S>) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.`in`(value))))
+            addCondition(property.`in`(value))
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.`in`(value: Collection<S>) = isIn(value)
 
     infix fun <S : Comparable<S>> TypedFieldWrapper<P, S>.notIn(value: Collection<S>) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.notIn(value))))
+            addCondition(property.notIn(value))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.`!in`(value: Collection<S>) = notIn(value)
 
     // non type safe versions
     infix fun FieldWrapper<P>._equal(value: Any) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.equal(value))))
+            addCondition(property.equal(value))
 
     infix fun FieldWrapper<P>._notEqual(value: Any) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.notEqual(value))))
+            addCondition(property.notEqual(value))
 
     infix fun FieldWrapper<P>._like(value: String) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.asStringProperty().like(value))))
+            addCondition(asStringProperty().like(value))
 
     infix fun FieldWrapper<P>._notLike(value: String) =
-            addCondition(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.asStringProperty().notLike(value))))
+            addCondition(asStringProperty().notLike(value))
 
     @supress("UNCHECKED_CAST")
     protected fun FieldWrapper<P>.asStringProperty() = this.property as KProperty1<P, String>
@@ -246,17 +211,11 @@ class AndCondition<P : StatePersistable, out F : Fields<P>>(
 ) : CompositeCondition<P, F>(fields, rootCondition) {
 
 
-    override fun toCriteria(): QueryCriteria? {
-        var criteria: QueryCriteria? = null
-        this.conditions.forEach {
-            val childCriteria = it.toCriteria()
-            if (childCriteria != null) {
-                if (criteria == null) criteria = childCriteria
-                else criteria = criteria!!.and(childCriteria)
-            }
-        }
-        return criteria
-    }
+    override fun toCriteria(): QueryCriteria? =
+            this.conditions.mapNotNull { it.toCriteria() }
+                    .takeIf { it.isNotEmpty() }
+                    ?.reduce { chain, link -> chain.and(link) }
+
 }
 
 /** Defines a set of conditions where at least a single item must be matched */
@@ -265,17 +224,10 @@ class OrCondition<P : StatePersistable, out F : Fields<P>>(
         rootCondition: RootCondition<P>
 ) : CompositeCondition<P, F>(fields, rootCondition) {
 
-    override fun toCriteria(): QueryCriteria? {
-        var criteria: QueryCriteria? = null
-        this.conditions.forEach {
-            val childCriteria = it.toCriteria()
-            if (childCriteria != null) {
-                if (criteria == null) criteria = childCriteria
-                else criteria = criteria!!.or(childCriteria)
-            }
-        }
-        return criteria
-    }
+    override fun toCriteria(): QueryCriteria? =
+            this.conditions.mapNotNull { it.toCriteria() }
+                    .takeIf { it.isNotEmpty() }
+                    ?.reduce { chain, link -> chain.or(link) }
 }
 
 /**
@@ -285,9 +237,12 @@ class OrCondition<P : StatePersistable, out F : Fields<P>>(
  * as shorthands (infix or regular), i.e. expression-only criteria without a contract state type,
  * vault state status or relevance status of their own.
  */
-open class VaultCustomQueryCriteriaWrapperCondition(
-        private val criterion: VaultCustomQueryCriteria<*>
+open class VaultCustomQueryCondition<L : StatePersistable>(
+        private val criterion: VaultCustomQueryCriteria<L>
 ) : Condition {
+    constructor(
+            expression: CriteriaExpression<L, Boolean>
+    ): this(VaultCustomQueryCriteria(expression))
     final override fun toCriteria(): QueryCriteria = criterion
 }
 
@@ -297,35 +252,27 @@ class Aggregates<P : StatePersistable>(val rootCondition: RootCondition<P>) {
     internal val aggregates: MutableList<Condition> = mutableListOf()
 
     private fun addAggregate(condition: Condition) = aggregates.add(condition)
+    private fun addAggregate(expression: CriteriaExpression<P, Boolean>) =
+            aggregates.add(VaultCustomQueryCondition<P>(expression))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.sum(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
-            addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.sum(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+            addAggregate(property.sum(groupColumns?.map { it.property }, orderBy))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.avg(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
-            addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.avg(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+            addAggregate(property.avg(groupColumns?.map { it.property }, orderBy))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.min(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
-            addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.min(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+            addAggregate(property.min(groupColumns?.map { it.property }, orderBy))
 
     fun <S : Comparable<S>> TypedFieldWrapper<P, S>.max(
             groupColumns: List<FieldWrapper<P>>? = null, orderBy: Sort.Direction? = null) =
-            addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.max(if (groupColumns != null) groupColumns.map { it.property } else null, orderBy))))
+            addAggregate(property.max(groupColumns?.map { it.property }, orderBy))
 
     fun FieldWrapper<P>.count() =
-            addAggregate(VaultCustomQueryCriteriaWrapperCondition(VaultCustomQueryCriteria(
-                    status = rootCondition.status,
-                    expression = this.property.count())))
+            addAggregate(property.count())
 }
 
 /** Used to define [Sort.SortColumn]s */
@@ -389,7 +336,7 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
         override var stateRefs: List<StateRef>? = null,
         override var notary: List<AbstractParty>? = null,
         override var softLockingCondition: QueryCriteria.SoftLockingCondition? = null,
-        override var timeCondition: QueryCriteria.TimeCondition? = null,
+        override var timeCondition: TimeCondition? = null,
         override var relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL,
         override var constraintTypes: Set<Vault.ConstraintInfo.Type> = emptySet(),
         override var constraints: Set<Vault.ConstraintInfo> = emptySet(),
@@ -405,8 +352,8 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
     /** The target [StatePersistable] type */
     abstract val statePersistableType: Class<P>
 
-    lateinit private var aggregates: Aggregates<P>
-    lateinit private var sortColumns: SortColumns<P>
+    private lateinit var aggregates: Aggregates<P>
+    private lateinit var sortColumns: SortColumns<P>
 
     val timeRecorded = TimeRecordedCondition()
     val timeConsumed = TimeConsumedCondition()
@@ -436,7 +383,8 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
     fun toSort() = Sort(if (::sortColumns.isInitialized) sortColumns.entries else emptySet())
 
     override fun toCriteria(): QueryCriteria {
-        var criteria: QueryCriteria = QueryCriteria.VaultQueryCriteria(
+        // Always applied root last to override status etc.
+        val rootCriteria = QueryCriteria.VaultQueryCriteria(
                 externalIds = externalIds,
                 status = status,
                 contractStateTypes = setOf(contractStateType),
@@ -448,13 +396,11 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
                 constraintTypes = constraintTypes,
                 constraints = constraints,
                 participants = participants)
+        var criteria = this.conditions.mapNotNull { it.toCriteria() }
+                .takeIf { it.isNotEmpty() }
+                ?.reduce { chain, link -> chain.and(link) }
 
-        this.conditions.forEach {
-            val childCriteria = it.toCriteria()
-            if (childCriteria != null) criteria = criteria.and(childCriteria)
-        }
-
-        return criteria
+        return criteria?.and(rootCriteria) ?: rootCriteria
     }
 
     /**
@@ -463,13 +409,12 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
      * Corda paged queries can have either state or aggregate results, but not both.
      */
     fun toCriteria(ignoreAggregates: Boolean = false): QueryCriteria {
-        var criteria: QueryCriteria = toCriteria()
-        if (!ignoreAggregates && ::aggregates.isInitialized) {
-            aggregates.aggregates.forEach {
-                val childCriteria = it.toCriteria()
-                if (childCriteria != null) criteria = criteria.and(childCriteria)
-            }
-        }
-        return criteria
+        val aggregateCriteria = if (!ignoreAggregates && ::aggregates.isInitialized) {
+            aggregates.aggregates.mapNotNull { it.toCriteria() }
+                    .takeIf { it.isNotEmpty() }
+                    ?.reduce { chain, link -> chain.and(link) }
+            }else null
+        // Always applied (the product of) root last to override status etc.
+        return aggregateCriteria?.and(toCriteria()) ?: toCriteria()
     }
 }

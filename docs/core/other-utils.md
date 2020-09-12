@@ -152,123 +152,30 @@ data class BookStateDto(
 ```
 
 
-## DTO Strategies
+## Results Page
 
-Both `@VaultaireGenerateDto` and `@VaultaireGenerateDtoForDependency` support generation strategies.
-By default the strategy used is `VaultaireDtoStrategyKeys.DEFAULT`.
+The `ResultsPage` is a more REST-friendly alternative to `Vault.Page`. 
+While it can be used to carry any type of results, it mainly focuses  
+on mapping `StateAndRef` query results to either contract states or DTOs.
 
-```kotlin
-@VaultaireGenerateDto(
-    // optional: properties to ignore
-    ignoreProperties = ["foo"],
-    // Default is [VaultaireDtoStrategyKeys.DEFAULT]
-    strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
-)
-data class BookState(
-		val publisher: Party,
-		val author: Party,
-		val price: BigDecimal,
-		val genre: Genre,
-		@DefaultValue("1")
-		val editions: Int = 1,
-		val title: String = "Uknown",
-		val published: Date = Date(),
-		@field:JsonProperty("alias")
-		val alternativeTitle: String? = null,
-		override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState{
-
-		//...
-}
-```
-
-The "lite" strategy is provided to help where deserialization would normally require
-either a `ServiceHub` or `RpcOps`, e.g. when the target property is a `Party`,
-in which case the DTO will use a more accessible type like `CordaX500Name`,
-and require a service to convert to or patch a `ContractState` instance.
-Note that "lite" DTO classname also have a `LiteDto` suffix. Here's the "lite"
-DTO generated for the above example:
+Sample use:
 
 ```kotlin
-/**
- * A [BookContract.BookState]-specific [com.github.manotbatsis.kotlin.utils.api.Dto] implementation
- */
-data class BookStateLiteDto(
-  var publisher: CordaX500Name? = null,
-  var author: CordaX500Name? = null,
-  var price: BigDecimal? = null,
-  var genre: BookContract.Genre? = null,
-  var editions: Int? = 1,
-  var title: String? = null,
-  var published: Date? = null,
-  @field:JsonProperty(value = "alias")
-  var alternativeTitle: String? = null,
-  var linearId: UniqueIdentifier? = null
-) : VaultaireDto<BookContract.BookState> {
-  /**
-   * Alternative constructor, used to map
-   * from the given [BookContract.BookState] instance.
-   */
-  constructor(original: BookContract.BookState) : this(
-        publisher = original.publisher.name,
-        author = original.author.name,
-        price = original.price,
-        genre = original.genre,
-        editions = original.editions,
-        title = original.title,
-        published = original.published,
-        alternativeTitle = original.alternativeTitle,
-        linearId = original.linearId
-  )
+// Use a generated state service to query
+val vaultPage: Vault.Page<MyState> = stateService
+    .queryBy(criteria, pageSpecification, sort)
 
-  /**
-   * Create a patched copy of the given [BookContract.BookState] instance,
-   * updated using this DTO's non-null properties.
-   */
-  override fun toPatched(original: BookContract.BookState,
-      stateService: StateService<BookContract.BookState>): BookContract.BookState {
-    val patched = BookContract.BookState(
-          publisher = if(this.publisher != null)
-        stateService.wellKnownPartyFromX500Name(this.publisher!!)!! else original.publisher!!,
-          author = if(this.author != null) stateService.wellKnownPartyFromX500Name(this.author!!)!!
-        else original.author!!,
-          price = this.price!!,
-          genre = this.genre!!,
-          editions = this.editions!!,
-          title = this.title!!,
-          published = this.published!!,
-          alternativeTitle = this.alternativeTitle,
-          linearId = this.linearId!!
-    )
-    return patched
-  }
+// As states
+val statesPage = ResultsPage.from(
+    vaultPage, pageSpecification, sort)
 
-  /**
-   * Create an instance of [BookContract.BookState], using this DTO's properties.
-   * May throw a [DtoInsufficientStateMappingException]
-   * if there is mot enough information to do so.
-   */
-  override fun toTargetType(stateService: StateService<BookContract.BookState>):
-      BookContract.BookState {
-    try {
-       val originalTypeInstance = BookContract.BookState(
-          publisher = if(this.publisher != null)
-        stateService.wellKnownPartyFromX500Name(this.publisher!!)!! else throw
-        DtoInsufficientMappingException("No value given for property publisher"),
-          author = if(this.author != null) stateService.wellKnownPartyFromX500Name(this.author!!)!!
-        else throw DtoInsufficientMappingException("No value given for property author"),
-          price = this.price!!,
-          genre = this.genre!!,
-          editions = this.editions!!,
-          title = this.title!!,
-          published = this.published!!,
-          alternativeTitle = this.alternativeTitle,
-          linearId = this.linearId!!
-       )
-       return originalTypeInstance
+// As DTOs
+val dtosPage = ResultsPage.from(
+    vaultPage, pageSpecification, sort
+) { stateAndRefs ->
+    stateAndRefs.map {
+        MyStateLiteDto
+            .mapToDto(it.state.data, stateService)
     }
-    catch(e: Exception) {
-       throw DtoInsufficientMappingException(exception = e)
-    }
-  }
 }
 ```

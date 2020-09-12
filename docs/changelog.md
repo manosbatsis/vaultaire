@@ -4,6 +4,13 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.29
+
+- Added `ResultsPage` as a REST-friendly alternative to `Vault.Page` combined
+with mapping from `StateAndRef` to either contract states or DTOs.
+- Removed explicit state status from DSL criteria, applied root criterion last instead.
+ 
+
 ## 0.28
 
 - Fixed generated DTOs missing `@CordaSerializable`

@@ -23,6 +23,11 @@ import com.github.manosbatsis.partiture.flow.PartitureFlow
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.HISTORICAL
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.SCIENCE_FICTION
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.TECHNOLOGY
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.UNKNOWN
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
@@ -40,6 +45,8 @@ import net.corda.core.flows.FlowLogic
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.Vault.RelevancyStatus.ALL
 import net.corda.core.node.services.Vault.StateStatus
+import net.corda.core.node.services.Vault.StateStatus.CONSUMED
+import net.corda.core.node.services.Vault.StateStatus.UNCONSUMED
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
@@ -266,13 +273,13 @@ class MagazineMockTests {
     }
 
     @Test
-    fun `Test find consumed`() {
+    fun `Test find with state status cases`() {
         val aAuthorDto = AccountInfoLiteDto.mapToDto(aAuthor)
         val bPublisherDto = AccountInfoLiteDto.mapToDto(bPublisher)
 
         logger.info("aAuthorDto: $aAuthorDto")
         logger.info("bPublisherDto: $bPublisherDto")
-        val aMagazineStateService = MagazineStateService(a.services)
+        val stateService = MagazineStateService(a.services)
 
 
         logger.info("Author creates draft...")
@@ -304,7 +311,7 @@ class MagazineMockTests {
                         createdState.copy(
                                 title = updatedTitle,
                                 issues = 2),
-                        aMagazineStateService))).single()
+                        stateService))).single()
         assertEquals(createdState.linearId, updatedState.linearId)
 
         // Update
@@ -314,27 +321,43 @@ class MagazineMockTests {
                 UpdateMagazineFlow(MagazineStateLiteDto.mapToDto(createdState.copy(
                         title = updatedTitle2,
                         issues = 3
-                ), aMagazineStateService))).single()
+                ), stateService))).single()
         assertEquals(createdState.linearId, updatedState2.linearId)
         //
         logger.info("Publisher side: " +
                 "Query for the consumed on the counter party node...")
-        val extendedService = MagazineStateService(b.services)
-        val querySpec = extendedService.buildQuery {
+        testFindWithStatusesAndService(MagazineStateService(a.services), bPublisherDto, createdState)
+        testFindWithStatusesAndService(MagazineStateService(b.services), bPublisherDto, createdState)
+
+
+    }
+
+    private fun testFindWithStatusesAndService(extendedService: MagazineStateService, bPublisherDto: AccountInfoLiteDto, createdState: MagazineState) {
+        logger.info("testFindWithStatusesAndService all")
+        val all = extendedService.buildQuery{
+            and {  }
+        }
+
+        val resultsAll = extendedService.queryBy(all.toCriteria())
+        logger.info("testFindWithStatusesAndService consumed")
+
+        val consumed = extendedService.buildQuery {
             externalIds = listOfNotNull(bPublisherDto.identifier)
-            status = Vault.StateStatus.CONSUMED
+            status = CONSUMED
             and {
                 fields.price `==` createdState.price
                 fields.genre `==` createdState.genre
-                fields.author `==` aAuthorDto.name!!
+                fields.author `==` createdState.author.name
+                //if(createdState.publisher != null) fields.publisher `==` createdState.author.name+"1"
+                if(createdState.genre != null) fields.genre `in` listOf(MagazineGenre.FANTACY, HISTORICAL, SCIENCE_FICTION, TECHNOLOGY, UNKNOWN)
                 or {
-                    fields.issues `==` createdState.issues
-                    fields.issues `==` updatedState.issues
+                    fields.issues `==` 1
+                    fields.issues `==` 2
                 }
                 fields.title `like` "%${createdState.title}%"
             }
         }
-        val criteria = querySpec.toCriteria()
+        val criteria = consumed.toCriteria()
         println("Test find consumed, criteria: ${criteria}")
         val results = extendedService.queryBy(criteria)
         println("Test find consumed, results: $results")
@@ -343,6 +366,41 @@ class MagazineMockTests {
         assertEquals(2, results.totalStatesAvailable.toInt())
         assertTrue(results.states.first().state.data.issues < 3)
         assertTrue(results.states[1].state.data.issues < 3)
+
+        logger.info("testFindWithStatusesAndService unconsumed")
+        val unconsumedCriteria = extendedService.buildQuery {
+            externalIds = listOfNotNull(bPublisherDto.identifier)
+            status = UNCONSUMED
+            and {
+                fields.price `==` createdState.price
+                fields.genre `==` createdState.genre
+                fields.author `==` createdState.author.name
+                fields.issues `in` listOf(1, 2, 3)
+                fields.title `like` "%${createdState.title}%"
+            }
+        }
+
+        val unconsumedResults = extendedService.queryBy(unconsumedCriteria.toCriteria())
+
+        assertEquals(1, unconsumedResults.totalStatesAvailable.toInt())
+        assertTrue(unconsumedResults.states.single().state.data.issues == 3)
+
+        logger.info("testFindWithStatusesAndService default")
+        val defaultCriteria = extendedService.buildQuery {
+            externalIds = listOfNotNull(bPublisherDto.identifier)
+            and {
+                fields.price `==` createdState.price
+                fields.genre `==` createdState.genre
+                fields.author `==` createdState.author.name
+                fields.issues `in` listOf(1, 2, 3)
+                fields.title `like` "%${createdState.title}%"
+            }
+        }
+
+        val defaultResults = extendedService.queryBy(defaultCriteria.toCriteria())
+
+        assertEquals(1, defaultResults.totalStatesAvailable.toInt())
+        assertTrue(defaultResults.states.single().state.data.issues == 3)
     }
 
     private fun testStateServiceQueryByForSingleResult(
