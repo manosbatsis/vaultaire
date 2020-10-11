@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.31
+
+- Updated corda-rpc-poolboy dependency 
+
 ## 0.30
 
 - Reverted to forcing root state status to criteria as Corda seems to 
