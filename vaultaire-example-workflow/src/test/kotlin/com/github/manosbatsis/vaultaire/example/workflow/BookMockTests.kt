@@ -64,7 +64,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
-@Suppress("DEPRECATION")
+@Suppress(names = ["DEPRECATION"])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
 class BookMockTests {
     companion object {

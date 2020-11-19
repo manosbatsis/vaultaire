@@ -4,6 +4,11 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.32
+
+- Added `VaultaireAttachmentService` as a utility for attaching 
+Vaultaire's JAR to a transaction.
+
 ## 0.31
 
 - Updated corda-rpc-poolboy dependency 

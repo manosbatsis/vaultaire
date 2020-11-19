@@ -179,3 +179,19 @@ val dtosPage = ResultsPage.from(
     }
 }
 ```
+
+## Vaultaire JAR Attachment
+
+In some cases you may want to attach Vaultaire's JAR to a 
+Corda transaction when creating a new accounts-aware state. 
+`VaultaireAttachmentService` is a Corda service 
+to do just that:
+
+```kotlin
+// Obtain Vaultaire's JAR hash
+val vaultaireJarAttachment = serviceHub
+    .cordaService(VaultaireAttachmentService::class.java)
+    .vaultaireSecureHash
+// Attach JAR to TX
+transactionBuilder.addAttachment(vaultaireJarAttachment)
+```
