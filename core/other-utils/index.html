@@ -372,6 +372,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#vaultaire-jar-attachment" title="Vaultaire JAR Attachment" class="md-nav__link">
+    Vaultaire JAR Attachment
+  </a>
+  
+</li>
+      
       
       
       
@@ -502,6 +509,13 @@
         <li class="md-nav__item">
   <a href="#results-page" title="Results Page" class="md-nav__link">
     Results Page
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vaultaire-jar-attachment" title="Vaultaire JAR Attachment" class="md-nav__link">
+    Vaultaire JAR Attachment
   </a>
   
 </li>
@@ -682,6 +696,19 @@ on mapping <code>StateAndRef</code> query results to either contract states or D
             <span class="p">.</span><span class="n">mapToDto</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">state</span><span class="p">.</span><span class="k">data</span><span class="p">,</span> <span class="n">stateService</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
+</pre></div>
+
+<h2 id="vaultaire-jar-attachment">Vaultaire JAR Attachment<a class="headerlink" href="#vaultaire-jar-attachment" title="Permanent link">&para;</a></h2>
+<p>In some cases you may want to attach Vaultaire&rsquo;s JAR to a 
+Corda transaction when creating a new accounts-aware state. 
+<code>VaultaireAttachmentService</code> is a Corda service 
+to do just that:</p>
+<div class="codehilite"><pre><span></span><span class="c1">// Obtain Vaultaire&#39;s JAR hash</span>
+<span class="k">val</span> <span class="py">vaultaireJarAttachment</span> <span class="p">=</span> <span class="n">serviceHub</span>
+    <span class="p">.</span><span class="n">cordaService</span><span class="p">(</span><span class="n">VaultaireAttachmentService</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">java</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">vaultaireSecureHash</span>
+<span class="c1">// Attach JAR to TX</span>
+<span class="n">transactionBuilder</span><span class="p">.</span><span class="n">addAttachment</span><span class="p">(</span><span class="n">vaultaireJarAttachment</span><span class="p">)</span>
 </pre></div>
                 
                   
