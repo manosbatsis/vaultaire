@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.33
+
+- Upgraded to Corda 4.6, Partiture 0.15, Poolboy 0.4
+
 ## 0.32
 
 - Added `VaultaireAttachmentService` as a utility for attaching 

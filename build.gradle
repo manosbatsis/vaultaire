@@ -1,15 +1,12 @@
 buildscript {
     ext {
-        autodsl_version = '0.0.9'
-        autoservice_version = '1.0-rc7'
         corda_release_group = 'net.corda'
-        corda_release_version = '4.5'
-        corda_gradle_plugins_version = '5.0.8'
-        corda_platform_version = '7'
+        corda_release_version = '4.6'
+        corda_gradle_plugins_version = '5.0.11'
+        corda_platform_version = '8'
 
         tokens_release_version = '1.1'
         tokens_release_group = 'com.r3.corda.lib.tokens'
-
 
         accounts_release_group = 'com.r3.corda.lib.accounts'
         accounts_release_version = '1.0'
@@ -17,15 +14,20 @@ buildscript {
         confidential_id_release_group = 'com.r3.corda.lib.ci'
         confidential_id_release_version = '1.0'
 
+        autodsl_version = '0.0.9'
+        autoservice_version = '1.0-rc7'
+
         dokka_version = '0.9.18'
         junitVersion = '5.3.2'
         junit_jupiter_version = '5.3.2'
+
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
+
         kotlinutils_version = '0.20'
-        partiture_version = '0.13'
-        poolboy_version = '0.3'
+        partiture_version = '0.15'
+        poolboy_version = '0.4'
     }
     repositories {
         mavenLocal()
@@ -169,6 +171,19 @@ subprojects {
             // Stop deprecation warnings since we use stdlib-jdkX
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
+            resolutionStrategy {
+                eachDependency { DependencyResolveDetails details ->
+                    // Force corda_release_version
+                    def exclusions = ['corda-finance-contracts']
+                    if (details.requested.group == "net.corda" && !exclusions.contains(details.requested.name)) {
+                        details.useTarget group: corda_release_group, name: details.requested.name, version: corda_release_version
+                    }
+                    // Force dependencies to use the same version of as Kotlin as we.
+                    if (details.requested.group == "org.jetbrains.kotlin") {
+                        details.useTarget group: details.requested.group, name: details.requested.name, version: kotlin_version
+                    }
+                }
+            }
         }
     }
 }
