@@ -3,7 +3,7 @@
 
 ### For Cordapps
 
-1. Add to your Cordapp's Gradle dependencies:
+Step 1: Add to your Cordapp's Gradle dependencies:
 
 ```groovy
 // apply the kapt plugin
@@ -26,7 +26,7 @@ dependencies{
 Alternatively, you might want to add Vaultaire in the Cordapp's fat JAR, 
 in which case use `compile` instead of `cordacompile` and skip step 2 bellow.
 
-2. Add Vaultaire and Kotlin Utils as Cordapps to your deployNodes task:
+Step 2: Add Vaultaire and Kotlin Utils as Cordapps to your deployNodes task:
 
 ```groovy
 
@@ -35,7 +35,7 @@ cordapp "com.github.manosbatsis.vaultaire:vaultaire:$vaultaire_version"
 cordapp("com.github.manosbatsis.kotlin-utils:kotlin-utils-api:$kotlinutils_version")
 ```
 
-3. You may also want to add the generated sources to your build's `sourceSets` 
+Step 3: You may also want to add the generated sources to your build's `sourceSets` 
 
 ```groovy
 
