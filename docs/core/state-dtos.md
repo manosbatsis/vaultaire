@@ -257,7 +257,7 @@ DTO generated for the above example:
 
 ```kotlin
 /**
- * A [BookContract.BookState]-specific [com.github.manotbatsis.kotlin.utils.api.Dto] implementation
+ * A [BookContract.BookState]-specific [com.github.manosbatsis.kotlin.utils.api.Dto] implementation
  */
 data class BookStateLiteDto(
   var publisher: CordaX500Name? = null,

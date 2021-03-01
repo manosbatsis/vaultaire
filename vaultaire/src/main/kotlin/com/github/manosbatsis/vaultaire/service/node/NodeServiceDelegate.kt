@@ -77,12 +77,13 @@ interface NodeServiceDelegate {
     fun getExtendedInfo(): ExtendedNodeInfo {
         val nodeInfo = getNodeInfo()
         return ExtendedNodeInfo(
-                identity = nodeInfo.legalIdentities.first(),
-                identities = nodeInfo.legalIdentities,
-                platformVersion = nodeInfo.platformVersion,
-                notaries = notaries(),
-                flows = flows(),
-                addresses = nodeInfo.addresses)
+            identity = nodeInfo.legalIdentities.first(),
+            identities = nodeInfo.legalIdentities,
+            platformVersion = nodeInfo.platformVersion,
+            notaries = notaries(),
+            flows = flows(),
+            addresses = nodeInfo.addresses
+        )
     }
 
     /** Get a list of nodes in the network, including self and notaries. */
@@ -116,21 +117,21 @@ interface NodeServiceDelegate {
         }
         // Return receipt
         return AttachmentReceipt(
-                date = Date(),
-                hash = hash,
-                files = attachment.filenames,
-                // TODO: resolve identity from new API
-                author = nodeIdentity.name.toString(),
-                savedOriginal = attachment.original
+            date = Date(),
+            hash = hash,
+            files = attachment.filenames,
+            // TODO: resolve identity from new API
+            author = nodeIdentity.name.toString(),
+            savedOriginal = attachment.original
         )
     }
 
     /**
      * Get a state service targeting the given `ContractState` type.
      * Default implementations assume a [Registry] has been properly initialized.
-      */
+     */
     fun <T : ContractState, S : StateService<T>> createStateService(
-            contractStateType: Class<T>
+        contractStateType: Class<T>
     ): S
 
     /**
@@ -151,7 +152,7 @@ interface NodeServiceDelegate {
     @Suspendable
     fun findPartyFromName(query: String): Party? {
         return this.partiesFromName(query, true).firstOrNull()
-                ?: this.partiesFromName(query, true).firstOrNull()
+            ?: this.partiesFromName(query, true).firstOrNull()
     }
 
     /**
@@ -170,9 +171,9 @@ interface NodeServiceDelegate {
     @Suspendable
     fun getPartyFromName(query: String): Party {
         return if (query.contains("O=")) wellKnownPartyFromX500Name(CordaX500Name.parse(query))
-                ?: throw IllegalArgumentException("No party found for query treated as an x500 name: ${query}")
+            ?: throw IllegalArgumentException("No party found for query treated as an x500 name: ${query}")
         else this.partiesFromName(query, true).firstOrNull()
-                ?: this.partiesFromName(query, false).single()
+            ?: this.partiesFromName(query, false).single()
     }
 
 
@@ -190,10 +191,10 @@ interface NodeServiceDelegate {
      */
     @Suspendable
     fun <T : ContractState> queryBy(
-            contractStateType: Class<T>,
-            criteria: QueryCriteria = defaults.criteria,
-            paging: PageSpecification = defaults.paging,
-            sort: Sort = defaults.sort
+        contractStateType: Class<T>,
+        criteria: QueryCriteria = defaults.criteria,
+        paging: PageSpecification = defaults.paging,
+        sort: Sort = defaults.sort
     ): Vault.Page<T>
 
     /**
@@ -202,10 +203,10 @@ interface NodeServiceDelegate {
      */
     @Suspendable
     fun <T : ContractState> trackBy(
-            contractStateType: Class<T>,
-            criteria: QueryCriteria = defaults.criteria,
-            paging: PageSpecification = defaults.paging,
-            sort: Sort = defaults.sort
+        contractStateType: Class<T>,
+        criteria: QueryCriteria = defaults.criteria,
+        paging: PageSpecification = defaults.paging,
+        sort: Sort = defaults.sort
     ): DataFeed<Vault.Page<T>, Vault.Update<T>>
 
     /** Uploads a jar to the node, returns it's hash. */
@@ -213,15 +214,15 @@ interface NodeServiceDelegate {
 
     /** Uploads a jar including metadata to the node, returns it's hash. */
     fun uploadAttachment(
-            inputStream: InputStream, uploader: String, filename: String
+        inputStream: InputStream, uploader: String, filename: String
     ): SecureHash
 }
 
 
 /** RPC implementation base */
 open class NodeServiceRpcPoolBoyDelegate(
-        val poolBoy: PoolBoyConnection,
-        override val defaults: ServiceDefaults = SimpleServiceDefaults()
+    val poolBoy: PoolBoyConnection,
+    override val defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceDelegate {
 
     companion object {
@@ -254,32 +255,32 @@ open class NodeServiceRpcPoolBoyDelegate(
         val notaries = this.notaries()
         return poolBoy.withConnection { connection ->
             connection.proxy.networkMapSnapshot()
-                    .filter { nodeInfo ->
-                        // Filter out self and notaries
-                        nodeInfo.legalIdentities
-                                .find {
-                                    it == nodeIdentity || notaries.contains(it)
-                                } == null
-                    }
-                    .map { it.legalIdentities.first() }
+                .filter { nodeInfo ->
+                    // Filter out self and notaries
+                    nodeInfo.legalIdentities
+                        .find {
+                            it == nodeIdentity || notaries.contains(it)
+                        } == null
+                }
+                .map { it.legalIdentities.first() }
         }
     }
 
     override fun partiesFromName(query: String, exactMatch: Boolean): Set<Party> =
-            poolBoy.withConnection { connection ->
-                connection.proxy.partiesFromName(query, exactMatch)
-            }
+        poolBoy.withConnection { connection ->
+            connection.proxy.partiesFromName(query, exactMatch)
+        }
 
     override fun wellKnownPartyFromX500Name(name: CordaX500Name): Party? =
-            poolBoy.withConnection { connection ->
-                connection.proxy.wellKnownPartyFromX500Name(name)
-            }
+        poolBoy.withConnection { connection ->
+            connection.proxy.wellKnownPartyFromX500Name(name)
+        }
 
     override fun <T : ContractState> queryBy(
-            contractStateType: Class<T>,
-            criteria: QueryCriteria,
-            paging: PageSpecification,
-            sort: Sort
+        contractStateType: Class<T>,
+        criteria: QueryCriteria,
+        paging: PageSpecification,
+        sort: Sort
     ): Vault.Page<T> {
         return poolBoy.withConnection { connection ->
             connection.proxy.vaultQueryBy(criteria, paging, sort, contractStateType)
@@ -287,10 +288,10 @@ open class NodeServiceRpcPoolBoyDelegate(
     }
 
     override fun <T : ContractState> trackBy(
-            contractStateType: Class<T>,
-            criteria: QueryCriteria,
-            paging: PageSpecification,
-            sort: Sort
+        contractStateType: Class<T>,
+        criteria: QueryCriteria,
+        paging: PageSpecification,
+        sort: Sort
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
         return poolBoy.withConnection { connection ->
             connection.proxy.vaultTrackBy(criteria, paging, sort, contractStateType)
@@ -322,23 +323,27 @@ open class NodeServiceRpcPoolBoyDelegate(
     }
 
     override fun <T : ContractState, S : StateService<T>> createStateService(
-            contractStateType: Class<T>
+        contractStateType: Class<T>
     ): S {
         val stateServiceType = Registry.getStateServiceType(contractStateType)
         return stateServiceType
-                ?.getConstructor(PoolBoyConnection::class.java, ServiceDefaults::class.java)
-                ?.newInstance(poolBoy, SimpleServiceDefaults()) as S?
-                ?: error("No state service type found for type ${contractStateType.canonicalName}")
+            ?.run {
+                this.getConstructor(PoolBoyConnection::class.java, ServiceDefaults::class.java)
+                    ?: this.getConstructor(PoolBoyConnection::class.java)
+            }
+            ?.newInstance(poolBoy, SimpleServiceDefaults()) as S?
+            ?: error("No state service type found for type ${contractStateType.canonicalName}")
     }
 
     /** Retrieve the attachment matching the given secure hash from the vault  */
     override fun openAttachment(hash: SecureHash): InputStream {
         return poolBoy.withConnection { connection ->
-             if (connection.proxy.attachmentExists(hash))
+            if (connection.proxy.attachmentExists(hash))
                 connection.proxy.openAttachment(hash)
             else throw NotFoundException(
-                    "Unable to find attachment ${hash}",
-                    net.corda.core.contracts.Attachment::class.java)
+                "Unable to find attachment ${hash}",
+                net.corda.core.contracts.Attachment::class.java
+            )
         }
     }
 
@@ -349,7 +354,8 @@ open class NodeServiceRpcPoolBoyDelegate(
     }
 
     override fun uploadAttachment(
-            inputStream: InputStream, uploader: String, filename: String): SecureHash {
+        inputStream: InputStream, uploader: String, filename: String
+    ): SecureHash {
         return poolBoy.withConnection { connection ->
             connection.proxy.uploadAttachmentWithMetadata(inputStream, uploader, filename)
         }
@@ -360,16 +366,16 @@ open class NodeServiceRpcPoolBoyDelegate(
 /** [CordaRPCOps]-based [NodeServiceDelegate] implementation */
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate] with a pool boy connection pool instead")
 open class NodeServiceRpcDelegate(
-        rpcOps: CordaRPCOps,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
+    rpcOps: CordaRPCOps,
+    defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcPoolBoyDelegate(PoolBoyNonPooledRawRpcConnection(rpcOps), defaults)
 
 
 /** [NodeRpcConnection]-based [NodeServiceDelegate] implementation */
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate] with a pool boy connection pool instead")
 open class NodeServiceRpcConnectionDelegate(
-        nodeRpcConnection: NodeRpcConnection,
-        override val defaults: ServiceDefaults = SimpleServiceDefaults()
+    nodeRpcConnection: NodeRpcConnection,
+    override val defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcPoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection), defaults)
 
 /**
@@ -378,13 +384,13 @@ open class NodeServiceRpcConnectionDelegate(
 
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate] with a pool boy connection pool instead")
 open class NodeServiceHubDelegate(
-        serviceHub: ServiceHub,
-        override val defaults: ServiceDefaults = SimpleServiceDefaults()
+    serviceHub: ServiceHub,
+    override val defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : AbstractNodeServiceHubDelegate<ServiceHub>(serviceHub)
 
 /** Abstract [AppServiceHub]-based implementation of [NodeServiceDelegate] as a CordaService */
 abstract class NodeCordaServiceDelegate(
-        serviceHub: AppServiceHub
+    serviceHub: AppServiceHub
 ) : AbstractNodeServiceHubDelegate<AppServiceHub>(serviceHub) {
     override val defaults: ServiceDefaults = SimpleServiceDefaults()
 
@@ -392,7 +398,7 @@ abstract class NodeCordaServiceDelegate(
 
 /** [ServiceHub]-based [NodeServiceDelegate] implementation */
 abstract class AbstractNodeServiceHubDelegate<S : ServiceHub>(
-        val serviceHub: S
+    val serviceHub: S
 ) : SingletonSerializeAsToken(), NodeServiceDelegate {
 
     companion object {
@@ -414,50 +420,51 @@ abstract class AbstractNodeServiceHubDelegate<S : ServiceHub>(
     override fun getNodeInfo(): NodeInfo = serviceHub.myInfo
 
     override fun nodes(): List<Party> =
-            serviceHub.networkMapCache.allNodes.map { it.legalIdentities.first() }
+        serviceHub.networkMapCache.allNodes.map { it.legalIdentities.first() }
 
     override fun notaries(): List<Party> =
-            serviceHub.networkMapCache.notaryIdentities
+        serviceHub.networkMapCache.notaryIdentities
 
     override fun peers(): List<Party> {
         val notaries = notaries()
         return serviceHub.networkMapCache.allNodes
-                .filter { nodeInfo ->
-                    // Filter out self and notaries
-                    nodeInfo.legalIdentities.find {
-                        it == nodeIdentity || notaries.contains(it)
-                    } == null
-                }
-                .map { it.legalIdentities.first() }
+            .filter { nodeInfo ->
+                // Filter out self and notaries
+                nodeInfo.legalIdentities.find {
+                    it == nodeIdentity || notaries.contains(it)
+                } == null
+            }
+            .map { it.legalIdentities.first() }
     }
 
     override fun serverTime(): LocalDateTime =
-            LocalDateTime.ofInstant(serviceHub.clock.instant(), ZoneId.of("UTC"))
+        LocalDateTime.ofInstant(serviceHub.clock.instant(), ZoneId.of("UTC"))
 
     override fun flows(): List<String> =
-            serviceHub.getAppContext().cordapp.allFlows.map { it.canonicalName }
+        serviceHub.getAppContext().cordapp.allFlows.map { it.canonicalName }
 
     override fun platformVersion(): Int =
-            serviceHub.diagnosticsService.nodeVersionInfo().platformVersion
+        serviceHub.diagnosticsService.nodeVersionInfo().platformVersion
 
     override fun identities(): List<Party> =
-            serviceHub.myInfo.legalIdentities
+        serviceHub.myInfo.legalIdentities
 
     override fun addresses(): List<NetworkHostAndPort> =
-            serviceHub.myInfo.addresses
+        serviceHub.myInfo.addresses
 
     override fun openAttachment(hash: SecureHash): InputStream =
-            serviceHub.attachments.openAttachment(hash)?.open()
-                    ?: throw NotFoundException(
-                            "Unable to find attachment ${hash}",
-                            net.corda.core.contracts.Attachment::class.java)
+        serviceHub.attachments.openAttachment(hash)?.open()
+            ?: throw NotFoundException(
+                "Unable to find attachment ${hash}",
+                net.corda.core.contracts.Attachment::class.java
+            )
 
 
     override fun <T : ContractState, S : StateService<T>> createStateService(contractStateType: Class<T>): S {
         return Registry.getStateServiceType(contractStateType)
-                ?.getConstructor(ServiceHub::class.java)
-                ?.newInstance(serviceHub) as S?
-                ?: error("No state service type found for type ${contractStateType.canonicalName}")
+            ?.getConstructor(ServiceHub::class.java)
+            ?.newInstance(serviceHub) as S?
+            ?: error("No state service type found for type ${contractStateType.canonicalName}")
     }
 
     @Suspendable
@@ -472,36 +479,38 @@ abstract class AbstractNodeServiceHubDelegate<S : ServiceHub>(
 
     @Suspendable
     override fun <T : ContractState> queryBy(
-            contractStateType: Class<T>,
-            criteria: QueryCriteria,
-            paging: PageSpecification,
-            sort: Sort
+        contractStateType: Class<T>,
+        criteria: QueryCriteria,
+        paging: PageSpecification,
+        sort: Sort
     ): Vault.Page<T> {
         return serviceHub.vaultService.queryBy(contractStateType, criteria, paging, sort)
     }
 
     @Suspendable
     override fun <T : ContractState> trackBy(
-            contractStateType: Class<T>,
-            criteria: QueryCriteria,
-            paging: PageSpecification,
-            sort: Sort
+        contractStateType: Class<T>,
+        criteria: QueryCriteria,
+        paging: PageSpecification,
+        sort: Sort
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
         return serviceHub.vaultService.trackBy(contractStateType, criteria, paging, sort)
     }
 
     override fun uploadAttachment(inputStream: InputStream): SecureHash {
         return serviceHub.attachments.importAttachment(
-                inputStream,
-                // TODO: resolve identity from new API
-                nodeIdentity.name.toString(),
-                null)
+            inputStream,
+            // TODO: resolve identity from new API
+            nodeIdentity.name.toString(),
+            null
+        )
     }
 
     override fun uploadAttachment(
-            inputStream: InputStream,
-            uploader: String,
-            filename: String): SecureHash {
+        inputStream: InputStream,
+        uploader: String,
+        filename: String
+    ): SecureHash {
         return serviceHub.attachments.importAttachment(inputStream, uploader, filename)
     }
 

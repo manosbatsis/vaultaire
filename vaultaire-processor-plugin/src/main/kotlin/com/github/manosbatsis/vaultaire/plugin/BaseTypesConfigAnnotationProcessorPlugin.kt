@@ -19,14 +19,14 @@
  */
 package com.github.manosbatsis.vaultaire.plugin
 
+import com.github.manosbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPlugin
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.service.dao.DefaultExtendedStateService
 import com.github.manosbatsis.vaultaire.service.dao.StateCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceDelegate
 import com.github.manosbatsis.vaultaire.service.dao.StateServicePoolBoyDelegate
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcConnectionDelegate
 import com.github.manosbatsis.vaultaire.service.dao.StateServiceRpcDelegate
-import com.github.manotbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPlugin
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName

@@ -25,7 +25,7 @@ buildscript {
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
 
-        kotlinutils_version = '0.20'
+        kotlinutils_version = '0.21'
         partiture_version = '0.15'
         poolboy_version = '0.4'
     }

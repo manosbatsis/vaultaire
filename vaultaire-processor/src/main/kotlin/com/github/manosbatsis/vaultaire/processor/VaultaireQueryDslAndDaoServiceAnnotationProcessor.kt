@@ -21,6 +21,10 @@ package com.github.manosbatsis.vaultaire.processor
 
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
+import com.github.manosbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
@@ -33,10 +37,6 @@ import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
 import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper
-import com.github.manotbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock

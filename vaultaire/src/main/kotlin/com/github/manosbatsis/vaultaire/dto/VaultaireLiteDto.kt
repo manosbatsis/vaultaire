@@ -19,8 +19,8 @@
  */
 package com.github.manosbatsis.vaultaire.dto
 
+import com.github.manosbatsis.kotlin.utils.api.DtoInsufficientMappingException
 import com.github.manosbatsis.vaultaire.service.dao.StateService
-import com.github.manotbatsis.kotlin.utils.api.DtoInsufficientMappingException
 import net.corda.core.contracts.ContractState
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party

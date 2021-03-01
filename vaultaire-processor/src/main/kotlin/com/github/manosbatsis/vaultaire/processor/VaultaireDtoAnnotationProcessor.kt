@@ -19,13 +19,13 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
+import com.github.manosbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
-import com.github.manotbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import javax.annotation.processing.SupportedAnnotationTypes
 import javax.annotation.processing.SupportedOptions
 import javax.annotation.processing.SupportedSourceVersion

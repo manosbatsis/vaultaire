@@ -20,10 +20,10 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor
 
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireAccountInfo
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_ACCOUNT_INFO
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import com.squareup.kotlinpoet.asClassName
 import net.corda.core.identity.AbstractParty

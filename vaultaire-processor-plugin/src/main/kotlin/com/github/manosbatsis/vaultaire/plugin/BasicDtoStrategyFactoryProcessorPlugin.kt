@@ -19,13 +19,13 @@
  */
 package com.github.manosbatsis.vaultaire.plugin
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.plugins.AbstractDtoStrategyFactoryProcessorPlugin
+import com.github.manosbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.processor.dto.DefaultDtoStrategy
 import com.github.manosbatsis.vaultaire.processor.dto.LiteDtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.plugins.AbstractDtoStrategyFactoryProcessorPlugin
-import com.github.manotbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.google.auto.service.AutoService
 
 

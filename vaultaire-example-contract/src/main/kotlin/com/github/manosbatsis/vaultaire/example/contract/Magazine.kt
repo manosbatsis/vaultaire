@@ -19,11 +19,11 @@
  */
 package com.github.manosbatsis.vaultaire.example.contract
 
+import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.Create
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.Delete
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.Update
-import com.github.manotbatsis.kotlin.utils.api.DefaultValue
 import net.corda.core.contracts.CommandData
 import net.corda.core.contracts.Contract
 import net.corda.core.contracts.LinearState

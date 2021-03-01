@@ -20,8 +20,8 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoTypeStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.squareup.kotlinpoet.TypeSpec.Builder
 import net.corda.core.serialization.CordaSerializable
 

@@ -19,12 +19,12 @@
  */
 package com.github.manosbatsis.vaultaire.example.workflow
 
+import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState.MagazineSchemaV1.PersistentMagazineState
-import com.github.manotbatsis.kotlin.utils.api.DefaultValue
 import com.r3.corda.lib.tokens.contracts.internal.schemas.PersistentFungibleToken
 import com.r3.corda.lib.tokens.contracts.states.FungibleToken
 import net.corda.core.contracts.UniqueIdentifier
@@ -38,7 +38,7 @@ import java.util.Date
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class,
         strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
-class Dummy1
+class FungibleTokenMixin
 
 @VaultaireGenerateForDependency(name = "magazineConditions",
         persistentStateType = PersistentMagazineState::class,
@@ -53,7 +53,8 @@ data class MagazineMixin(
         @DefaultValue("Date()")
         val published: Date,
         @DefaultValue("UniqueIdentifier()")
-        val linearId: UniqueIdentifier
+        val linearId: UniqueIdentifier,
+        val customMixinField: Map<String, String> = emptyMap()
 )
 
 /*TODO: move to module, have it generated

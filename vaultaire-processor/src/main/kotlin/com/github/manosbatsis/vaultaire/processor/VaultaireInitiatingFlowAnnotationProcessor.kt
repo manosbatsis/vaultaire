@@ -21,8 +21,8 @@ package com.github.manosbatsis.vaultaire.processor
 
 import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec

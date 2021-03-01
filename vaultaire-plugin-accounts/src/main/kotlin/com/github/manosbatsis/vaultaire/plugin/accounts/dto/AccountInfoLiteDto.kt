@@ -24,10 +24,10 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.dto
 
 import co.paralleluniverse.fibers.Suspendable
+import com.github.manosbatsis.kotlin.utils.api.DtoInsufficientMappingException
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.AccountsAwareLiteDto
 import com.github.manosbatsis.vaultaire.service.dao.StateService
-import com.github.manotbatsis.kotlin.utils.api.DtoInsufficientMappingException
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.CordaX500Name
@@ -35,7 +35,7 @@ import net.corda.core.serialization.CordaSerializable
 import java.util.UUID
 
 /**
- * A [AccountInfo]-specific [com.github.manotbatsis.kotlin.utils.api.Dto] implementation
+ * A [AccountInfo]-specific [com.github.manosbatsis.kotlin.utils.api.Dto] implementation
  */
 @CordaSerializable
 data class AccountInfoLiteDto(

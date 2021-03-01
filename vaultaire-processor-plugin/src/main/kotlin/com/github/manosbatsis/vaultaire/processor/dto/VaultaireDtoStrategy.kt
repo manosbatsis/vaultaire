@@ -20,11 +20,10 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.CompositeDtoStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategyComposition
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoNameStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import javax.lang.model.element.VariableElement
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.CompositeDtoStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategyComposition
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoNameStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 
 /** Vaultaire-specific overrides for building a DTO type spec */
 open class VaultaireDtoStrategy(
@@ -35,20 +34,14 @@ open class VaultaireDtoStrategy(
         annotatedElementInfo, composition
 ), ProcessingEnvironmentAware, AnnotatedElementInfo by annotatedElementInfo {
 
+    private fun ignoreParticipants() = annotatedElementInfo.annotation
+        .getAnnotationValue("includeParticipants").value as Boolean
 
-    override fun getFieldsToProcess(): List<VariableElement> {
-        val includeParticipants = annotatedElementInfo.annotation
-                .getAnnotationValue("includeParticipants").value as Boolean
-        processingEnvironment.noteMessage { "\nVaultaireDtoStrategy.getFieldsToProcess, ignoreParticipants: $includeParticipants" }
-        processingEnvironment.noteMessage { "\nVaultaireDtoStrategy.getFieldsToProcess, ignoreProperties: $ignoreProperties" }
-        val ignored = if (includeParticipants) ignoreProperties else ignoreProperties + "participants"
-        processingEnvironment.noteMessage { "\nVaultaireDtoStrategy.getFieldsToProcess, ignored: $ignored" }
-        return primaryTargetTypeElementFields.filterNot { ignored.contains(it.simpleName.toString()) }
-                .map {
-                    processingEnvironment.noteMessage { "\nVaultaireDtoStrategy.getFieldsToProcess, includiong: ${it.simpleName}" }
-                    it
-                }
-    }
+    override fun getIgnoredFieldNames(): List<String> =
+        super.getIgnoredFieldNames().run {
+            if (ignoreParticipants())  plusElement( "participants")
+            else this
+        }
 }
 
 /** Vaultaire-specific overrides for building a DTO type spec */

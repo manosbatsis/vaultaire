@@ -19,6 +19,11 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy.Statement
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.AccountInfoHelper
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_ABSTRACT_PARTY
@@ -27,11 +32,6 @@ import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_PUBLIC_KEY
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
 import com.github.manosbatsis.vaultaire.processor.dto.LiteDtoMemberStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy.Statement
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
-import com.github.manotbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
