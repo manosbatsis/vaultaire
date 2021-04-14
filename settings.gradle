@@ -4,4 +4,5 @@ include ':vaultaire',
 		':vaultaire-processor-plugin',
         ':vaultaire-example-contract',
         ':vaultaire-example-workflow',
-        ':vaultaire-plugin-accounts'
+		':vaultaire-plugin-accounts',
+		':vaultaire-plugin-rsql'

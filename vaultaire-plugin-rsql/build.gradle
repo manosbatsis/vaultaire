@@ -1,0 +1,7 @@
+apply plugin: "idea"
+
+dependencies {
+    compile project(':vaultaire')
+    compile("cz.jirutka.rsql:rsql-parser:2.1.0")
+    implementation "$corda_release_group:corda-core:$corda_release_version"
+}

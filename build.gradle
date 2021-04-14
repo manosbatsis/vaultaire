@@ -191,7 +191,8 @@ subprojects {
 configure([project(':vaultaire'),
            project(':vaultaire-processor'),
            project(':vaultaire-processor-plugin'),
-           project(':vaultaire-plugin-accounts')]) {
+           project(':vaultaire-plugin-accounts'),
+           project(':vaultaire-plugin-rsql')]) {
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'

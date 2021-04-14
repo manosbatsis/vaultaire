@@ -89,7 +89,7 @@ interface RootCondition<P : StatePersistable> : Condition {
 abstract class ConditionsCondition<P : StatePersistable, out F : Fields<P>>() : Condition {
 
     /** The root condition */
-    internal abstract val rootCondition: RootCondition<P>
+    abstract val rootCondition: RootCondition<P>
 
     /** The fields of the target [StatePersistable] type `P` */
     abstract val fields: F
