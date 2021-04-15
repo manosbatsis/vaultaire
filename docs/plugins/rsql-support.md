@@ -91,7 +91,7 @@ The plugin supports the following operators:
 | `==`     | `propName==queryValue` | Performs an **equals** query. Returns all entries  where values in `propName` exactly equal *queryValue* |  
 | `!=`     | `propName!=queryValue` | Performs a **not equals** query. Returns all entries  where values in `propName` do not equal *queryValue* |
 | `=like=` | `propName=like=queryValue` | Performs an **like** query using `*` as a wildcard. Returns all entries  where values in `propName` are like *queryValue* |
-| `=unlike=` or `=notlike=` or `=nonlike=` | `propName=like=queryValue` | Performs a **not like** query using `*` as a wildcard. Returns all entries  where values in `propName` are not like *queryValue* |
+| `=unlike=` or `=notlike=` or `=nonlike=` | `propName=unlike=queryValue` | Performs a **not like** query using `*` as a wildcard. Returns all entries  where values in `propName` are not like *queryValue* |
 | `=in=`   | `propName=in=(valueA, valueB)` | Performs an **in** query. Returns all entries  where `propName` contains *valueA* OR *valueB* |
 | `=out=`   | `propName=out=(valueA, valueB)` | Performs an **not in** query. Returns all entries  where `propName` contains *valueA* OR *valueB* |
 | `<` or `=lt=` | `propName<queryValue`, `propName=lt=queryValue` | Performs a **lesser than** query. Returns all entries  where values in `propName` are lesser than *queryValue* |
