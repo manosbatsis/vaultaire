@@ -36,17 +36,16 @@ dependencies {
     cordaCompile project(':vaultaire')
     cordaCompile project(':vaultaire-plugin-accounts')
     cordaCompile project(':vaultaire-example-contract')
+    kapt(project(':vaultaire-processor'))
+
+    cordaCompile "com.github.manosbatsis.partiture:partiture:$partiture_version"
+
     cordaCompile "$tokens_release_group:tokens-contracts:$tokens_release_version"
     cordaCompile "$accounts_release_group:accounts-workflows:$accounts_release_version"
     cordaCompile "$confidential_id_release_group:ci-workflows:$confidential_id_release_version"
-
-    cordaCompile "com.github.manosbatsis.partiture:partiture:$partiture_version"
-    cordaCompile project(':vaultaire')
-    cordaCompile project(':vaultaire-plugin-accounts')
-    kapt project(':vaultaire-processor')
-
     testImplementation ("$corda_release_group:corda-node-driver:$corda_release_version")
 
+    testCompile project(':vaultaire-plugin-rsql')
     testCompile "org.assertj:assertj-core:3.10.0"
     testCompile "com.willowtreeapps.assertk:assertk:0.10"
 }

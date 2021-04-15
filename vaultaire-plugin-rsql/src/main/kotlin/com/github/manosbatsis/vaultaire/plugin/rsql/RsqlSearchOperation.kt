@@ -23,6 +23,11 @@ import cz.jirutka.rsql.parser.ast.ComparisonOperator
 import cz.jirutka.rsql.parser.ast.RSQLOperators
 import java.util.Arrays
 
+object CustomOperators{
+
+    val IS_NULL = ComparisonOperator("=null=", "=isnull=")
+    val NOT_NULL = ComparisonOperator("=notnull=", "=nonnull=")
+}
 /**
  * Maps from [ComparisonOperator]
  */
@@ -34,9 +39,13 @@ enum class RsqlSearchOperation(val operator: ComparisonOperator) {
     LESS_THAN(RSQLOperators.LESS_THAN),
     LESS_THAN_OR_EQUAL(RSQLOperators.LESS_THAN_OR_EQUAL),
     IN(RSQLOperators.IN),
-    NOT_IN(RSQLOperators.NOT_IN);
+    NOT_IN(RSQLOperators.NOT_IN),
+    IS_NULL(CustomOperators.IS_NULL),
+    NOT_NULL(CustomOperators.NOT_NULL);
 
     companion object {
+        val asSimpleOperators: Set<ComparisonOperator> = RSQLOperators.defaultOperators() +
+                listOf(CustomOperators.IS_NULL, CustomOperators.NOT_NULL)
         fun getSimpleOperator(operator: ComparisonOperator): RsqlSearchOperation {
             return Arrays.stream(values())
                 .filter { operation: RsqlSearchOperation -> operation.operator === operator }

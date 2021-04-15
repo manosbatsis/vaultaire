@@ -28,10 +28,12 @@ import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.EQUAL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.GREATER_THAN
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.GREATER_THAN_OR_EQUAL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.IN
+import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.IS_NULL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.LESS_THAN
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.LESS_THAN_OR_EQUAL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_EQUAL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_IN
+import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_NULL
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.TypedFieldWrapper
@@ -57,10 +59,13 @@ import net.corda.core.schemas.StatePersistable
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KProperty1
 
-
-class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
+/**
+ * Used by [RsqlConditionsVisitor] to build the actual [Condition]s.
+ */
+@Suppress("MemberVisibilityCanBePrivate")
+open class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
     val rootCondition: VaultQueryCriteriaCondition<P, F>,
-    val argumentsConverter: RsqlConditionArgumentsConverter<P, F>
+    val argumentsConverter: RsqlArgumentsConverter<P, F>
 ){
     companion object{
         private val logger = LoggerFactory.getLogger(RsqlConditionBuilder::class.java)
@@ -126,23 +131,26 @@ class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
             LESS_THAN_OR_EQUAL -> field.lessThanOrEqual(argument)
             IN -> field.isIn(argument as Collection<*>)
             NOT_IN -> field.notIn(argument as Collection<*>)
+            IS_NULL -> field.property.isNull()
+            NOT_NULL -> field.property.notNull()
         }
 
         return toCondition(expression)
     }
 
 
+    @Suppress("UNCHECKED_CAST")
     private inline fun <reified S : Any, C: Comparable<S>> toComparable(
         property: KProperty1<P, *>, value: S?
     ) = if(value is Comparable<*>)
         Pair(property as KProperty1<P, C?>, value as C)
     else error("Input does not implement Comparable: $value")
 
+    @Suppress("UNCHECKED_CAST")
     private inline fun <reified S : Any?, C: Comparable<S>> toComparables(
         property: KProperty1<P, *>, value: Collection<S>
-    ): Pair<KProperty1<P, C?>, Collection<C>> = if(value is Collection<*>)
+    ): Pair<KProperty1<P, C?>, Collection<C>> =
         Pair(property as KProperty1<P, C?>, value as Collection<C>)
-    else error("Input does not implement Comparable: $value")
 
 
     fun FieldWrapper<P>.greaterThan(value: Any?): CriteriaExpression<P, Boolean> =

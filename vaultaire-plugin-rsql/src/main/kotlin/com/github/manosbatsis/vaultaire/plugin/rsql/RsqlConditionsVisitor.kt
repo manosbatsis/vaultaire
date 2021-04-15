@@ -21,6 +21,7 @@ package com.github.manosbatsis.vaultaire.plugin.rsql
 
 import com.github.manosbatsis.vaultaire.dsl.query.Condition
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.plugin.rsql.support.SimpleRsqlArgumentsConverter
 import com.github.manosbatsis.vaultaire.util.Fields
 import cz.jirutka.rsql.parser.ast.AndNode
 import cz.jirutka.rsql.parser.ast.ComparisonNode
@@ -28,13 +29,24 @@ import cz.jirutka.rsql.parser.ast.OrNode
 import cz.jirutka.rsql.parser.ast.RSQLVisitor
 import net.corda.core.schemas.StatePersistable
 
-class RootConditionWrappingRsqlVisitor<P : StatePersistable, out F : Fields<P>>(
-    val rootCondition: VaultQueryCriteriaCondition<P, F>,
-    val argumentsConverter: RsqlConditionArgumentsConverter<P, F> =
-        SimpleRsqlConditionArgumentsConverter(rootCondition)
+/**
+ * Parses RSQL (a superset of FIQL) into [Condition]s that can be added to
+ * [VaultQueryCriteriaCondition]. The latter can then generate complete
+ * Vault query criteria that takes the RSQL string into account.
+ *
+ * See also:
+ * - [REST Query Language with RSQL](https://www.baeldung.com/rest-api-search-language-rsql-fiql)
+ * - [RSQL Parser](https://github.com/jirutka/rsql-parser)
+ * - [FIQL: The Feed Item Query Language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00)
+ */
+@Suppress("MemberVisibilityCanBePrivate")
+open class RsqlConditionsVisitor<P : StatePersistable, out F : Fields<P>>(
+    protected val rootCondition: VaultQueryCriteriaCondition<P, F>,
+    protected val argumentsConverter: RsqlArgumentsConverter<P, F> =
+        SimpleRsqlArgumentsConverter(rootCondition)
 ): RSQLVisitor<Condition?, Unit> {
 
-    private val builder: RsqlConditionBuilder<P, F> =
+    val builder: RsqlConditionBuilder<P, F> =
         RsqlConditionBuilder(rootCondition, argumentsConverter)
 
     override fun visit(node: AndNode, param: Unit?): Condition? {

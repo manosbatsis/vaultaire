@@ -372,6 +372,9 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
         val fieldType = fieldWrapperClass.asClassName().parameterizedBy(
                 enclosingParameterisedType,
                 field.asKotlinTypeName())
+        processingEnv.noteMessage { "buildPersistentStateFieldWrapperPropertySpec, field name: ${field.simpleName},  type: ${enclosingType}" }
+        println("buildPersistentStateFieldWrapperPropertySpec, field name: ${field.simpleName},  type: ${enclosingType}")
+
         return PropertySpec.builder(field.simpleName.toString(), fieldType, KModifier.PUBLIC)
                 .initializer("%T(%T::${field.simpleName})", fieldWrapperClass, enclosingParameterisedType)
                 .addKdoc("Wraps [%T.${field.simpleName}]", enclosingParameterisedType)

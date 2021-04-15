@@ -21,7 +21,7 @@ cordapp {
 dependencies {
     cordaCompile project(':vaultaire')
     cordaCompile project(':vaultaire-plugin-accounts')
-    kapt project(':vaultaire-processor')
+    kapt(project(':vaultaire-processor'))
 
     cordaCompile group: 'io.swagger', name: 'swagger-annotations', version: '1.6.0'
     cordaCompile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7"

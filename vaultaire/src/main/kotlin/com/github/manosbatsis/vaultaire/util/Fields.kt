@@ -28,6 +28,7 @@ import kotlin.reflect.KProperty1
  */
 interface TypedFieldWrapper<T, S> : FieldWrapper<T> {
     override val property: KProperty1<T, S>
+    val propertyNullable: Boolean
 }
 
 interface FieldWrapper<T> {
@@ -50,10 +51,18 @@ interface Fields<T> {
  * Wraps a non-nullable [KProperty1] of a class to provide for cleaner operators,
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
-class GenericFieldWrapper<T, S>(override val property: KProperty1<T, S>) : TypedFieldWrapper<T, S>
+class GenericFieldWrapper<T, S>(
+    override val property: KProperty1<T, S>
+) : TypedFieldWrapper<T, S>{
+    override val propertyNullable = false
+}
 
 /**
  * Wraps a nullable [KProperty1] of a class to provide for cleaner operators,
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
-class NullableGenericFieldWrapper<T, S>(override val property: KProperty1<T, S?>) : TypedFieldWrapper<T, S?>
+class NullableGenericFieldWrapper<T, S>(
+    override val property: KProperty1<T, S?>
+) : TypedFieldWrapper<T, S?>{
+    override val propertyNullable = true
+}

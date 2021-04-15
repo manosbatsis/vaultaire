@@ -19,12 +19,23 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.rsql
 
-import cz.jirutka.rsql.parser.ast.ComparisonNode
-import cz.jirutka.rsql.parser.ast.ComparisonOperator
+import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.util.Fields
+import net.corda.core.schemas.StatePersistable
 
-/** Our simplified view of a [ComparisonNode] */
-data class RsqlCriterion(
-    val property: String,
-    val operator: ComparisonOperator,
-    val arguments: List<String?>
-)
+/**
+ * Used by [RsqlConditionBuilder] to convert [RsqlCriterion.arguments]
+ * to their intended type. Sample implementations are included in
+ * [com.github.manosbatsis.vaultaire.plugin.rsql.support].
+ */
+interface RsqlArgumentsConverter<P : StatePersistable, out F : Fields<P>> {
+    fun convertArguments(criterion: RsqlCriterion): List<*>
+}
+
+/**
+ * Convenient helper interface for [VaultQueryCriteriaCondition]
+ * extension functions etc.
+ */
+interface RsqlArgumentsConverterFactory<P : StatePersistable, F : Fields<P>> {
+    fun create(rootCondition: VaultQueryCriteriaCondition<P, F>): RsqlArgumentsConverter<P, F>
+}

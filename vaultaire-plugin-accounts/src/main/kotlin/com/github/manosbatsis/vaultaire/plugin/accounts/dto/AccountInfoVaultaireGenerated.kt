@@ -88,12 +88,14 @@ object AccountInfoFields : Fields<AccountInfo> {
     /**
      * Wraps [AccountInfo.name]
      */
-    val name: GenericFieldWrapper<AccountInfo, String> = GenericFieldWrapper(AccountInfo::name)
+    val name: GenericFieldWrapper<AccountInfo, String> =
+        GenericFieldWrapper(AccountInfo::name)
 
     /**
      * Wraps [AccountInfo.host]
      */
-    val host: GenericFieldWrapper<AccountInfo, Party> = GenericFieldWrapper(AccountInfo::host)
+    val host: GenericFieldWrapper<AccountInfo, Party> =
+        GenericFieldWrapper(AccountInfo::host)
 
     /**
      * Wraps [AccountInfo.identifier]

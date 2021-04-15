@@ -3,5 +3,7 @@ apply plugin: "idea"
 dependencies {
     compile project(':vaultaire')
     compile("cz.jirutka.rsql:rsql-parser:2.1.0")
-    implementation "$corda_release_group:corda-core:$corda_release_version"
+    compile("$corda_release_group:corda-core:$corda_release_version")
+    compileOnly("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+    compileOnly("org.springframework:spring-core:$spring_version")
 }
