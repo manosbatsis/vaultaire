@@ -650,7 +650,10 @@ the following query DSL without RSQL:</p>
     <span class="p">}</span>
 <span class="p">}</span>
 <span class="c1">// Use the RSQL extension function</span>
-<span class="p">.</span><span class="n">withRsql</span><span class="p">(</span><span class="s">&quot;title==*Corda*;price&gt;=12&quot;</span><span class="p">,</span> <span class="n">converterFactory</span><span class="p">)</span>
+<span class="p">.</span><span class="n">withRsql</span><span class="p">(</span>
+    <span class="s">&quot;title==*Corda*;price&gt;=12&quot;</span><span class="p">,</span> 
+    <span class="n">converterFactory</span> <span class="c1">// optional </span>
+<span class="p">)</span>
 
 <span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">(),</span> <span class="n">query</span><span class="p">.</span><span class="n">toSort</span><span class="p">())</span>
 </pre></div>
@@ -671,12 +674,22 @@ the following query DSL without RSQL:</p>
 <tr>
 <td><code>==</code></td>
 <td><code>propName==queryValue</code></td>
-<td>Performs an <strong>equals</strong> or <strong>like</strong> query (using <code>*</code> as a wildcard). Returns all entries  where values in <code>propName</code> exactly equal <em>queryValue</em></td>
+<td>Performs an <strong>equals</strong> query. Returns all entries  where values in <code>propName</code> exactly equal <em>queryValue</em></td>
 </tr>
 <tr>
 <td><code>!=</code></td>
 <td><code>propName!=queryValue</code></td>
-<td>Performs a <strong>not equals</strong> or <strong>not like</strong> query (using <code>*</code> as a wildcard) query. Returns all entries  where values in <code>propName</code> do not equal <em>queryValue</em></td>
+<td>Performs a <strong>not equals</strong> query. Returns all entries  where values in <code>propName</code> do not equal <em>queryValue</em></td>
+</tr>
+<tr>
+<td><code>=like=</code></td>
+<td><code>propName=like=queryValue</code></td>
+<td>Performs an <strong>like</strong> query using <code>*</code> as a wildcard. Returns all entries  where values in <code>propName</code> are like <em>queryValue</em></td>
+</tr>
+<tr>
+<td><code>=unlike=</code> or <code>=notlike=</code> or <code>=nonlike=</code></td>
+<td><code>propName=unlike=queryValue</code></td>
+<td>Performs a <strong>not like</strong> query using <code>*</code> as a wildcard. Returns all entries  where values in <code>propName</code> are not like <em>queryValue</em></td>
 </tr>
 <tr>
 <td><code>=in=</code></td>
@@ -689,32 +702,32 @@ the following query DSL without RSQL:</p>
 <td>Performs an <strong>not in</strong> query. Returns all entries  where <code>propName</code> contains <em>valueA</em> OR <em>valueB</em></td>
 </tr>
 <tr>
-<td><code>&lt;</code> &amp; <code>=lt=</code></td>
+<td><code>&lt;</code> or <code>=lt=</code></td>
 <td><code>propName&lt;queryValue</code>, <code>propName=lt=queryValue</code></td>
 <td>Performs a <strong>lesser than</strong> query. Returns all entries  where values in <code>propName</code> are lesser than <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>=le=</code> &amp; <code>&lt;=</code></td>
+<td><code>&lt;=</code> or <code>=le=</code></td>
 <td><code>propName&lt;=queryValue</code>, <code>propName=le=queryValue</code></td>
 <td>Performs a <strong>lesser than or equal to</strong> query. Returns all entries  where values in <code>propName</code> are lesser than or equal to <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>&lt;</code> &amp; <code>=gt=</code></td>
+<td><code>&lt;</code> or <code>=gt=</code></td>
 <td><code>propName&gt;queryValue</code>, <code>propName=gt=queryValue</code></td>
 <td>Performs a <strong>greater than</strong> query. Returns all entries  where values in <code>propName</code> are greater than <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>&gt;=</code> &amp; <code>=ge=</code></td>
+<td><code>&gt;=</code> or <code>=ge=</code></td>
 <td><code>propName&gt;=queryValue</code>, <code>propName=ge=queryValue</code></td>
-<td>Performs a <strong>equal to or greater than</strong> query. Returns all entries  where values in <code>propName</code> are equal to or greater than <em>queryValue</em></td>
+<td>Performs a <strong>greater than or equal</strong> query. Returns all entries  where values in <code>propName</code> are equal to or greater than <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>=null=</code>, <code>=isnull=</code></td>
+<td><code>=null=</code> or <code>=isnull=</code></td>
 <td><code>propName=null=</code>, <code>propName=isnull=</code></td>
 <td>Performs an <strong>is null</strong> query. Returns all entries  where values in <code>propName</code> are <code>null</code></td>
 </tr>
 <tr>
-<td><code>=notnull=</code>, <code>=nonnull=</code></td>
+<td><code>=notnull=</code> or <code>=nonnull=</code></td>
 <td><code>propName=notnull=</code>, <code>propName=nonnull=</code></td>
 <td>Performs a <strong>not null</strong> query. Returns all entries  where values in <code>propName</code> are <strong>not</strong> <code>null</code></td>
 </tr>
@@ -744,7 +757,7 @@ and <code>RsqlArgumentsConverterFactory</code> types or use one already provided
 <tr>
 <td>SimpleRsqlArgumentsConverter</td>
 <td>Yes</td>
-<td>Simple, extensible, dependency-free  implementation</td>
+<td>The default. Simple, extensible, dependency-free  implementation</td>
 </tr>
 <tr>
 <td>ObjectMapperAdapterRsqlArgumentsConverter</td>
