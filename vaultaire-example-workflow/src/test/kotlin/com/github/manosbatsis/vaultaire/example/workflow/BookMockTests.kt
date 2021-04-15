@@ -470,7 +470,7 @@ class BookMockTests {
             }
         // Test (not) lile
         extendedService.buildQuery {}
-            .withRsql("title==RSQL*;title!=RSQL1", converterFactory)
+            .withRsql("title=like=RSQL*;title=unlike=RSQL2*", converterFactory)
             .toCriteria()
             .also {
                 assertEquals(2, extendedService.queryBy(it)
@@ -478,7 +478,7 @@ class BookMockTests {
             }
         // Test greater/less than
         extendedService.buildQuery {}
-            .withRsql("title==RSQL*;price>70;price<=90", converterFactory)
+            .withRsql("title=like=RSQL*;price>70;price<=90", converterFactory)
             .toCriteria()
             .also {
                 assertEquals(2, extendedService.queryBy(it)
@@ -486,7 +486,7 @@ class BookMockTests {
             }
         // Test null
         extendedService.buildQuery {}
-            .withRsql("title==RSQL*;alternativeTitle=null=", converterFactory)
+            .withRsql("title=like=RSQL*;alternativeTitle=null=", converterFactory)
             .toCriteria()
             .also {
                 assertEquals(1, extendedService.queryBy(it)
@@ -494,7 +494,15 @@ class BookMockTests {
             }
         // Test not null
         extendedService.buildQuery {}
-            .withRsql("title==RSQL*;alternativeTitle=nonnull=", converterFactory)
+            .withRsql("title=like=RSQL*;alternativeTitle=nonnull=", converterFactory)
+            .toCriteria()
+            .also {
+                assertEquals(2, extendedService.queryBy(it)
+                    .totalStatesAvailable.toInt())
+            }
+        // Test (not) in
+        extendedService.buildQuery {}
+            .withRsql("price=in=(70,80,90);price=out=(20,80)", converterFactory)
             .toCriteria()
             .also {
                 assertEquals(2, extendedService.queryBy(it)

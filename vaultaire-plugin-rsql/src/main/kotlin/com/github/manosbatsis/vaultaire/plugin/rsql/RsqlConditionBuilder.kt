@@ -31,8 +31,10 @@ import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.IN
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.IS_NULL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.LESS_THAN
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.LESS_THAN_OR_EQUAL
+import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.LIKE
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_EQUAL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_IN
+import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_LIKE
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_NULL
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
@@ -70,88 +72,61 @@ open class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
     companion object{
         private val logger = LoggerFactory.getLogger(RsqlConditionBuilder::class.java)
     }
-    
+
+    /**
+     * Create a condition for any node type.
+     * Delegates to the appropriate function.
+     */
     fun createCondition(node: Node): Condition? =
         when(node){
             is LogicalNode -> createCondition(node)
             is ComparisonNode -> createCondition(node)
             else -> null
         }
-    
-    fun createCondition(logicalNode: LogicalNode): Condition? {
-        val childNodes: List<Condition> = logicalNode.children
-            .mapNotNull { node: Node? ->
-                node?.let { createCondition(node) }
-            }
 
-        val compositChildCondition = when(logicalNode.operator){
+    /**
+     * Create a condition for a logical operator node.
+     */
+    fun createCondition(logicalNode: LogicalNode): Condition? {
+        // Create the logical operator
+        val compositeChildCondition = when(logicalNode.operator){
             AND -> AndCondition(rootCondition.fields, rootCondition.rootCondition)
             OR -> OrCondition(rootCondition.fields, rootCondition.rootCondition)
         }
-
-        childNodes.forEach{
-            compositChildCondition.addCondition(it)
-        }
-        return compositChildCondition
+        // Add child nodes
+        logicalNode.children
+            .mapNotNull { it?.let { createCondition(it) } }
+            .forEach { compositeChildCondition.addCondition(it) }
+        return compositeChildCondition
     }
 
+    /**
+     * Create a condition for a comparison operator node.
+     */
     @Suppress("UNCHECKED_CAST")
     fun createCondition(comparisonNode: ComparisonNode): Condition? {
         val criterion = with(comparisonNode){
             RsqlCriterion(selector, operator, arguments)
         }
         val args: List<Any?> = argumentsConverter.convertArguments(criterion)
-        val operator =
-            RsqlSearchOperation.getSimpleOperator(criterion.operator)
-        val argument = args[0]
+        val operator = RsqlSearchOperation.getSimpleOperator(criterion.operator)
         val field: FieldWrapper<P> = rootCondition.fields.fieldsByName[comparisonNode.selector]!!
         val expression: CriteriaExpression<P, Boolean> = when (operator) {
-            EQUAL -> {
-                if (argument == null) {
-                    field.property.isNull()
-                } else if (argument is String) {
-                    (field as TypedFieldWrapper<P, String>)
-                        .property.like(argument.toString().replace('*', '%'))
-                } else {
-                    field.property.equal(argument)
-                }
-            }
-            NOT_EQUAL -> {
-                if (argument == null) {
-                    field.property.notNull()
-                } else if (argument is String) {
-                    (field as TypedFieldWrapper<P, String>).property.notLike(argument.toString().replace('*', '%'))
-                } else {
-                    field.property.notEqual(argument)
-                }
-            }
-            GREATER_THAN -> field.greaterThan(argument)
-            GREATER_THAN_OR_EQUAL -> field.greaterThanOrEqual(argument)
-            LESS_THAN -> field.lessThan(argument)
-            LESS_THAN_OR_EQUAL -> field.lessThanOrEqual(argument)
-            IN -> field.isIn(argument as Collection<*>)
-            NOT_IN -> field.notIn(argument as Collection<*>)
+            EQUAL -> field.property.equal(args.single())
+            NOT_EQUAL -> field.property.notEqual(args.single())
+            LIKE -> field.like(args.single())
+            NOT_LIKE -> field.notLike(args.single())
+            GREATER_THAN -> field.greaterThan(args.single())
+            GREATER_THAN_OR_EQUAL -> field.greaterThanOrEqual(args.single())
+            LESS_THAN -> field.lessThan(args.single())
+            LESS_THAN_OR_EQUAL -> field.lessThanOrEqual(args.single())
+            IN -> field.isIn(args)
+            NOT_IN -> field.notIn(args)
             IS_NULL -> field.property.isNull()
             NOT_NULL -> field.property.notNull()
         }
-
-        return toCondition(expression)
+        return VaultCustomQueryCondition(expression, rootCondition.status)
     }
-
-
-    @Suppress("UNCHECKED_CAST")
-    private inline fun <reified S : Any, C: Comparable<S>> toComparable(
-        property: KProperty1<P, *>, value: S?
-    ) = if(value is Comparable<*>)
-        Pair(property as KProperty1<P, C?>, value as C)
-    else error("Input does not implement Comparable: $value")
-
-    @Suppress("UNCHECKED_CAST")
-    private inline fun <reified S : Any?, C: Comparable<S>> toComparables(
-        property: KProperty1<P, *>, value: Collection<S>
-    ): Pair<KProperty1<P, C?>, Collection<C>> =
-        Pair(property as KProperty1<P, C?>, value as Collection<C>)
-
 
     fun FieldWrapper<P>.greaterThan(value: Any?): CriteriaExpression<P, Boolean> =
         with(toComparable(property, value)){ first.greaterThan(second) }
@@ -171,7 +146,29 @@ open class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
     fun FieldWrapper<P>.notIn(value: Collection<*>): CriteriaExpression<P, Boolean> =
         with(toComparables(property, value)){ first.notIn(second) }
 
-    private fun toCondition(expression: CriteriaExpression<P, Boolean>) =
-        VaultCustomQueryCondition<P>(expression, rootCondition.status)
+    fun FieldWrapper<P>.like(value: Any?): CriteriaExpression<P, Boolean> =
+        if (value is String) toStringField().property.like(processWildcards(value))
+        else error("The like operator requires a non-null string argument")
 
+    fun FieldWrapper<P>.notLike(value: Any?): CriteriaExpression<P, Boolean> =
+        if (value is String) toStringField().property.notLike(processWildcards(value))
+        else error("The notlike operator requires a non-null string argument")
+
+    private fun processWildcards(value: String) = value.replace('*', '%')
+
+    @Suppress("UNCHECKED_CAST")
+    private fun FieldWrapper<P>.toStringField() = (this as TypedFieldWrapper<P, String>)
+
+    @Suppress("UNCHECKED_CAST")
+    private inline fun <reified S : Any, C: Comparable<S>> toComparable(
+        property: KProperty1<P, *>, value: S?
+    ) = if(value is Comparable<*>)
+        Pair(property as KProperty1<P, C?>, value as C)
+    else error("Input does not implement Comparable: $value")
+
+    @Suppress("UNCHECKED_CAST")
+    private inline fun <reified S : Any?, C: Comparable<S>> toComparables(
+        property: KProperty1<P, *>, value: Collection<S>
+    ): Pair<KProperty1<P, C?>, Collection<C>> =
+        Pair(property as KProperty1<P, C?>, value as Collection<C>)
 }

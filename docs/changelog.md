@@ -4,17 +4,26 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+
+## 0.36
+
+RSQL improvements:
+
+- Fixed `=in=`, `=out=` comparisons.
+- Moved wildcard-based comparisons to dedicated `=like=` and `=unlike=` operators.
+- The `converterFactory` parameter in `VaultQueryCriteriaCondition.withRsql` is now optional. 
+
 ## 0.35
 
-- Added plugin for RSQL support
+- Added plugin for RSQL support.
 
 ## 0.34
 
-- Support DTO-only fields with mixins
+- Support DTO-only fields with mixins.
 
 ## 0.33
 
-- Upgraded to Corda 4.6, Partiture 0.15, Poolboy 0.4
+- Upgraded to Corda 4.6, Partiture 0.15, Poolboy 0.4.
 
 ## 0.32
 
@@ -23,12 +32,12 @@ Vaultaire's JAR to a transaction.
 
 ## 0.31
 
-- Updated corda-rpc-poolboy dependency 
+- Updated corda-rpc-poolboy dependency.
 
 ## 0.30
 
 - Reverted to forcing root state status to criteria as Corda seems to 
-have an issue with `StateStatus.ALL`
+have an issue with `StateStatus.ALL`.
 
 
 ## 0.29
@@ -40,10 +49,10 @@ with mapping from `StateAndRef` to either contract states or DTOs.
 
 ## 0.28
 
-- Fixed generated DTOs missing `@CordaSerializable`
-- (Service) Registry is now more accessible
-- Fixed service defaults parameter type from SimpleServiceDefaults to interface ServiceDefaults in NodeService, StateService and delegates
-- Fixed pool-based initialization of services from network service
+- Fixed generated DTOs missing `@CordaSerializable`.
+- (Service) Registry is now more accessible.
+- Fixed service defaults parameter type from SimpleServiceDefaults to interface ServiceDefaults in NodeService, StateService and delegates.
+- Fixed pool-based initialization of services from network service.
 
 ## 0.26-27
 

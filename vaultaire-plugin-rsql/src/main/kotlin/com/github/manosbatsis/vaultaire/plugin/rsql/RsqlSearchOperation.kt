@@ -25,6 +25,8 @@ import java.util.Arrays
 
 object CustomOperators{
 
+    val LIKE = ComparisonOperator("=like=")
+    val NOT_LIKE = ComparisonOperator("=unlike=", "=notlike=", "=nonlike=")
     val IS_NULL = ComparisonOperator("=null=", "=isnull=")
     val NOT_NULL = ComparisonOperator("=notnull=", "=nonnull=")
     private val all = listOf(IS_NULL, NOT_NULL)
@@ -43,20 +45,29 @@ object CustomOperators{
  * Maps from [ComparisonOperator]
  */
 enum class RsqlSearchOperation(val operator: ComparisonOperator) {
+    // Operators provided by RSQL parser
     EQUAL(RSQLOperators.EQUAL),
     NOT_EQUAL(RSQLOperators.NOT_EQUAL),
+
     GREATER_THAN(RSQLOperators.GREATER_THAN),
     GREATER_THAN_OR_EQUAL(RSQLOperators.GREATER_THAN_OR_EQUAL),
     LESS_THAN(RSQLOperators.LESS_THAN),
     LESS_THAN_OR_EQUAL(RSQLOperators.LESS_THAN_OR_EQUAL),
+
     IN(RSQLOperators.IN),
     NOT_IN(RSQLOperators.NOT_IN),
+
+    // Custom operators
+    LIKE(CustomOperators.LIKE),
+    NOT_LIKE(CustomOperators.NOT_LIKE),
+
     IS_NULL(CustomOperators.IS_NULL),
     NOT_NULL(CustomOperators.NOT_NULL);
 
     companion object {
         val asSimpleOperators: Set<ComparisonOperator> = RSQLOperators.defaultOperators() +
-                listOf(CustomOperators.IS_NULL, CustomOperators.NOT_NULL)
+                listOf(CustomOperators.LIKE, CustomOperators.NOT_LIKE,
+                    CustomOperators.IS_NULL, CustomOperators.NOT_NULL)
         fun getSimpleOperator(operator: ComparisonOperator): RsqlSearchOperation {
             return Arrays.stream(values())
                 .filter { operation: RsqlSearchOperation -> operation.operator === operator }

@@ -71,7 +71,10 @@ val query = bookStateService.buildQuery {
     }
 }
 // Use the RSQL extension function
-.withRsql("title==*Corda*;price>=12", converterFactory)
+.withRsql(
+    "title==*Corda*;price>=12", 
+    converterFactory // optional 
+)
 
 bookStateService.queryBy(query.toCriteria(), query.toSort())
 ```
@@ -85,16 +88,18 @@ The plugin supports the following operators:
 
 | Operator | Example | Description |
 |----------|---------|-------------|
-| `==`     | `propName==queryValue` | Performs an **equals** or **like** query (using `*` as a wildcard). Returns all entries  where values in `propName` exactly equal *queryValue* |  
-| `!=`     | `propName!=queryValue` | Performs a **not equals** or **not like** query (using `*` as a wildcard) query. Returns all entries  where values in `propName` do not equal *queryValue* |
+| `==`     | `propName==queryValue` | Performs an **equals** query. Returns all entries  where values in `propName` exactly equal *queryValue* |  
+| `!=`     | `propName!=queryValue` | Performs a **not equals** query. Returns all entries  where values in `propName` do not equal *queryValue* |
+| `=like=` | `propName=like=queryValue` | Performs an **like** query using `*` as a wildcard. Returns all entries  where values in `propName` are like *queryValue* |
+| `=unlike=` or `=notlike=` or `=nonlike=` | `propName=like=queryValue` | Performs a **not like** query using `*` as a wildcard. Returns all entries  where values in `propName` are not like *queryValue* |
 | `=in=`   | `propName=in=(valueA, valueB)` | Performs an **in** query. Returns all entries  where `propName` contains *valueA* OR *valueB* |
 | `=out=`   | `propName=out=(valueA, valueB)` | Performs an **not in** query. Returns all entries  where `propName` contains *valueA* OR *valueB* |
-| `<` & `=lt=` | `propName<queryValue`, `propName=lt=queryValue` | Performs a **lesser than** query. Returns all entries  where values in `propName` are lesser than *queryValue* |
-| `=le=` & `<=` | `propName<=queryValue`, `propName=le=queryValue` | Performs a **lesser than or equal to** query. Returns all entries  where values in `propName` are lesser than or equal to *queryValue* |
-| `<` & `=gt=` | `propName>queryValue`, `propName=gt=queryValue` | Performs a **greater than** query. Returns all entries  where values in `propName` are greater than *queryValue* |
-| `>=` & `=ge=` | `propName>=queryValue`, `propName=ge=queryValue` | Performs a **equal to or greater than** query. Returns all entries  where values in `propName` are equal to or greater than *queryValue* |
-| `=null=`, `=isnull=` | `propName=null=`, `propName=isnull=` | Performs an **is null** query. Returns all entries  where values in `propName` are `null`
-| `=notnull=`, `=nonnull=` | `propName=notnull=`, `propName=nonnull=` | Performs a **not null** query. Returns all entries  where values in `propName` are __not__ `null`
+| `<` or `=lt=` | `propName<queryValue`, `propName=lt=queryValue` | Performs a **lesser than** query. Returns all entries  where values in `propName` are lesser than *queryValue* |
+| `<=` or `=le=` | `propName<=queryValue`, `propName=le=queryValue` | Performs a **lesser than or equal to** query. Returns all entries  where values in `propName` are lesser than or equal to *queryValue* |
+| `<` or `=gt=` | `propName>queryValue`, `propName=gt=queryValue` | Performs a **greater than** query. Returns all entries  where values in `propName` are greater than *queryValue* |
+| `>=` or `=ge=` | `propName>=queryValue`, `propName=ge=queryValue` | Performs a **greater than or equal** query. Returns all entries  where values in `propName` are equal to or greater than *queryValue* |
+| `=null=` or `=isnull=` | `propName=null=`, `propName=isnull=` | Performs an **is null** query. Returns all entries  where values in `propName` are `null`
+| `=notnull=` or `=nonnull=` | `propName=notnull=`, `propName=nonnull=` | Performs a **not null** query. Returns all entries  where values in `propName` are __not__ `null`
 
 
 ### Value Converters
@@ -111,7 +116,7 @@ and `RsqlArgumentsConverterFactory` types or use one already provided:
 | Converter Class                                	| Nested Factory 	| Description                                                                                                              	|
 |------------------------------------------------	|----------------	|--------------------------------------------------------------------------------------------------------------------------	|
 | AbstractRsqlArgumentsConverter                 	| No             	| Abstract base implementation, (optionally) extend to create your custom converter                                        	|
-| SimpleRsqlArgumentsConverter                   	| Yes            	| Simple, extensible, dependency-free  implementation                                                                      	|
+| SimpleRsqlArgumentsConverter                   	| Yes            	| The default. Simple, extensible, dependency-free  implementation                                                                      	|
 | ObjectMapperAdapterRsqlArgumentsConverter      	| Yes            	| An implementation suitable for applications that make use of Jackson. Used as adapter for an `ObjectMapper` instance.    	|
 | ConversionServiceAdapterRsqlArgumentsConverter 	| Yes            	| An implementation suitable for applications that make use of Spring. Used as adapter for a `ConversionService` instance. 	|
 
