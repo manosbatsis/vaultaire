@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.35
+
+- Added plugin for RSQL support
+
 ## 0.34
 
 - Support DTO-only fields with mixins

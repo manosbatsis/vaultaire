@@ -10,7 +10,7 @@ import net.corda.core.schemas.StatePersistable
 
 /**
  * An [RsqlArgumentsConverter] implementation suitable for
- * applications thar make use of Jackson. Used as adapter for
+ * applications that make use of Jackson. Used as adapter for
  * an [ObjectMapper] instance.
  */
 class ObjectMapperAdapterRsqlArgumentsConverter<P : StatePersistable, out F : Fields<P>>(

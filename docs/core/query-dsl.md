@@ -76,7 +76,7 @@ val query = booksQuery {
     orderBy {
         fields.title sort DESC
     }
-}.toCriteria()
+}
 
 queryBy(query.toCriteria(), query.toSort())
 

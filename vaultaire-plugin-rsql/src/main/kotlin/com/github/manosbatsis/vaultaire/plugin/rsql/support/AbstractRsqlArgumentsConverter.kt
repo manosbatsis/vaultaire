@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.javaField
 
 /**
  * Base [RsqlArgumentsConverter] implementation,
- * (optionally) extend to create your custom custom converter.
+ * (optionally) extend to create your custom converter.
  * See [SimpleRsqlArgumentsConverter] and
  * [ObjectMapperAdapterRsqlArgumentsConverter] for examples.
  */
