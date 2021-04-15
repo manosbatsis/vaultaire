@@ -30,6 +30,21 @@ val queryCriteria: QueryCriteria = booksQuery {
 
 For more details see [Query DSL](https://manosbatsis.github.io/vaultaire/core/query-dsl/).
 
+
+## RSQL Plugin
+
+A plugin with support for [RSQL](https://www.baeldung.com/rest-api-search-language-rsql-fiql), 
+a URL-friendly query language for dynamic, complex queries and 
+maintenance-free REST endpoints for searching the Vault.
+
+For more details see [RSQL Support](https://manosbatsis.github.io/vaultaire/plugins/rsql-support/).
+
+## Accounts Plugin
+
+A plugin for adding Corda Accounts support to Vaultaire's runtime and build-time modules.
+
+For more details see [Corda Accounts](https://manosbatsis.github.io/vaultaire/plugins/corda-accounts/).
+
 ## State Services
 
 Vaultaire's `StateService` interface provide a simple, consistent API to
@@ -50,10 +65,11 @@ Vaultaire’s annotation processing automates this by (re)generating those DTOs 
 
 For more info checkout [State DTOs](https://manosbatsis.github.io/vaultaire/core/state-dtos/)
 
-
 ## Other Utils
 
-Vaultaire includes a few other utilities like annotations to generate Data Transfer Objects for 
-your contract states and responding flows from commonly used supertypes.
+Vaultaire includes a few other utilities like:
+
+- REST-friendly pages for query results.
+- Annotation to generate responder flows from commonly used supertypes.
 
 For more info checkout [Other Utilities](https://manosbatsis.github.io/vaultaire/core/other-utils/)
