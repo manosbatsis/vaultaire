@@ -18,6 +18,7 @@ buildscript {
         autoservice_version = '1.0-rc7'
 
         dokka_version = '0.9.18'
+        jackson_version = '2.9.7'
         junitVersion = '5.3.2'
         junit_jupiter_version = '5.3.2'
 
@@ -28,6 +29,8 @@ buildscript {
         kotlinutils_version = '0.21'
         partiture_version = '0.15'
         poolboy_version = '0.4'
+
+        spring_version = '5.2.10.RELEASE'
     }
     repositories {
         mavenLocal()
@@ -191,7 +194,8 @@ subprojects {
 configure([project(':vaultaire'),
            project(':vaultaire-processor'),
            project(':vaultaire-processor-plugin'),
-           project(':vaultaire-plugin-accounts')]) {
+           project(':vaultaire-plugin-accounts'),
+           project(':vaultaire-plugin-rsql')]) {
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'

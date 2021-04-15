@@ -51,6 +51,7 @@ nav:
     - 'Other Utilities': core/other-utils.md
   - 'Plugins':
     - 'Corda Accounts': plugins/corda-accounts.md
+    - 'RSQL Support': plugins/rsql-support.md
   - 'API Reference': /vaultaire/0.x/index.html
   - 'FAQ': faq.md
   - 'Change Log': changelog.md

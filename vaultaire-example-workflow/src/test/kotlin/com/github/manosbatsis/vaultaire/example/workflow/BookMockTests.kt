@@ -24,14 +24,18 @@ import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState.BookSchemaV1.PersistentBookState
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Genre.TECHNOLOGY
 import com.github.manosbatsis.vaultaire.example.contract.BookStateDto
 import com.github.manosbatsis.vaultaire.example.contract.BookStateService
 import com.github.manosbatsis.vaultaire.example.contract.PersistentBookStateConditions
+import com.github.manosbatsis.vaultaire.example.contract.PersistentBookStateFields
 import com.github.manosbatsis.vaultaire.example.contract.bookStateQuery
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.accountInfoQuery
+import com.github.manosbatsis.vaultaire.plugin.rsql.support.SimpleRsqlArgumentsConverter
+import com.github.manosbatsis.vaultaire.plugin.rsql.withRsql
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.node.NotFoundException
 import com.r3.corda.lib.accounts.contracts.AccountInfoContract
@@ -422,6 +426,80 @@ class BookMockTests {
         assertEquals(2, results.totalStatesAvailable.toInt())
         assertTrue(results.states.first().state.data.editions < 3)
         assertTrue(results.states[1].state.data.editions < 3)
+    }
+
+    @Test
+    fun `Test RSQL`() {
+        // Create a state
+        val createdState1: BookState = flowWorksCorrectly(a,
+            CreateBookFlow(BookStateDto(
+                author = b.info.legalIdentities.first(),
+                price = BigDecimal.valueOf(70),
+                genre = BookContract.Genre.HISTORICAL,
+                editions = 1,
+                title = "RSQL1",
+                alternativeTitle = "RSQL One"))).single()
+        val createdState2: BookState = flowWorksCorrectly(a,
+            CreateBookFlow(BookStateDto(
+                author = b.info.legalIdentities.first(),
+                price = BigDecimal.valueOf(80),
+                genre = BookContract.Genre.HISTORICAL,
+                editions = 1,
+                title = "RSQL2",
+                alternativeTitle = "RSQL Two"))).single()
+        val createdState3: BookState = flowWorksCorrectly(a,
+            CreateBookFlow(BookStateDto(
+                author = b.info.legalIdentities.first(),
+                price = BigDecimal.valueOf(90),
+                genre = BookContract.Genre.HISTORICAL,
+                editions = 1,
+                title = "RSQL3"))).single()
+
+        val extendedService = BookStateService(a.services)
+
+        val converterFactory = SimpleRsqlArgumentsConverter
+            .Factory<PersistentBookState, PersistentBookStateFields>()
+
+        // Test (not) equals
+        extendedService.buildQuery {}
+            .withRsql("title==RSQL1;title!=RSQL2", converterFactory)
+            .toCriteria()
+            .also {
+                assertEquals(1, extendedService.queryBy(it)
+                    .totalStatesAvailable.toInt())
+            }
+        // Test (not) lile
+        extendedService.buildQuery {}
+            .withRsql("title==RSQL*;title!=RSQL1", converterFactory)
+            .toCriteria()
+            .also {
+                assertEquals(2, extendedService.queryBy(it)
+                    .totalStatesAvailable.toInt())
+            }
+        // Test greater/less than
+        extendedService.buildQuery {}
+            .withRsql("title==RSQL*;price>70;price<=90", converterFactory)
+            .toCriteria()
+            .also {
+                assertEquals(2, extendedService.queryBy(it)
+                    .totalStatesAvailable.toInt())
+            }
+        // Test null
+        extendedService.buildQuery {}
+            .withRsql("title==RSQL*;alternativeTitle=null=", converterFactory)
+            .toCriteria()
+            .also {
+                assertEquals(1, extendedService.queryBy(it)
+                    .totalStatesAvailable.toInt())
+            }
+        // Test not null
+        extendedService.buildQuery {}
+            .withRsql("title==RSQL*;alternativeTitle=nonnull=", converterFactory)
+            .toCriteria()
+            .also {
+                assertEquals(2, extendedService.queryBy(it)
+                    .totalStatesAvailable.toInt())
+            }
     }
 
     private fun testStateServiceQueryBy(stateService: BasicStateService<BookContract.BookState>, bookStateQuery: PersistentBookStateConditions, bookState: BookContract.BookState) {

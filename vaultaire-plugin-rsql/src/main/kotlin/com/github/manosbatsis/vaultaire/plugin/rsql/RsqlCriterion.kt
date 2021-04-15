@@ -17,18 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.util
+package com.github.manosbatsis.vaultaire.plugin.rsql
 
-import net.corda.core.contracts.Contract
-import net.corda.core.transactions.LedgerTransaction
+import cz.jirutka.rsql.parser.ast.ComparisonNode
+import cz.jirutka.rsql.parser.ast.ComparisonOperator
 
-class DummyContract: Contract {
-
-    companion object {
-        const val ID = "com.github.manosbatsis.vaultaire.util.DummyContract"
-    }
-
-    override fun verify(tx: LedgerTransaction) {
-        TODO("Not yet implemented")
-    }
-}
+/** Our simplified view of a [ComparisonNode] */
+data class RsqlCriterion(
+    val property: String,
+    val operator: ComparisonOperator,
+    val arguments: List<String?>
+)

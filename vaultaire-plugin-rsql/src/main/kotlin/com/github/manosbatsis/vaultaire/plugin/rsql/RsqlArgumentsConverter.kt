@@ -17,18 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.util
+package com.github.manosbatsis.vaultaire.plugin.rsql
 
-import net.corda.core.contracts.Contract
-import net.corda.core.transactions.LedgerTransaction
+import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.util.Fields
+import net.corda.core.schemas.StatePersistable
 
-class DummyContract: Contract {
+/**
+ * Used by [RsqlConditionBuilder] to convert [RsqlCriterion.arguments]
+ * to their intended type. Sample implementations are included in
+ * [com.github.manosbatsis.vaultaire.plugin.rsql.support].
+ */
+interface RsqlArgumentsConverter<P : StatePersistable, out F : Fields<P>> {
+    fun convertArguments(criterion: RsqlCriterion): List<*>
+}
 
-    companion object {
-        const val ID = "com.github.manosbatsis.vaultaire.util.DummyContract"
-    }
-
-    override fun verify(tx: LedgerTransaction) {
-        TODO("Not yet implemented")
-    }
+/**
+ * Convenient helper interface for [VaultQueryCriteriaCondition]
+ * extension functions etc.
+ */
+interface RsqlArgumentsConverterFactory<P : StatePersistable, F : Fields<P>> {
+    fun create(rootCondition: VaultQueryCriteriaCondition<P, F>): RsqlArgumentsConverter<P, F>
 }
