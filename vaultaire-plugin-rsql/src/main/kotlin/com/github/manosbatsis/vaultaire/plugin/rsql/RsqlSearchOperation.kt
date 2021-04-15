@@ -27,6 +27,17 @@ object CustomOperators{
 
     val IS_NULL = ComparisonOperator("=null=", "=isnull=")
     val NOT_NULL = ComparisonOperator("=notnull=", "=nonnull=")
+    private val all = listOf(IS_NULL, NOT_NULL)
+
+    fun preProcessRsql(rsql: String): String {
+        var processed = "$rsql;"
+        all.forEach { operator ->
+            operator.symbols.forEach { symbol ->
+                processed = processed.replace("${symbol};", "${symbol}null;")
+            }
+        }
+        return processed.removeSuffix(";")
+    }
 }
 /**
  * Maps from [ComparisonOperator]

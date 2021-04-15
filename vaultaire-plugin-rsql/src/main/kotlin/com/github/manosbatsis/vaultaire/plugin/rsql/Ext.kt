@@ -31,7 +31,7 @@ fun <P : StatePersistable, F : Fields<P>, C: VaultQueryCriteriaCondition<P, F>> 
 ): C {
     if(!rsql.isNullOrBlank()) {
         RSQLParser(RsqlSearchOperation.asSimpleOperators)
-            .parse(rsql)
+            .parse(CustomOperators.preProcessRsql(rsql!!))
             .accept(RsqlConditionsVisitor(
                 this,
                 converterFactory.create(this)))
