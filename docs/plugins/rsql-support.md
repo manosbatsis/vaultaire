@@ -42,41 +42,33 @@ the following query DSL without RSQL:
 ```kotlin
 // Use the generated DSL to create query criteria
 val query = bookStateService.buildQuery {
-    status = Vault.StateStatus.ALL
+    // blah
     and {
-    	// Check publisher?
-        if(checkPublisher) fields.publisher `==` "Corda Books Ltd."
-        or {
-            fields.title `like` "%Corda%"
-            fields.price gte 12
-        }
+        fields.title `like` "%Corda%"
+        fields.price gte 12
     }
-    orderBy {
-        fields.title sort DESC
-    }
+    // blah
 }
 
-bookStateService.queryBy(query.toCriteria(), query.toSort())
+bookStateService.queryBy(query.toCriteria())
 ```
 
 The equivalent using RSQL:
 
 
 ```kotlin
+val rsql = "title=like=*Corda*;price>=12"
 // Use the generated DSL to create query criteria
 val query = bookStateService.buildQuery {
-    status = Vault.StateStatus.ALL
-    orderBy {
-        fields.title sort DESC
-    }
+    // blah
 }
 // Use the RSQL extension function
 .withRsql(
-    "title=like=*Corda*;price>=12", 
+    rsql, 
     converterFactory // optional 
 )
 
-bookStateService.queryBy(query.toCriteria(), query.toSort())
+bookStateService.queryBy(query.toCriteria())
 ```
 
 If you're wondering about `converterFactory`, see the 
