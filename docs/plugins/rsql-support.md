@@ -9,7 +9,7 @@ What if those could be evaluated dynamically?
 This plugin provides support for 
 [RSQL](https://www.baeldung.com/rest-api-search-language-rsql-fiql) 
 and [FIQL](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00) 
-queries. RSQL is great for REST:
+queries, which is great great for REST:
 
 - It's simple, compact and URL-friendly.
 - There's no need to maintain endpoints as you add/modify state propperties/schemas.
@@ -75,6 +75,11 @@ bookStateService.queryBy(query.toCriteria())
 
 If you're wondering about `converterFactory`, see the 
 [Value Converters](#value-converters) section bellow.
+
+For an actual endpoint example that supports both 
+"regular" and RSQL approaches above have a look at 
+[YoController.findPaged](https://github.com/manosbatsis/corbeans-yo-cordapp/blob/master/bootapp-webserver/src/main/kotlin/mypackage/server/yo/YoController.kt#L143) 
+in the corbeans-yo-cordapp on Github.
 
 ### Operators
 
