@@ -9,10 +9,12 @@ What if those could be evaluated dynamically?
 This plugin provides support for 
 [RSQL](https://www.baeldung.com/rest-api-search-language-rsql-fiql) 
 and [FIQL](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00) 
-queries. RSQL is ideal for describing a query in URLs, including 
-both logical and comparison operators. The simplicity of RSQL and its 
-capacity for complex queries in a compact, URL-friendly manner makes 
-it a great generic query language for REST endpoints.
+queries. RSQL is great for REST:
+
+- It's simple, compact and URL-friendly.
+- There's no need to maintain endpoints as you add/modify state propperties/schemas.
+- Supports complex queries with logical and comparison operators.
+- Being able to store queries as strings allows to e.g. easily manage reports.
 
 ## Installation
 
