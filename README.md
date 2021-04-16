@@ -78,7 +78,7 @@ For more info checkout [Other Utilities](https://manosbatsis.github.io/vaultaire
 ## Sample Projects
 
 1. For simple examples, checkout the vaultaire-example-contract and vaultaire-example-workflow 
-   modules in Vaultaire's [repository] on Github(https://github.com/manosbatsis/vaultaire).
+   modules in Vaultaire's [repository](https://github.com/manosbatsis/vaultaire) on Github.
 2. For an extensive Cordapp example including a Spring Boot client checkout the 
    [corbeans-yo-cordapp](https://github.com/manosbatsis/corbeans-yo-cordapp) 
    repository.
