@@ -599,10 +599,13 @@ What if those could be evaluated dynamically?</p>
 <p>This plugin provides support for 
 <a href="https://www.baeldung.com/rest-api-search-language-rsql-fiql">RSQL</a> 
 and <a href="https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00">FIQL</a> 
-queries. RSQL is ideal for describing a query in URLs, including 
-both logical and comparison operators. The simplicity of RSQL and its 
-capacity for complex queries in a compact, URL-friendly manner makes 
-it a great generic query language for REST endpoints.</p>
+queries. RSQL is great for REST:</p>
+<ul>
+<li>It&rsquo;s simple, compact and URL-friendly.</li>
+<li>There&rsquo;s no need to maintain endpoints as you add/modify state propperties/schemas.</li>
+<li>Supports complex queries with logical and comparison operators.</li>
+<li>Being able to store queries as strings allows to e.g. easily manage reports.</li>
+</ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>The plugin is mainly intended for Corda client applications using 
 Spring, Spring Boot or Jackson. It can however be used with other 
