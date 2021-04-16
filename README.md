@@ -73,3 +73,12 @@ Vaultaire includes a few other utilities like:
 - Annotation to generate responder flows from commonly used supertypes.
 
 For more info checkout [Other Utilities](https://manosbatsis.github.io/vaultaire/core/other-utils/)
+
+
+## Sample Projects
+
+1. For simple examples, checkout the vaultaire-example-contract and vaultaire-example-workflow 
+   modules in Vaultaire's [repository] on Github(https://github.com/manosbatsis/vaultaire).
+2. For an extensive Cordapp example including a Spring Boot client checkout the 
+   [corbeans-yo-cordapp](https://github.com/manosbatsis/corbeans-yo-cordapp) 
+   repository.
