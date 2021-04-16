@@ -624,38 +624,30 @@ i.e. subclasses of <code>VaultQueryCriteriaCondition</code>. Consider
 the following query DSL without RSQL:</p>
 <div class="codehilite"><pre><span></span><span class="c1">// Use the generated DSL to create query criteria</span>
 <span class="k">val</span> <span class="py">query</span> <span class="p">=</span> <span class="n">bookStateService</span><span class="p">.</span><span class="n">buildQuery</span> <span class="p">{</span>
-    <span class="n">status</span> <span class="p">=</span> <span class="n">Vault</span><span class="p">.</span><span class="n">StateStatus</span><span class="p">.</span><span class="n">ALL</span>
+    <span class="c1">// blah</span>
     <span class="n">and</span> <span class="p">{</span>
-        <span class="c1">// Check publisher?</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">checkPublisher</span><span class="p">)</span> <span class="n">fields</span><span class="p">.</span><span class="n">publisher</span> <span class="err">`</span><span class="p">==</span><span class="err">`</span> <span class="s">&quot;Corda Books Ltd.&quot;</span>
-        <span class="n">or</span> <span class="p">{</span>
-            <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">`like`</span> <span class="s">&quot;%Corda%&quot;</span>
-            <span class="n">fields</span><span class="p">.</span><span class="n">price</span> <span class="n">gte</span> <span class="m">12</span>
-        <span class="p">}</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">`like`</span> <span class="s">&quot;%Corda%&quot;</span>
+        <span class="n">fields</span><span class="p">.</span><span class="n">price</span> <span class="n">gte</span> <span class="m">12</span>
     <span class="p">}</span>
-    <span class="n">orderBy</span> <span class="p">{</span>
-        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">sort</span> <span class="n">DESC</span>
-    <span class="p">}</span>
+    <span class="c1">// blah</span>
 <span class="p">}</span>
 
-<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">(),</span> <span class="n">query</span><span class="p">.</span><span class="n">toSort</span><span class="p">())</span>
+<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">())</span>
 </pre></div>
 
 <p>The equivalent using RSQL:</p>
-<div class="codehilite"><pre><span></span><span class="c1">// Use the generated DSL to create query criteria</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">rsql</span> <span class="p">=</span> <span class="s">&quot;title=like=*Corda*;price&gt;=12&quot;</span>
+<span class="c1">// Use the generated DSL to create query criteria</span>
 <span class="k">val</span> <span class="py">query</span> <span class="p">=</span> <span class="n">bookStateService</span><span class="p">.</span><span class="n">buildQuery</span> <span class="p">{</span>
-    <span class="n">status</span> <span class="p">=</span> <span class="n">Vault</span><span class="p">.</span><span class="n">StateStatus</span><span class="p">.</span><span class="n">ALL</span>
-    <span class="n">orderBy</span> <span class="p">{</span>
-        <span class="n">fields</span><span class="p">.</span><span class="n">title</span> <span class="n">sort</span> <span class="n">DESC</span>
-    <span class="p">}</span>
+    <span class="c1">// blah</span>
 <span class="p">}</span>
 <span class="c1">// Use the RSQL extension function</span>
 <span class="p">.</span><span class="n">withRsql</span><span class="p">(</span>
-    <span class="s">&quot;title=like=*Corda*;price&gt;=12&quot;</span><span class="p">,</span> 
+    <span class="n">rsql</span><span class="p">,</span> 
     <span class="n">converterFactory</span> <span class="c1">// optional </span>
 <span class="p">)</span>
 
-<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">(),</span> <span class="n">query</span><span class="p">.</span><span class="n">toSort</span><span class="p">())</span>
+<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">())</span>
 </pre></div>
 
 <p>If you&rsquo;re wondering about <code>converterFactory</code>, see the 
