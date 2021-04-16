@@ -599,7 +599,7 @@ What if those could be evaluated dynamically?</p>
 <p>This plugin provides support for 
 <a href="https://www.baeldung.com/rest-api-search-language-rsql-fiql">RSQL</a> 
 and <a href="https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00">FIQL</a> 
-queries. RSQL is great for REST:</p>
+queries, which is great great for REST:</p>
 <ul>
 <li>It&rsquo;s simple, compact and URL-friendly.</li>
 <li>There&rsquo;s no need to maintain endpoints as you add/modify state propperties/schemas.</li>
@@ -655,6 +655,10 @@ the following query DSL without RSQL:</p>
 
 <p>If you&rsquo;re wondering about <code>converterFactory</code>, see the 
 <a href="#value-converters">Value Converters</a> section bellow.</p>
+<p>For an actual endpoint example that supports both 
+&ldquo;regular&rdquo; and RSQL approaches above have a look at 
+<a href="https://github.com/manosbatsis/corbeans-yo-cordapp/blob/master/bootapp-webserver/src/main/kotlin/mypackage/server/yo/YoController.kt#L143">YoController.findPaged</a> 
+in the corbeans-yo-cordapp on Github.</p>
 <h3 id="operators">Operators<a class="headerlink" href="#operators" title="Permanent link">&para;</a></h3>
 <p>The plugin supports the following operators:</p>
 <table>
