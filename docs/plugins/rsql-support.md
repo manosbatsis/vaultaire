@@ -72,7 +72,7 @@ val query = bookStateService.buildQuery {
 }
 // Use the RSQL extension function
 .withRsql(
-    "title==*Corda*;price>=12", 
+    "title=like=*Corda*;price>=12", 
     converterFactory // optional 
 )
 
