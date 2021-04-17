@@ -635,7 +635,7 @@ the following query DSL without RSQL:</p>
     <span class="c1">// blah</span>
 <span class="p">}</span>
 
-<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">())</span>
+<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">(),</span> <span class="n">query</span><span class="p">.</span><span class="n">toSort</span><span class="p">())</span>
 </pre></div>
 
 <p>The equivalent using RSQL:</p>
@@ -646,11 +646,13 @@ the following query DSL without RSQL:</p>
 <span class="p">}</span>
 <span class="c1">// Use the RSQL extension function</span>
 <span class="p">.</span><span class="n">withRsql</span><span class="p">(</span>
-    <span class="n">rsql</span><span class="p">,</span> 
-    <span class="n">converterFactory</span> <span class="c1">// optional </span>
+    <span class="n">rsql</span><span class="p">,</span>
+    <span class="c1">// Optional, default is </span>
+    <span class="c1">// SimpleRsqlArgumentsConverter.Factory()</span>
+    <span class="n">converterFactory</span>  
 <span class="p">)</span>
 
-<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">())</span>
+<span class="n">bookStateService</span><span class="p">.</span><span class="n">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="n">toCriteria</span><span class="p">(),</span> <span class="n">query</span><span class="p">.</span><span class="n">toSort</span><span class="p">())</span>
 </pre></div>
 
 <p>If you&rsquo;re wondering about <code>converterFactory</code>, see the 
@@ -722,13 +724,8 @@ in the corbeans-yo-cordapp on Github.</p>
 </tr>
 <tr>
 <td><code>=null=</code> or <code>=isnull=</code></td>
-<td><code>propName=null=</code>, <code>propName=isnull=</code></td>
-<td>Performs an <strong>is null</strong> query. Returns all entries  where values in <code>propName</code> are <code>null</code></td>
-</tr>
-<tr>
-<td><code>=notnull=</code> or <code>=nonnull=</code></td>
-<td><code>propName=notnull=</code>, <code>propName=nonnull=</code></td>
-<td>Performs a <strong>not null</strong> query. Returns all entries  where values in <code>propName</code> are <strong>not</strong> <code>null</code></td>
+<td><code>propName=null=true</code>, <code>propName=isnull=true</code></td>
+<td>Performs an <strong>is null</strong> or <strong>is not null</strong> query. Returns all entries  where values in <code>propName</code> are <code>null</code> or not, based on the boolean argument.</td>
 </tr>
 </tbody>
 </table>
