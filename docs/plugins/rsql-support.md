@@ -101,7 +101,7 @@ The plugin supports the following operators:
 | `>=` or `=ge=` | `propName>=queryValue`, `propName=ge=queryValue` | Performs a **greater than or equal** query. Returns all entries  where values in `propName` are equal to or greater than *queryValue* |
 | `=null=` or `=isnull=` | `propName=null=true`, `propName=isnull=true` | Performs an **is null** or **is not null** query. Returns all entries  where values in `propName` are `null` or not, based on the boolean argument.
 
-### Value Converters
+### Argument Converters
 
 Since an RSQL query is basically a `String`, we need converters to 
 transform criteria arguments to their intended type.
