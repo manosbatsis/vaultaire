@@ -107,7 +107,8 @@ Since an RSQL query is basically a `String`, we need converters to
 transform criteria arguments to their intended type.
 
 For that purpose, the second parameter of the `withRsql` extension function 
-accepts an `RsqlArgumentsConverterFactory` instance.
+accepts an optional `RsqlArgumentsConverterFactory` instance, with  
+`SimpleRsqlArgumentsConverter.Factory()` being the default.
 
 You can create your own, custom `RsqlArgumentsConverter` 
 and `RsqlArgumentsConverterFactory` types or use one already provided:
