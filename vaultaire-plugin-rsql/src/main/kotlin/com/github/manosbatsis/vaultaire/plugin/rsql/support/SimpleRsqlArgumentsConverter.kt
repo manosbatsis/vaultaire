@@ -23,6 +23,7 @@ package com.github.manosbatsis.vaultaire.plugin.rsql.support
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlArgumentsConverter
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlArgumentsConverterFactory
+import com.github.manosbatsis.vaultaire.plugin.rsql.anyToBoolean
 import com.github.manosbatsis.vaultaire.util.Fields
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.crypto.SecureHash
@@ -68,6 +69,7 @@ open class SimpleRsqlArgumentsConverter<P : StatePersistable, out F : Fields<P>>
         Long::class.java -> arg.toLong()
         Float::class.java -> arg.toFloat()
         BigDecimal::class.java -> BigDecimal(arg)
+        Boolean::class.java -> arg.anyToBoolean()
         Date::class.java -> parseDate(arg)
         LocalDate::class.java -> parseLocalDate(arg)
         LocalDateTime::class.java -> parseLocalDateTime(arg)

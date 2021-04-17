@@ -35,7 +35,6 @@ import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.LIKE
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_EQUAL
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_IN
 import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_LIKE
-import com.github.manosbatsis.vaultaire.plugin.rsql.RsqlSearchOperation.NOT_NULL
 import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.TypedFieldWrapper
@@ -109,7 +108,7 @@ open class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
             RsqlCriterion(selector, operator, arguments)
         }
         val args: List<Any?> = argumentsConverter.convertArguments(criterion)
-        val operator = RsqlSearchOperation.getSimpleOperator(criterion.operator)
+        val operator = RsqlSearchOperation.fromComparisonOperator(criterion.operator)
         val field: FieldWrapper<P> = rootCondition.fields.fieldsByName[comparisonNode.selector]!!
         val expression: CriteriaExpression<P, Boolean> = when (operator) {
             EQUAL -> field.property.equal(args.single())
@@ -122,8 +121,7 @@ open class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
             LESS_THAN_OR_EQUAL -> field.lessThanOrEqual(args.single())
             IN -> field.isIn(args)
             NOT_IN -> field.notIn(args)
-            IS_NULL -> field.property.isNull()
-            NOT_NULL -> field.property.notNull()
+            IS_NULL -> field.isNull(args.singleOrNull())
         }
         return VaultCustomQueryCondition(expression, rootCondition.status)
     }
@@ -153,6 +151,13 @@ open class RsqlConditionBuilder<P : StatePersistable, out F : Fields<P>>(
     fun FieldWrapper<P>.notLike(value: Any?): CriteriaExpression<P, Boolean> =
         if (value is String) toStringField().property.notLike(processWildcards(value))
         else error("The notlike operator requires a non-null string argument")
+
+    fun FieldWrapper<P>.isNull(value: Any?): CriteriaExpression<P, Boolean> =
+        when{
+            value == null -> property.isNull()
+            value.anyToBoolean() -> property.isNull()
+            else -> property.notNull()
+        }
 
     private fun processWildcards(value: String) = value.replace('*', '%')
 

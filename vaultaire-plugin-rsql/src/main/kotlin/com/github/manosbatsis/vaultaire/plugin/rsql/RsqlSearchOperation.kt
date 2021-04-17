@@ -21,29 +21,9 @@ package com.github.manosbatsis.vaultaire.plugin.rsql
 
 import cz.jirutka.rsql.parser.ast.ComparisonOperator
 import cz.jirutka.rsql.parser.ast.RSQLOperators
-import java.util.Arrays
 
-object CustomOperators{
 
-    val LIKE = ComparisonOperator("=like=")
-    val NOT_LIKE = ComparisonOperator("=unlike=", "=notlike=", "=nonlike=")
-    val IS_NULL = ComparisonOperator("=null=", "=isnull=")
-    val NOT_NULL = ComparisonOperator("=notnull=", "=nonnull=")
-    private val all = listOf(IS_NULL, NOT_NULL)
-
-    fun preProcessRsql(rsql: String): String {
-        var processed = "$rsql;"
-        all.forEach { operator ->
-            operator.symbols.forEach { symbol ->
-                processed = processed.replace("${symbol};", "${symbol}null;")
-            }
-        }
-        return processed.removeSuffix(";")
-    }
-}
-/**
- * Maps from [ComparisonOperator]
- */
+/** Combines standard and custom operators. */
 enum class RsqlSearchOperation(val operator: ComparisonOperator) {
     // Operators provided by RSQL parser
     EQUAL(RSQLOperators.EQUAL),
@@ -58,20 +38,16 @@ enum class RsqlSearchOperation(val operator: ComparisonOperator) {
     NOT_IN(RSQLOperators.NOT_IN),
 
     // Custom operators
-    LIKE(CustomOperators.LIKE),
-    NOT_LIKE(CustomOperators.NOT_LIKE),
-
-    IS_NULL(CustomOperators.IS_NULL),
-    NOT_NULL(CustomOperators.NOT_NULL);
+    LIKE(ComparisonOperator("=like=")),
+    NOT_LIKE(ComparisonOperator("=unlike=", "=notlike=", "=nonlike=")),
+    IS_NULL(ComparisonOperator("=null=", "=isnull="));
 
     companion object {
-        val asSimpleOperators: Set<ComparisonOperator> = RSQLOperators.defaultOperators() +
-                listOf(CustomOperators.LIKE, CustomOperators.NOT_LIKE,
-                    CustomOperators.IS_NULL, CustomOperators.NOT_NULL)
-        fun getSimpleOperator(operator: ComparisonOperator): RsqlSearchOperation {
-            return Arrays.stream(values())
-                .filter { operation: RsqlSearchOperation -> operation.operator === operator }
-                .findAny().orElse(null)
+        val asComparisonOperators: Set<ComparisonOperator> = values().map { it.operator }.toSet()
+        fun fromComparisonOperator(operator: ComparisonOperator): RsqlSearchOperation {
+            return values().find { it.operator === operator }
+                ?: error("Unmapped ComparisonOperator: $operator")
+
         }
     }
 }

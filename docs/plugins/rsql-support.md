@@ -52,7 +52,7 @@ val query = bookStateService.buildQuery {
     // blah
 }
 
-bookStateService.queryBy(query.toCriteria())
+bookStateService.queryBy(query.toCriteria(), query.toSort())
 ```
 
 The equivalent using RSQL:
@@ -66,11 +66,13 @@ val query = bookStateService.buildQuery {
 }
 // Use the RSQL extension function
 .withRsql(
-    rsql, 
-    converterFactory // optional 
+    rsql,
+    // Optional, default is 
+    // SimpleRsqlArgumentsConverter.Factory()
+    converterFactory  
 )
 
-bookStateService.queryBy(query.toCriteria())
+bookStateService.queryBy(query.toCriteria(), query.toSort())
 ```
 
 If you're wondering about `converterFactory`, see the 
@@ -97,9 +99,7 @@ The plugin supports the following operators:
 | `<=` or `=le=` | `propName<=queryValue`, `propName=le=queryValue` | Performs a **lesser than or equal to** query. Returns all entries  where values in `propName` are lesser than or equal to *queryValue* |
 | `<` or `=gt=` | `propName>queryValue`, `propName=gt=queryValue` | Performs a **greater than** query. Returns all entries  where values in `propName` are greater than *queryValue* |
 | `>=` or `=ge=` | `propName>=queryValue`, `propName=ge=queryValue` | Performs a **greater than or equal** query. Returns all entries  where values in `propName` are equal to or greater than *queryValue* |
-| `=null=` or `=isnull=` | `propName=null=`, `propName=isnull=` | Performs an **is null** query. Returns all entries  where values in `propName` are `null`
-| `=notnull=` or `=nonnull=` | `propName=notnull=`, `propName=nonnull=` | Performs a **not null** query. Returns all entries  where values in `propName` are __not__ `null`
-
+| `=null=` or `=isnull=` | `propName=null=true`, `propName=isnull=true` | Performs an **is null** or **is not null** query. Returns all entries  where values in `propName` are `null` or not, based on the boolean argument.
 
 ### Value Converters
 

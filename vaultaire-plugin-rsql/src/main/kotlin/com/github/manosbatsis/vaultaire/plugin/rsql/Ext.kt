@@ -52,12 +52,27 @@ fun <P : StatePersistable, F : Fields<P>, C: VaultQueryCriteriaCondition<P, F>> 
         SimpleRsqlArgumentsConverter.Factory()
 ): C {
     if(!rsql.isNullOrBlank()) {
-        RSQLParser(RsqlSearchOperation.asSimpleOperators)
-            .parse(CustomOperators.preProcessRsql(rsql!!))
+        RSQLParser(RsqlSearchOperation.asComparisonOperators)
+            .parse(rsql)
             .accept(RsqlConditionsVisitor(
                 this,
                 converterFactory.create(this)))
             ?.also { this.addCondition(it) }
     }
     return this
+}
+
+
+private val trueValues = setOf("true", "t", "yes", "y", "on", "1" )
+
+/**
+ * Converts input to a String (if not null),
+ * then to a boolean (optimised for performance).
+ *
+ * The values "true", "t", "yes", "y", "on" and "1" (case insensitive)
+ * will return `true`. Otherwise, `false` is returned.
+ */
+fun Any?.anyToBoolean(): Boolean {
+    return if(this == null) false
+    else trueValues.contains(this.toString().toLowerCase())
 }

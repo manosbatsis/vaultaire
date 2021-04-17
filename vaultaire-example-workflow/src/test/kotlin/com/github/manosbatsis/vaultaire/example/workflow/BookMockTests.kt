@@ -486,7 +486,7 @@ class BookMockTests {
             }
         // Test null
         extendedService.buildQuery {}
-            .withRsql("title=like=RSQL*;alternativeTitle=null=", converterFactory)
+            .withRsql("title=like=RSQL*;alternativeTitle=null=true", converterFactory)
             .toCriteria()
             .also {
                 assertEquals(1, extendedService.queryBy(it)
@@ -494,7 +494,7 @@ class BookMockTests {
             }
         // Test not null
         extendedService.buildQuery {}
-            .withRsql("title=like=RSQL*;alternativeTitle=nonnull=", converterFactory)
+            .withRsql("title=like=RSQL*;alternativeTitle=null=false", converterFactory)
             .toCriteria()
             .also {
                 assertEquals(2, extendedService.queryBy(it)
