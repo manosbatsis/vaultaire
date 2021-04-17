@@ -436,8 +436,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#value-converters" title="Value Converters" class="md-nav__link">
-    Value Converters
+  <a href="#argument-converters" title="Argument Converters" class="md-nav__link">
+    Argument Converters
   </a>
   
 </li>
@@ -561,8 +561,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#value-converters" title="Value Converters" class="md-nav__link">
-    Value Converters
+  <a href="#argument-converters" title="Argument Converters" class="md-nav__link">
+    Argument Converters
   </a>
   
 </li>
@@ -666,8 +666,8 @@ in the corbeans-yo-cordapp on Github.</p>
 <table>
 <thead>
 <tr>
-<th>Operator</th>
-<th>Example</th>
+<th>Operator(s)</th>
+<th>Examples</th>
 <th>Description</th>
 </tr>
 </thead>
@@ -688,7 +688,7 @@ in the corbeans-yo-cordapp on Github.</p>
 <td>Performs an <strong>like</strong> query using <code>*</code> as a wildcard. Returns all entries  where values in <code>propName</code> are like <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>=unlike=</code> or <code>=notlike=</code> or <code>=nonlike=</code></td>
+<td><code>=unlike=</code>, <code>=notlike=</code>, <code>=nonlike=</code></td>
 <td><code>propName=unlike=queryValue</code></td>
 <td>Performs a <strong>not like</strong> query using <code>*</code> as a wildcard. Returns all entries  where values in <code>propName</code> are not like <em>queryValue</em></td>
 </tr>
@@ -703,37 +703,38 @@ in the corbeans-yo-cordapp on Github.</p>
 <td>Performs an <strong>not in</strong> query. Returns all entries  where <code>propName</code> contains <em>valueA</em> OR <em>valueB</em></td>
 </tr>
 <tr>
-<td><code>&lt;</code> or <code>=lt=</code></td>
+<td><code>&lt;</code>, <code>=lt=</code></td>
 <td><code>propName&lt;queryValue</code>, <code>propName=lt=queryValue</code></td>
 <td>Performs a <strong>lesser than</strong> query. Returns all entries  where values in <code>propName</code> are lesser than <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>&lt;=</code> or <code>=le=</code></td>
+<td><code>&lt;=</code>, <code>=le=</code></td>
 <td><code>propName&lt;=queryValue</code>, <code>propName=le=queryValue</code></td>
 <td>Performs a <strong>lesser than or equal to</strong> query. Returns all entries  where values in <code>propName</code> are lesser than or equal to <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>&lt;</code> or <code>=gt=</code></td>
+<td><code>&lt;</code>, <code>=gt=</code></td>
 <td><code>propName&gt;queryValue</code>, <code>propName=gt=queryValue</code></td>
 <td>Performs a <strong>greater than</strong> query. Returns all entries  where values in <code>propName</code> are greater than <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>&gt;=</code> or <code>=ge=</code></td>
+<td><code>&gt;=</code>, <code>=ge=</code></td>
 <td><code>propName&gt;=queryValue</code>, <code>propName=ge=queryValue</code></td>
 <td>Performs a <strong>greater than or equal</strong> query. Returns all entries  where values in <code>propName</code> are equal to or greater than <em>queryValue</em></td>
 </tr>
 <tr>
-<td><code>=null=</code> or <code>=isnull=</code></td>
+<td><code>=null=</code>, <code>=isnull=</code></td>
 <td><code>propName=null=true</code>, <code>propName=isnull=true</code></td>
 <td>Performs an <strong>is null</strong> or <strong>is not null</strong> query. Returns all entries  where values in <code>propName</code> are <code>null</code> or not, based on the boolean argument.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="value-converters">Value Converters<a class="headerlink" href="#value-converters" title="Permanent link">&para;</a></h3>
+<h3 id="argument-converters">Argument Converters<a class="headerlink" href="#argument-converters" title="Permanent link">&para;</a></h3>
 <p>Since an RSQL query is basically a <code>String</code>, we need converters to 
 transform criteria arguments to their intended type.</p>
 <p>For that purpose, the second parameter of the <code>withRsql</code> extension function 
-accepts an <code>RsqlArgumentsConverterFactory</code> instance.</p>
+accepts an optional <code>RsqlArgumentsConverterFactory</code> instance, with<br />
+<code>SimpleRsqlArgumentsConverter.Factory()</code> being the default.</p>
 <p>You can create your own, custom <code>RsqlArgumentsConverter</code> 
 and <code>RsqlArgumentsConverterFactory</code> types or use one already provided:</p>
 <table>
