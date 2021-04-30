@@ -41,7 +41,8 @@ import java.util.UUID
 data class AccountInfoLiteDto(
         var name: String? = null,
         var host: CordaX500Name? = null,
-        var identifier: UUID? = null
+        var identifier: UUID? = null,
+        var externalId: String? = null
 ) : AccountsAwareLiteDto<AccountInfo> {
     /**
      * Create a patched copy of the given [AccountInfo] instance,
@@ -53,10 +54,10 @@ data class AccountInfoLiteDto(
 
         val hostResolved = toPartyOrDefault(this.host, original.host, stateService, "host")
         val patched = AccountInfo(
-                name = this.name ?: original.name,
-                host = hostResolved,
-                identifier = if (this.identifier != null) UniqueIdentifier(null, this.identifier!!)
-                else original.identifier
+            name = this.name ?: original.name,
+            host = hostResolved,
+            identifier = if (identifier != null) UniqueIdentifier(externalId, identifier!!)
+            else original.identifier
         )
         return patched
     }
@@ -71,10 +72,10 @@ data class AccountInfoLiteDto(
         try {
             val hostResolved = toParty(this.host, stateService, "host")
             return AccountInfo(
-                    name = this.name!!,
-                    host = hostResolved,
-                    identifier = if (this.identifier != null) UniqueIdentifier(null, this.identifier!!)
-                    else throw IllegalArgumentException("AccountInfoLiteDto.toTargetType requireds a valid identifier")
+                name = this.name!!,
+                host = hostResolved,
+                identifier = if (identifier != null) UniqueIdentifier(externalId, identifier!!)
+                else throw IllegalArgumentException("AccountInfoLiteDto.toTargetType requireds a valid identifier")
             )
         } catch (e: Exception) {
             throw DtoInsufficientMappingException(exception = e)
@@ -86,9 +87,10 @@ data class AccountInfoLiteDto(
          * Create a new DTO instance using the given [AccountInfo] as source.
          */
         fun mapToDto(original: AccountInfo, stateService: StateService<AccountInfo>? = null): AccountInfoLiteDto = AccountInfoLiteDto(
-                name = original.name,
-                host = original.host.name,
-                identifier = original.identifier.id
+            name = original.name,
+            host = original.host.name,
+            identifier = original.identifier.id,
+            externalId = original.identifier.externalId
         )
 
     }

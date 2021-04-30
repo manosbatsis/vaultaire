@@ -5,9 +5,14 @@ The following sections describe major changes per version
 and can be helpful with version upgrades.
 
 
+## 0.38
+
+- Minor accounts update 
+
+
 ## 0.37
 
-- RSQL support: removed `=notnull=` and refactored `=null=` to accept a boolean argument instead, 
+- RSQL support: removed `=notnull=` and refactored `=null=` to accept a boolean argument instead,
   according to the RSQL parser grammar.
 
 ## 0.36
