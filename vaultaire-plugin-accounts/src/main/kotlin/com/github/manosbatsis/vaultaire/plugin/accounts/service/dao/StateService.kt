@@ -58,9 +58,9 @@ interface AccountsAwareStateService<T : ContractState> :
             val accountInfo = findStoredAccountOrNull(accountIdAndParty.identifier)
             if (accountInfo != null) with(accountInfo!!.state!!.data) {
                 AccountInfoDto(
-                        name = name,
-                        host = host,
-                        identifier = identifier)
+                    name = name,
+                    host = host,
+                    identifier = identifier)
             }
             else null
         } else null
@@ -74,9 +74,10 @@ interface AccountsAwareStateService<T : ContractState> :
             val accountInfo = findStoredAccountOrNull(accountIdAndParty.identifier)
             if (accountInfo != null) with(accountInfo!!.state!!.data) {
                 AccountInfoLiteDto(
-                        name = name,
-                        host = host.name,
-                        identifier = identifier.id)
+                    name = name,
+                    host = host.name,
+                    identifier = identifier.id,
+                    externalId = identifier.externalId)
             }
             else null
         } else null
@@ -227,7 +228,9 @@ interface AccountsAwareStateService<T : ContractState> :
             AccountInfoDto(
                     accountInfoLiteDto.name,
                     host,
-                    accountInfoLiteDto.identifier?.let { UniqueIdentifier(null, it) }
+                    accountInfoLiteDto.identifier?.let {
+                        UniqueIdentifier(accountInfoLiteDto.externalId, it)
+                    }
             )
         }
         val accountParty = toAccountPartyOrNull(
@@ -258,13 +261,17 @@ interface AccountsAwareStateService<T : ContractState> :
             val accountInfo = findAccountOrNull(accountInfoDto.identifier!!.id, accountInfoDto.host!!.name)
             if (accountInfo != null) {
                 val anonymousParty = createPublicKey(accountInfo)
-                AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty)
+                with(accountInfo){
+                    AccountParty(identifier.id, name, anonymousParty, identifier.externalId)
+                }
             } else null
         } else if (accountInfoDto.identifier != null) {
             val accountInfo = findStoredAccountOrNull(accountInfoDto.identifier!!.id)?.state?.data
             if (accountInfo != null) {
                 val anonymousParty = createPublicKey(accountInfo)
-                AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty)
+                with(accountInfo){
+                    AccountParty(identifier.id, name, anonymousParty, identifier.externalId)
+                }
             } else null
         } else throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
                 "value: $accountInfoDto to AccountParty")

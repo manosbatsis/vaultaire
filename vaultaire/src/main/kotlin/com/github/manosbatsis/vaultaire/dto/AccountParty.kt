@@ -25,13 +25,13 @@ import java.util.UUID
 
 /**
  * Convenient "participant" type that combines a known Corda Account ID
- * with a corresponding  anonymous party.
+ * with a corresponding anonymous party.
  */
 @CordaSerializable
 data class AccountParty(
         /**
          * The account ID, maps to
-         * [com.r3.corda.lib.accounts.contracts.states.AccountInfo.identifier]
+         * [com.r3.corda.lib.accounts.contracts.states.AccountInfo.identifier.id]
          */
         var identifier: UUID,
         /**
@@ -40,7 +40,12 @@ data class AccountParty(
          * */
         var name: String,
         /** The account party */
-        var party: AnonymousParty
+        var party: AnonymousParty,
+        /**
+         * The account external ID, maps to
+         * [com.r3.corda.lib.accounts.contracts.states.AccountInfo.identifier.externalId]
+         */
+        var externalId: String? = null
 ) {
     fun hasMatchingIdentifier(other: AccountParty?): Boolean = identifier == other?.identifier
 
