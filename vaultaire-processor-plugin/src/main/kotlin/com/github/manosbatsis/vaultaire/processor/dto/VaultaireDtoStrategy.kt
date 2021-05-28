@@ -53,11 +53,19 @@ open class DefaultDtoStrategy(
 )
 
 /** Vaultaire-specific overrides for building a "lite" DTO type spec */
-class LiteDtoStrategy(
+open class LiteDtoStrategy(
         annotatedElementInfo: AnnotatedElementInfo
 ) : VaultaireDtoStrategy(
         annotatedElementInfo = annotatedElementInfo,
         composition = VaultaireLiteDtoStrategyComposition(annotatedElementInfo)
+)
+
+/** Vaultaire-specific overrides for building a REST-friendly DTO to be used as FlowLogic input */
+class LiteFlowInputStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : VaultaireDtoStrategy(
+        annotatedElementInfo = annotatedElementInfo,
+        composition = VaultaireLiteFlowInputStrategyComposition(annotatedElementInfo)
 )
 
 open class VaultaireDefaultDtoStrategyComposition(
@@ -77,5 +85,15 @@ open class VaultaireLiteDtoStrategyComposition(
     override val dtoNameStrategy = LiteDtoNameStrategy(annotatedElementInfo)
     override val dtoTypeStrategy = LiteDtoTypeStrategy(annotatedElementInfo)
     override val dtoMembersStrategy = LiteDtoMemberStrategy(
+            annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy)
+}
+
+open class VaultaireLiteFlowInputStrategyComposition(
+        override val annotatedElementInfo: AnnotatedElementInfo
+) : DtoStrategyComposition {
+
+    override val dtoNameStrategy = LiteFlowInputNameStrategy(annotatedElementInfo)
+    override val dtoTypeStrategy = LiteFlowInputTypeStrategy(annotatedElementInfo)
+    override val dtoMembersStrategy = LiteFlowInputMemberStrategy(
             annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy)
 }

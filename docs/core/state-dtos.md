@@ -122,6 +122,17 @@ class BookStateMixin // just a placeholder for our annotation
 ```
 
 
+#### Non-State Models
+
+`@VaultaireFlowInput` and `@VaultaireFlowInputForDependency` cab be used for 
+regular, non-ContractState data classes to similarly generate REST-friendly 
+DTOs and conversion utils focused op Corda-related types like accounts etc.
+
+```kotlin
+@VaultaireFlowInputForDependency(baseType = MagazineModel::class)
+data class MagazineModelMixin
+```
+
 #### Utility Annotations
 
 The`@DefaultValue` can be used to provide default property initializers. 

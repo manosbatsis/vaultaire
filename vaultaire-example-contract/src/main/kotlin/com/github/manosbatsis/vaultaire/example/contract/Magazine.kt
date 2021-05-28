@@ -21,16 +21,8 @@ package com.github.manosbatsis.vaultaire.example.contract
 
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.Create
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.Delete
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.Update
-import net.corda.core.contracts.CommandData
-import net.corda.core.contracts.Contract
-import net.corda.core.contracts.LinearState
-import net.corda.core.contracts.TypeOnlyCommandData
-import net.corda.core.contracts.UniqueIdentifier
-import net.corda.core.contracts.requireSingleCommand
-import net.corda.core.contracts.requireThat
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.*
+import net.corda.core.contracts.*
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.QueryableState
@@ -38,7 +30,7 @@ import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.math.BigDecimal
 import java.security.PublicKey
-import java.util.Date
+import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
@@ -118,6 +110,17 @@ class MagazineContract : Contract {
         FANTACY,
         HISTORICAL
     }
+
+    data class MagazineModel(val publisher: AccountParty?,
+                             val author: AccountParty,
+                             val price: BigDecimal,
+                             val genre: MagazineGenre,
+                             val issues: Int = 1,
+                             val title: String,
+                             @DefaultValue("Date()")
+                             val published: Date,
+                             @DefaultValue("UniqueIdentifier()")
+                             val linearId: UniqueIdentifier = UniqueIdentifier())
 
     data class MagazineState(val publisher: AccountParty?,
                              val author: AccountParty,

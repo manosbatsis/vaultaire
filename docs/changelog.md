@@ -4,6 +4,10 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+## 0.39
+
+- Added `@VaultaireFlowInput` and `@VaultaireFlowInputForDependency` to support
+generating REST-friendly DTOs and utils for non-state data classes.
 
 ## 0.38
 

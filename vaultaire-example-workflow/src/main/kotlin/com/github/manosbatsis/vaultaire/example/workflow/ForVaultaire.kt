@@ -21,15 +21,29 @@ package com.github.manosbatsis.vaultaire.example.workflow
 
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
+import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowInputForDependency
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
 import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState.MagazineSchemaV1.PersistentMagazineState
 import com.r3.corda.lib.tokens.contracts.internal.schemas.PersistentFungibleToken
 import com.r3.corda.lib.tokens.contracts.states.FungibleToken
 import net.corda.core.contracts.UniqueIdentifier
-import java.util.Date
+import java.util.*
 
+
+@VaultaireFlowInputForDependency(
+        baseType = MagazineContract.MagazineModel::class)
+data class MagazineModelMixin(
+        @DefaultValue("1")
+        var issues: Int,
+        @DefaultValue("Date()")
+        val published: Date,
+        @DefaultValue("UniqueIdentifier()")
+        val linearId: UniqueIdentifier,
+        val customMixinField: Map<String, String> = emptyMap()
+)
 
 @VaultaireGenerateForDependency(name = "fungibleTokenConditions",
         persistentStateType = PersistentFungibleToken::class,

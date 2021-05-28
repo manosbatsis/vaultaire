@@ -17,26 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.plugin.accounts.service.dto
+package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
-import com.github.manosbatsis.vaultaire.dto.VaultaireBaseLiteDto
-import com.github.manosbatsis.vaultaire.dto.VaultaireDto
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeService
-import net.corda.core.contracts.ContractState
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
+
+open class AccountsAwareLiteFlowInputMemberStrategy(
+        annotatedElementInfo: AnnotatedElementInfo,
+        dtoNameStrategy: DtoNameStrategy,
+        dtoTypeStrategy: DtoTypeStrategy
+) : AcountsAwareLiteDtoMemberStrategy(
+        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+) {
 
 
-/**
- * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
- * only bringing a [AccountsAwareStateService] in-context for
- * additional conversion or other utility functions.
- */
-interface AccountsAwareLiteDto<T : ContractState> : VaultaireBaseLiteDto<T, AccountsAwareStateService<T>>
 
+    override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
+        functionBuilder.addParameter("stateService",
+                AccountsAwareNodeService::class.java.asClassName())
+    }
 
-/**
- * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
- * only bringing a [AccountsAwareStateService] in-context for
- * additional conversion or other utility functions.
- */
-interface AccountsAwareDto<T : Any>: VaultaireDto<T, AccountsAwareNodeService>
+}

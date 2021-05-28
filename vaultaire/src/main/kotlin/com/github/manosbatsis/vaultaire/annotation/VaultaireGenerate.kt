@@ -56,7 +56,8 @@ annotation class VaultaireGenerateForDependency(
 
 enum class VaultaireDtoStrategyKeys(val classNameSuffix: String) {
     DEFAULT("Dto"),
-    LITE("LiteDto");
+    LITE("LiteDto"),
+    FLOW_INPUT("FlowInputDto");
 
 
     override fun toString(): String {
@@ -79,6 +80,27 @@ enum class VaultaireDtoStrategyKeys(val classNameSuffix: String) {
     }
 
 }
+
+/** Generate a REST-friendly DTO for the annotated input model class or constructor. */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.CONSTRUCTOR)
+annotation class VaultaireFlowInput(
+        val ignoreProperties: Array<String> = [],
+        val copyAnnotationPackages: Array<String> = [],
+        val strategies: Array<VaultaireDtoStrategyKeys> = [VaultaireDtoStrategyKeys.FLOW_INPUT],
+        val includeParticipants: Boolean = false
+)
+
+/** Generate a REST-friendly DTO for the target [baseType] input model class of a project dependency. */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.CLASS)
+annotation class VaultaireFlowInputForDependency(
+        val ignoreProperties: Array<String> = [],
+        val baseType: KClass<out Any>,
+        val copyAnnotationPackages: Array<String> = [],
+        val strategies: Array<VaultaireDtoStrategyKeys> = [VaultaireDtoStrategyKeys.FLOW_INPUT],
+        val includeParticipants: Boolean = false
+)
 
 /** Generate a DTO for the annotated [ContractState] class or constructor. */
 @Retention(AnnotationRetention.SOURCE)

@@ -26,6 +26,7 @@ import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.processor.dto.DefaultDtoStrategy
 import com.github.manosbatsis.vaultaire.processor.dto.LiteDtoStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.LiteFlowInputStrategy
 import com.google.auto.service.AutoService
 
 
@@ -35,7 +36,8 @@ class BasicDtoStrategyFactoryProcessorPlugin : AbstractDtoStrategyFactoryProcess
     companion object {
         private val strategies = mapOf(
                 VaultaireDtoStrategyKeys.DEFAULT to DefaultDtoStrategy::class.java,
-                VaultaireDtoStrategyKeys.LITE to LiteDtoStrategy::class.java
+                VaultaireDtoStrategyKeys.LITE to LiteDtoStrategy::class.java,
+                VaultaireDtoStrategyKeys.FLOW_INPUT to LiteFlowInputStrategy::class.java
         )
     }
 

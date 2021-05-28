@@ -26,12 +26,8 @@ import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.plugin.BaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto.AccountsAwareLiteDtoStrategy
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateCordaServiceDelegate
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceDelegate
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServicePoolBoyDelegate
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcConnectionDelegate
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServiceRpcDelegate
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.ExtendedAccountsAwareStateService
+import com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto.AccountsAwareLiteFlowInputStrategy
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.*
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
@@ -58,7 +54,8 @@ class AccountsAwarDtoStrategyFactoryProcessorPlugin : AbstractDtoStrategyFactory
 
     companion object {
         private val strategies = mapOf(
-                VaultaireDtoStrategyKeys.LITE to AccountsAwareLiteDtoStrategy::class.java
+                VaultaireDtoStrategyKeys.LITE to AccountsAwareLiteDtoStrategy::class.java,
+                VaultaireDtoStrategyKeys.FLOW_INPUT to AccountsAwareLiteFlowInputStrategy::class.java
         )
     }
 

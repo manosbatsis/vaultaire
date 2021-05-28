@@ -21,18 +21,30 @@ package com.github.manosbatsis.vaultaire.dto
 
 import com.github.manosbatsis.kotlin.utils.api.DtoInsufficientMappingException
 import com.github.manosbatsis.vaultaire.service.dao.StateService
+import com.github.manosbatsis.vaultaire.service.node.NodeService
+import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
 import net.corda.core.contracts.ContractState
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
 
 
+/**
+ * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
+ * only bringing a [StateService] in-context for [toTargetType] and [toPatched].
+ */
 interface VaultaireLiteDto<T : ContractState> : VaultaireBaseLiteDto<T, StateService<T>>
 
 /**
  * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
  * only bringing a [StateService] in-context for [toTargetType] and [toPatched].
  */
-interface VaultaireBaseLiteDto<T : ContractState, S : StateService<T>> {
+interface VaultaireBaseLiteDto<T : ContractState, S : StateService<T>> : VaultaireDto<T, S>
+
+/**
+ * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
+ * only bringing a [NodeService] in-context for [toTargetType] and [toPatched].
+ */
+interface VaultaireDto<T : Any, S : NodeServiceDelegate> {
     /**
      * Create a patched copy of the given [T] instance,
      * updated using this DTO's non-null properties
