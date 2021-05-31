@@ -584,11 +584,12 @@
 <p>Creating search endpoints in webapp is a tedious process, 
 even with Vaultaire&rsquo;s query DSL. The main maintenance effort 
 goes to mapping URL parameters to query criteria and operators. 
-What if those could be evaluated dynamically?</p>
-<p>This plugin provides support for 
+Why not evaluate those dynamically?</p>
+<p>This plugin uses <a href="https://github.com/jirutka/rsql-parser">jirutka/rsql-parser</a> 
+to provide support for 
 <a href="https://www.baeldung.com/rest-api-search-language-rsql-fiql">RSQL</a> 
 and <a href="https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00">FIQL</a> 
-queries, which is great great for REST:</p>
+queries, which is great for REST:</p>
 <ul>
 <li>It&rsquo;s simple, compact and URL-friendly.</li>
 <li>There&rsquo;s no need to maintain endpoints as you add/modify state propperties/schemas.</li>
