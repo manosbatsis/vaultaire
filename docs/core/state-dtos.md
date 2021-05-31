@@ -155,86 +155,97 @@ data class MagazineMixin(
 
 #### Sample DTO
 
-In both cases above the following DTO will be generated.
-Note the nullable var members and utilities to convert between the two types
-or to patch an existing state:
+Sample (state) client DTO: nullable var members and utilities to convert from/to  
+or patch an instance of the target type:
 
 ```kotlin
 /**
- * A [BookState]-specific [Dto] implementation
+ * A [MagazineContract.MagazineState]-specific
+ * [com.github.manosbatsis.vaultaire.dto.VaultaireStateClientDto] implementation
  */
 @CordaSerializable
-data class BookStateClientDto(
-  var publisher: Party? = null,
-  var author: Party? = null,
-  var price: BigDecimal? = null,
-  var genre: BookContract.Genre? = null,
-  var editions: Int? = 1,
-  var title: String? = null,
-  var published: Date? = null,
-  @field:JsonProperty(value = "alias")
-  var alternativeTitle: String? = null,
-  var linearId: UniqueIdentifier? = null
-) : Dto<BookState> {
-  /**
-   * Alternative constructor, used to map 
-   * from the given [BookState] instance.
-   */
-  constructor(original: BookState) : this(
-        publisher = original.publisher,
-        author = original.author,
-        price = original.price,
-        genre = original.genre,
-        editions = original.editions,
-        title = original.title,
-        published = original.published,
-        alternativeTitle = original.alternativeTitle,
-        linearId = original.linearId
-  )
-
-  /**
-   * Create a patched copy of the given [BookState] instance,
-   * updated using this DTO's non-null properties.
-   */
-  override fun toPatched(original: BookState): BookState {
-    val patched = BookState(
-          publisher = this.publisher ?: original.publisher,
-          author = this.author ?: original.author,
-          price = this.price ?: original.price,
-          genre = this.genre ?: original.genre,
-          editions = this.editions ?: original.editions,
-          title = this.title ?: original.title,
-          published = this.published ?: original.published,
-          alternativeTitle = this.alternativeTitle ?: original.alternativeTitle,
-          linearId = this.linearId ?: original.linearId
-    )
-    return patched
-  }
-
-  /**
-   * Create an instance of [BookState], using this DTO's properties.
-   * May throw a [DtoInsufficientStateMappingException] 
-   * if there is mot enough information to do so.
-   */
-  override fun toState(): BookState {
-    try {
-       val state = BookState(
-          publisher = this.publisher!!,
-          author = this.author!!,
-          price = this.price!!,
-          genre = this.genre!!,
-          editions = this.editions!!,
-          title = this.title!!,
-          published = this.published!!,
-          alternativeTitle = this.alternativeTitle,
-          linearId = this.linearId!!
-       )
-       return state
+data class MagazineStateClientDto(
+        var publisher: AccountInfoStateClientDto? = null,
+        var author: AccountInfoStateClientDto? = null,
+        var price: BigDecimal? = null,
+        var genre: MagazineContract.MagazineGenre? = null,
+        var issues: Int? = 1,
+        var title: String? = null,
+        var published: Date? = Date(),
+        var linearId: UniqueIdentifier? = UniqueIdentifier(),
+        var customMixinField: Map<String, String>? = null
+) : VaultaireAccountsAwareStateClientDto<MagazineContract.MagazineState> {
+    /**
+     * Create a patched copy of the given [MagazineContract.MagazineState] instance,
+     * updated using this DTO's non-null properties.
+     */
+    @Suspendable
+    override fun toPatched(original: MagazineContract.MagazineState,
+                           stateService: AccountsAwareStateService<MagazineContract.MagazineState>):
+            MagazineContract.MagazineState {
+        val publisherResolved = stateService.toAccountPartyOrNull(this.publisher,
+                original.publisher)
+        val authorResolved = stateService.toAccountParty(this.author, original.author)
+        val patched = original.copy(
+                publisher = publisherResolved,
+                author = authorResolved,
+                price = this.price ?: original.price,
+                genre = this.genre ?: original.genre,
+                issues = this.issues ?: original.issues,
+                title = this.title ?: original.title,
+                published = this.published ?: original.published,
+                linearId = this.linearId ?: original.linearId
+        )
+        return patched
     }
-    catch(e: Exception) {
-       throw DtoInsufficientStateMappingException(exception = e)
+
+    /**
+     * Create an instance of [MagazineContract.MagazineState], using this DTO's properties.
+     * May throw a [DtoInsufficientStateMappingException]
+     * if there is mot enough information to do so.
+     */
+    @Suspendable
+    override
+    fun toTargetType(stateService: AccountsAwareStateService<MagazineContract.MagazineState>):
+            MagazineContract.MagazineState {
+        val publisherResolved = stateService.toAccountPartyOrNull(this.publisher, null, false,
+                "publisher")
+        val authorResolved = stateService.toAccountParty(this.author, null, false, "author")
+        return MagazineContract.MagazineState(
+                publisher = publisherResolved,
+                author = authorResolved,
+                price = this.price?:errNull("price"),
+                genre = this.genre?:errNull("genre"),
+                issues = this.issues?:errNull("issues"),
+                title = this.title?:errNull("title"),
+                published = this.published?:errNull("published"),
+                linearId = this.linearId?:errNull("linearId")
+        )
     }
-  }
+
+    companion object {
+        /**
+         * Create a new DTO instance using the given [MagazineContract.MagazineState] as source.
+         */
+        @Suspendable
+        fun mapToDto(original: MagazineContract.MagazineState,
+                     stateService: AccountsAwareStateService<MagazineContract.MagazineState>):
+                MagazineStateClientDto {
+            val publisherResolved = stateService.toAccountInfoClientDtoOrNull(original.publisher)
+            val authorResolved = stateService.toAccountInfoClientDto(original.author)
+            return MagazineStateClientDto(
+                    publisher = publisherResolved,
+                    author = authorResolved,
+                    price = original.price,
+                    genre = original.genre,
+                    issues = original.issues,
+                    title = original.title,
+                    published = original.published,
+                    linearId = original.linearId
+            )
+
+        }
+    }
 }
 
 ```
@@ -259,50 +270,3 @@ data class BookState(
 }
 ```
 
-The "client" strategy is provided to help where deserialization would normally require
-either a `ServiceHub` or `RpcOps`, e.g. when the target property is a `Party`,
-in which case the DTO will use a more manageable type like `CordaX500Name`,
-and require a service to convert to or patch a `ContractState` instance.
-Note that client DTO classnames will also have a `StateClientDto` suffix. Here's the "client"
-DTO generated for the above example:
-
-```kotlin
-data class BookStateClientDto(
-  var publisher: CordaX500Name? = null,
-  var author: CordaX500Name? = null,
-  var price: BigDecimal? = null,
-  var genre: BookContract.Genre? = null,
-  var editions: Int? = 1,
-  var title: String? = null,
-  var published: Date? = null,
-  @field:JsonProperty(value = "alias")
-  var alternativeTitle: String? = null,
-  var linearId: UniqueIdentifier? = null
-) : VaultaireDto<BookContract.BookState> {
-  
-
-  /**
-   * Create a patched copy of the given [BookContract.BookState] instance,
-   * updated using this DTO's non-null properties.
-   */
-  override fun toPatched(original: BookContract.BookState,
-      stateService: StateService<BookContract.BookState>): BookContract.BookState {
-    val patched = //... path the original, applying non-null values from this DTO
-    return patched
-  }
-
-  /**
-   * Create an instance of [BookContract.BookState], using this DTO's properties.
-   * May throw a [DtoInsufficientStateMappingException]
-   * if there is mot enough information to do so.
-   */
-  override fun toTargetType(stateService: StateService<BookContract.BookState>):
-      BookContract.BookState {
-    val originalTypeInstance = BookContract.BookState(
-        // Use this DTO's values to create an new 
-        // instance of the target type
-    )
-    return originalTypeInstance
-  }
-}
-```

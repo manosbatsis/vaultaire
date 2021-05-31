@@ -66,7 +66,7 @@ data class MagazineState(
 The generated client DTO for the above:
 
 ```kotlin
-data class MagazineStateStateClientDto(
+data class MagazineStateClientDto(
 		var publisher: AccountInfoStateClientDto? = null,
 		var author: AccountInfoStateClientDto? = null,
 		var editor: AccountInfoStateClientDto? = null,

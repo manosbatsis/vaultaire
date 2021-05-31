@@ -6,7 +6,8 @@ Vaultaire's `StateService`s provide a simple, consistent API to
 load, query and track vault states.
 
 `StateService` implementations are usually auto-generated at build time
-and specific to a single `ContractState` type.
+based on `VaultaireStateUtils` or `VaultaireStateUtilsMixin` annotations, 
+i.e. specific to a single `ContractState` type.
 
 State Services can also decouple you code from `ServiceHub` and `CordaRPCOps`
 by providing constructors for either, thus helping increase code reuse 
@@ -29,8 +30,8 @@ val bookStateService = BasicStateService(
 
 Vaultaire's annotation processor  will generate optimal `StateService` implementations,
 each specific to one of the `ContractState`-`PersistentState` pairs found at build-time
-based on the annotations found in your code. Service classnames are based on the contract state
-classname, suffixed by "Service".
+based on the `VaultaireStateUtils` or `VaultaireStateUtilsMixin` annotations found in 
+your code. Service classnames are based on the contract state classname, suffixed by "Service".
 
 Usage example:
 

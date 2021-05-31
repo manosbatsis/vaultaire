@@ -59,14 +59,13 @@ The equivalent using RSQL:
 
 
 ```kotlin
-val rsql = "title=like=*Corda*;price>=12"
 // Use the generated DSL to create query criteria
 val query = bookStateService.buildQuery {
     // blah
 }
 // Use the RSQL extension function
 .withRsql(
-    rsql,
+    "title=like=*Corda*;price>=12",
     // Optional, default is 
     // SimpleRsqlArgumentsConverter.Factory()
     converterFactory  
