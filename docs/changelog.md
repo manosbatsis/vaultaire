@@ -24,11 +24,11 @@ This is a release with BREAKING CHANGES.
 
 
 - Class and file names of generated state-based DTOs use new suffixes:
-  - `LiteDto` has changes to `StateClientDto`
-  - `Dto` has changes to `StateDto`
+    - `LiteDto` has changed to `StateClientDto`
+    - `Dto` has changed to `StateDto`
 - DTO generation strategies have been updated:
-  - `DEFAULT`is now `CORDAPP_LOCAL_DTO`
-  - `LITE` is now `CORDAPP_CLIENT_DTO`
+    - `DEFAULT`is now `CORDAPP_LOCAL_DTO`
+    - `LITE` is now `CORDAPP_CLIENT_DTO`
 - The default DTO strategy is now `CORDAPP_CLIENT_DTO`
 
 
