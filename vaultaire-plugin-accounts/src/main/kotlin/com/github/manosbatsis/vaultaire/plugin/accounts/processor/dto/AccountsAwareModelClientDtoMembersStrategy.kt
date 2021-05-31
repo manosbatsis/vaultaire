@@ -19,22 +19,22 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategyComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeService
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.asClassName
 
-open class AccountsAwareLiteFormInputStrategyComposition(
-        override val annotatedElementInfo: AnnotatedElementInfo
-) : DtoStrategyComposition {
+open class AccountsAwareModelClientDtoMembersStrategy(
+        annotatedElementInfo: AnnotatedElementInfo,
+        dtoNameStrategy: AccountsAwareModelClientDtoNameStrategy,
+        dtoTypeStrategy: AccountsAwareModelClientDtoTypeStrategy
+) : AccountsAwareClientDtoMemberStrategyBase<AccountsAwareModelClientDtoNameStrategy, AccountsAwareModelClientDtoTypeStrategy>(
+        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+) {
 
-    override val dtoNameStrategy = AccountsAwareLiteFlowInputNameStrategy(
-            annotatedElementInfo
-    )
-    override val dtoTypeStrategy = AccountsAwareLiteFlowInputTypeStrategy(
-            annotatedElementInfo
-    )
-    override val dtoMembersStrategy = AccountsAwareLiteFlowInputMemberStrategy(
-            annotatedElementInfo,
-            dtoNameStrategy,
-            dtoTypeStrategy
-    )
+    override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
+        functionBuilder.addParameter("stateService",
+                AccountsAwareNodeService::class.java.asClassName())
+    }
+
 }

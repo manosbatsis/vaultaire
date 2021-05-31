@@ -29,7 +29,7 @@ import com.github.manosbatsis.partiture.flow.io.input.InputConverter
 import com.github.manosbatsis.partiture.flow.io.output.TypedOutputStatesConverter
 import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
+import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowResponder
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_ID
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
@@ -39,7 +39,7 @@ import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatingFlow
 import net.corda.core.flows.StartableByRPC
-import java.util.Date
+import java.util.*
 
 
 class CreateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<BookStateDto> {
@@ -99,7 +99,7 @@ open class BaseBookFlowResponder(
 /** Create/publish a bookstate  */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(
+@VaultaireFlowResponder(
         value = BaseBookFlowResponder::class,
         comment = "A basic responder for countersigning and listening for finality"
 )
@@ -112,7 +112,7 @@ class CreateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, List<Boo
 /** Create/publish a bookstate  */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(
+@VaultaireFlowResponder(
         value = BaseBookFlowResponder::class,
         comment = "A basic responder for countersigning and listening for finality"
 )
@@ -125,7 +125,7 @@ class UpdateBookFlow(input: BookStateDto) : PartitureFlow<BookStateDto, List<Boo
 /** Create/publish a bookstate  */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(
+@VaultaireFlowResponder(
         value = BaseBookFlowResponder::class,
         comment = "A basic responder for countersigning and listening for finality"
 )

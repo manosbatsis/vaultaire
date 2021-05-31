@@ -21,18 +21,12 @@ package com.github.manosbatsis.vaultaire.example.workflow
 
 import com.github.manosbatsis.partiture.flow.PartitureFlow
 import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
-import com.github.manosbatsis.vaultaire.example.contract.BookContract
+import com.github.manosbatsis.vaultaire.example.contract.*
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState.BookSchemaV1.PersistentBookState
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Genre.TECHNOLOGY
-import com.github.manosbatsis.vaultaire.example.contract.BookStateDto
-import com.github.manosbatsis.vaultaire.example.contract.BookStateService
-import com.github.manosbatsis.vaultaire.example.contract.PersistentBookStateConditions
-import com.github.manosbatsis.vaultaire.example.contract.PersistentBookStateFields
-import com.github.manosbatsis.vaultaire.example.contract.bookStateQuery
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.accountInfoQuery
 import com.github.manosbatsis.vaultaire.plugin.rsql.support.SimpleRsqlArgumentsConverter
 import com.github.manosbatsis.vaultaire.plugin.rsql.withRsql
@@ -54,15 +48,11 @@ import net.corda.testing.node.MockNetworkNotarySpec
 import net.corda.testing.node.MockNetworkParameters
 import net.corda.testing.node.StartedMockNode
 import net.corda.testing.node.TestCordapp.Companion.findCordapp
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -83,7 +73,7 @@ class BookMockTests {
             RequestKey::class.java.`package`.name,
             // Vaultaire
             AccountParty::class.java.`package`.name,
-            AccountInfoDto::class.java.`package`.name,
+            AccountInfoStateDto::class.java.`package`.name,
             // Partiture
             PartitureFlow::class.java.`package`.name,
             // Our coprdapp

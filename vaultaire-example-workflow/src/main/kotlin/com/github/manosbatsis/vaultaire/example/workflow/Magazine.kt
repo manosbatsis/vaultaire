@@ -35,7 +35,7 @@ import com.github.manosbatsis.partiture.flow.tx.initiating.TxStrategy
 import com.github.manosbatsis.partiture.flow.tx.initiating.TxStrategyExecutionException
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
 import com.github.manosbatsis.partiture.flow.util.IdentitySyncMode.SKIP
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
+import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowResponder
 import com.github.manosbatsis.vaultaire.example.contract.MAGAZINE_CONTRACT_ID
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
@@ -49,7 +49,7 @@ import net.corda.core.transactions.SignedTransaction.SignaturesMissingException
 import java.security.PublicKey
 
 /* TODO
-class LiteDtoInputConverter<D: AccountsAwareLiteDto<*>> :
+class StateClientDtoInputConverter<D: VaultaireAccountsAwareStateClientDto<*>> :
         PartitureFlowDelegateBase(),
         InputConverter<D>{
     override fun convert(input: D): CallContext {
@@ -66,9 +66,9 @@ class LiteDtoInputConverter<D: AccountsAwareLiteDto<*>> :
  */
 class CreateMagazineInputConverter :
         PartitureFlowDelegateBase(),
-        InputConverter<MagazineStateLiteDto> {
+        InputConverter<MagazineStateClientDto> {
     @Suspendable
-    override fun convert(input: MagazineStateLiteDto): CallContext {
+    override fun convert(input: MagazineStateClientDto): CallContext {
         val stateService = MagazineStateService(clientFlow.serviceHub)
         val contractState = input.toTargetType(stateService)
         // Prepare a TX builder
@@ -83,9 +83,9 @@ class CreateMagazineInputConverter :
 
 class UpdateMagazineInputConverter :
         PartitureFlowDelegateBase(),
-        InputConverter<MagazineStateLiteDto> {
+        InputConverter<MagazineStateClientDto> {
     @Suspendable
-    override fun convert(input: MagazineStateLiteDto): CallContext {
+    override fun convert(input: MagazineStateClientDto): CallContext {
         val stateService = MagazineStateService(clientFlow.serviceHub)
         // Load existing state
         val existing = stateService.getByLinearId(input.linearId!!)
@@ -188,12 +188,12 @@ abstract class BaseMagazineFlow<IN, OUT>(
 /** Create/publish a magazinestate  */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(
+@VaultaireFlowResponder(
         value = BaseMagazineFlowResponder::class,
         comment = "A basic responder for countersigning and listening for finality"
 )
-class CreateMagazineFlow(input: MagazineStateLiteDto) :
-        BaseMagazineFlow<MagazineStateLiteDto, List<MagazineState>>(
+class CreateMagazineFlow(input: MagazineStateClientDto) :
+        BaseMagazineFlow<MagazineStateClientDto, List<MagazineState>>(
                 input = input, // Input can be anything
                 inputConverter = CreateMagazineInputConverter(),// Our custom IN converter
                 outputConverter = TypedOutputStatesConverter(MagazineState::class.java)
@@ -202,12 +202,12 @@ class CreateMagazineFlow(input: MagazineStateLiteDto) :
 /** Create/publish a magazinestate  */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(
+@VaultaireFlowResponder(
         value = BaseMagazineFlowResponder::class,
         comment = "A basic responder for countersigning and listening for finality"
 )
-class UpdateMagazineFlow(input: MagazineStateLiteDto) :
-        BaseMagazineFlow<MagazineStateLiteDto, List<MagazineState>>(
+class UpdateMagazineFlow(input: MagazineStateClientDto) :
+        BaseMagazineFlow<MagazineStateClientDto, List<MagazineState>>(
                 input = input, // Input can be anything
                 inputConverter = UpdateMagazineInputConverter(),// Our custom IN converter
                 outputConverter = TypedOutputStatesConverter(MagazineState::class.java)// OUT build-in converter
@@ -217,7 +217,7 @@ class UpdateMagazineFlow(input: MagazineStateLiteDto) :
 /** Create/publish a magazinestate  */
 @InitiatingFlow
 @StartableByRPC
-@VaultaireGenerateResponder(
+@VaultaireFlowResponder(
         value = BaseMagazineFlowResponder::class,
         comment = "A basic responder for countersigning and listening for finality"
 )

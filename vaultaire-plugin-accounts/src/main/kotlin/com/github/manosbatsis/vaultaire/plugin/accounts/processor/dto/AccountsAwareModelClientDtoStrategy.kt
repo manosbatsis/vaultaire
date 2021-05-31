@@ -20,12 +20,23 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDtoStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.BaseVaultaireDtoStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.ModelClientDtoStrategy
 
 /** Vaultaire-specific overrides for building a "lite" DTO type spec */
-open class AccountsAwareLiteDtoStrategy(
+open class AccountsAwareModelClientDtoStrategy(
         annotatedElementInfo: AnnotatedElementInfo
-) : VaultaireDtoStrategy(
+) : BaseVaultaireDtoStrategy<AccountsAwareModelClientDtoNameStrategy, AccountsAwareModelClientDtoTypeStrategy, AccountsAwareModelClientDtoMembersStrategy>(
         annotatedElementInfo = annotatedElementInfo,
-        composition = AccountsAwareLiteDtoStrategyComposition(annotatedElementInfo)
-)
+        dtoNameStrategyConstructor = ::AccountsAwareModelClientDtoNameStrategy,
+        dtoTypeStrategyConstructor = ::AccountsAwareModelClientDtoTypeStrategy,
+        dtoMembersStrategyConstructor = ::AccountsAwareModelClientDtoMembersStrategy
+){
+    companion object{
+        const val STRATEGY_KEY = ModelClientDtoStrategy.STRATEGY_KEY
+    }
+
+    override fun with(annotatedElementInfo: AnnotatedElementInfo): AccountsAwareModelClientDtoStrategy{
+        return AccountsAwareModelClientDtoStrategy(annotatedElementInfo)
+    }
+}

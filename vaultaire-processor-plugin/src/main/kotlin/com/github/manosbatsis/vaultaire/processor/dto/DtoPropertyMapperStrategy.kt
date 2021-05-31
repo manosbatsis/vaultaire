@@ -19,18 +19,19 @@
  */
 package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
 import com.squareup.kotlinpoet.TypeName
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 
-
+// TODO
 interface DtoPropertyMapper {
 
     fun supportsSourceType(strategy: Class<*>): Boolean
 
 }
 
+// TODO
 interface DtoPropertyMapperStrategy {
 
     /** Level 1 filtering */

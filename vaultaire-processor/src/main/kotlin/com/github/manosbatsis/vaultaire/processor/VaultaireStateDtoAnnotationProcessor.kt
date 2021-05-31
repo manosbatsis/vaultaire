@@ -19,10 +19,9 @@
  */
 package com.github.manosbatsis.vaultaire.processor
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.ConstructorRefsCompositeDtoStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.plugins.AnnotationProcessorPluginService
 import com.github.manosbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
-import com.github.manosbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModelInfoProcessor
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
@@ -35,52 +34,29 @@ import javax.lang.model.SourceVersion
  * Kapt processor for generating (Corda) state-based DTOs.
  */
 @SupportedAnnotationTypes(
-        "com.github.manosbatsis.vaultaire.annotation.VaultaireFlowInput",
-        "com.github.manosbatsis.vaultaire.annotation.VaultaireFlowInputForDependency")
+        "com.github.manosbatsis.vaultaire.annotation.VaultaireStateDto",
+        "com.github.manosbatsis.vaultaire.annotation.VaultaireStateDtoMixin")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED)
-class VaultaireFlowInputAnnotationProcessor : AbstractAnnotatedModelInfoProcessor(
-        primaryTargetRefAnnotationName = "baseType",
-        secondaryTargetRefAnnotationName = ""
+class VaultaireStateDtoAnnotationProcessor : AbstractVaultaireDtoAnnotationProcessor(
+        primaryTargetRefAnnotationName = "contractStateType",
+        secondaryTargetRefAnnotationName = "persistentStateType"
 ) {
 
     /** Get a list of DTO strategies to apply per annotated element */
-    private fun getDtoStrategies(annotatedElementInfo: AnnotatedElementInfo): Map<String, DtoStrategy> {
+    override fun getDtoStrategies(annotatedElementInfo: AnnotatedElementInfo): Map<String, ConstructorRefsCompositeDtoStrategy<*, *, *>> {
         val pluginServiceLoader = AnnotationProcessorPluginService.getInstance()
         val strategyKeys = annotatedElementInfo.annotation
                 .findAnnotationValueListEnum("strategies", VaultaireDtoStrategyKeys::class.java)
                 ?: error("Could not find annotation member: strategies")
         return strategyKeys.map {
-            val strategy = it.toString() //.toString()
-            strategy to pluginServiceLoader.getPlugin(
+            val strategyKey = it.toString() //.toString()
+            val pluginLoader = pluginServiceLoader.getPlugin(
                     DtoStrategyFactoryProcessorPlugin::class.java,
-                    annotatedElementInfo, strategy)
-                    .createStrategy(annotatedElementInfo, strategy)
+                    annotatedElementInfo, strategyKey)
+            val strategy = pluginLoader.createStrategy(annotatedElementInfo, strategyKey) as ConstructorRefsCompositeDtoStrategy<*, *, *>
+            strategyKey to strategy
         }.toMap()
-    }
-
-    override fun processElementInfos(elementInfos: List<AnnotatedElementInfo>) =
-            elementInfos.forEach { processElementInfo(it) }
-
-    private fun processElementInfo(elementInfo: AnnotatedElementInfo) {
-        println("processElementInfo, elementInfo: $elementInfo")
-        getDtoStrategies(elementInfo).map { (suffix, strategy) ->
-
-            val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
-            println("processElementInfo, suffix: ${suffix}")
-            val dto = dtoStrategyBuilder.build()
-            val packageName = elementInfo.generatedPackageName
-            val fileName = "${elementInfo.primaryTargetTypeElementSimpleName}${suffix}"
-            println("processElementInfo, dto: ${dto}")
-            println("processElementInfo, packageName: ${packageName}")
-            println("processElementInfo, fileName: ${fileName}")
-            println("processElementInfo, sourceRootFile: ${sourceRootFile}")
-            // Generate the Kotlin file
-            getFileSpecBuilder(packageName, fileName)
-                    .addType(dto)
-                    .build()
-                    .writeTo(sourceRootFile)
-        }
     }
 
 }

@@ -19,22 +19,17 @@
  */
 package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoMembersStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.TypeSpec.Builder
 
-open class VaultaireDtoMemberStrategy(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: DtoNameStrategy,
-        dtoTypeStrategy: DtoTypeStrategy
-) : SimpleDtoMembersStrategy(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-) {
+open class ModelClientDtoNameStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : StateClientDtoNameStrategy(annotatedElementInfo) {
 
-    override fun addAltConstructor(typeSpecBuilder: Builder, dtoAltConstructorBuilder: FunSpec.Builder) {
-        // NO-OP
+    companion object{
+        val STRATEGY_KEY = ModelClientDtoStrategy.STRATEGY_KEY
+        val OVERLAP = "Model"
     }
+
+    override fun getClassNameSuffix(): String = annotatedElementInfo.overrideClassNameSuffix
+            ?: if(annotatedElementInfo.primaryTargetTypeElementSimpleName.endsWith(OVERLAP)){STRATEGY_KEY.removePrefix(OVERLAP)}else{STRATEGY_KEY}
 }

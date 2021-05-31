@@ -24,74 +24,73 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.dto
 
 import co.paralleluniverse.fibers.Suspendable
-import com.github.manosbatsis.kotlin.utils.api.DtoInsufficientMappingException
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.AccountsAwareLiteDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.VaultaireAccountsAwareStateClientDto
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.serialization.CordaSerializable
-import java.util.UUID
+import java.util.*
 
 /**
  * A [AccountInfo]-specific [com.github.manosbatsis.kotlin.utils.api.Dto] implementation
  */
 @CordaSerializable
-data class AccountInfoLiteDto(
+data class AccountInfoStateClientDto(
         var name: String? = null,
         var host: CordaX500Name? = null,
         var identifier: UUID? = null,
         var externalId: String? = null
-) : AccountsAwareLiteDto<AccountInfo> {
-    /**
-     * Create a patched copy of the given [AccountInfo] instance,
-     * updated using this DTO's non-null properties.
-     */
-    @Suspendable
-    override fun toPatched(original: AccountInfo, stateService: AccountsAwareStateService<AccountInfo>):
-            AccountInfo {
+) : VaultaireAccountsAwareStateClientDto<AccountInfo> {
+  /**
+   * Create a patched copy of the given [AccountInfo] instance,
+   * updated using this DTO's non-null properties.
+   */
+  @Suspendable
+  override fun toPatched(original: AccountInfo, stateService: AccountsAwareStateService<AccountInfo>):
+          AccountInfo {
 
-        val hostResolved = toPartyOrDefault(this.host, original.host, stateService, "host")
-        val patched = AccountInfo(
-            name = this.name ?: original.name,
+    val hostResolved = toPartyOrDefault(this.host, original.host, stateService, "host")
+    val patched = AccountInfo(
+            name = this.name ?: original.name ?:errNull("name"),
             host = hostResolved,
             identifier = if (identifier != null) UniqueIdentifier(externalId, identifier!!)
             else original.identifier
-        )
-        return patched
-    }
+    )
+    return patched
+  }
 
+  /**
+   * Create an instance of [AccountInfo], using this DTO's properties.
+   * May throw a [DtoInsufficientStateMappingException]
+   * if there is mot enough information to do so.
+   */
+  @Suspendable
+  override fun toTargetType(stateService: AccountsAwareStateService<AccountInfo>): AccountInfo {
+    try {
+      val hostResolved = toParty(this.host, stateService, "host")
+      return AccountInfo(
+              name = this.name?:errNull("name"),
+              host = hostResolved,
+              identifier = if (identifier != null) UniqueIdentifier(externalId, identifier!!)
+              else throw IllegalArgumentException("AccountInfoStateClientDto.toTargetType requireds a valid identifier")
+      )
+    } catch (e: Exception) {
+      throw IllegalStateException("Failed converting DTO to AccountInfo", e)
+    }
+  }
+
+  companion object {
     /**
-     * Create an instance of [AccountInfo], using this DTO's properties.
-     * May throw a [DtoInsufficientStateMappingException]
-     * if there is mot enough information to do so.
+     * Create a new DTO instance using the given [AccountInfo] as source.
      */
-    @Suspendable
-    override fun toTargetType(stateService: AccountsAwareStateService<AccountInfo>): AccountInfo {
-        try {
-            val hostResolved = toParty(this.host, stateService, "host")
-            return AccountInfo(
-                name = this.name!!,
-                host = hostResolved,
-                identifier = if (identifier != null) UniqueIdentifier(externalId, identifier!!)
-                else throw IllegalArgumentException("AccountInfoLiteDto.toTargetType requireds a valid identifier")
-            )
-        } catch (e: Exception) {
-            throw DtoInsufficientMappingException(exception = e)
-        }
-    }
-
-    companion object {
-        /**
-         * Create a new DTO instance using the given [AccountInfo] as source.
-         */
-        fun mapToDto(original: AccountInfo, stateService: StateService<AccountInfo>? = null): AccountInfoLiteDto = AccountInfoLiteDto(
+    fun mapToDto(original: AccountInfo, stateService: StateService<AccountInfo>? = null): AccountInfoStateClientDto = AccountInfoStateClientDto(
             name = original.name,
             host = original.host.name,
             identifier = original.identifier.id,
             externalId = original.identifier.externalId
-        )
+    )
 
-    }
+  }
 }

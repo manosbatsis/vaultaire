@@ -17,14 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.processor.dto
+package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoNameStrategy
+
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.AccountsAwareVaultaireModelClientDto
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.asClassName
 
-open class LiteDtoNameStrategy(
+open class AccountsAwareModelClientDtoTypeStrategy(
         annotatedElementInfo: AnnotatedElementInfo
-) : SimpleDtoNameStrategy(annotatedElementInfo) {
+) : AccountsAwareStateClientDtoTypeStrategy(annotatedElementInfo) {
 
-    override fun getClassNameSuffix(): String = "LiteDto"
+    // TODO: use fun getDtoInterface()?
+    override fun addSuperTypes(typeSpecBuilder: Builder) {
+        val typeName = annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()
+        typeSpecBuilder.addSuperinterface(
+                AccountsAwareVaultaireModelClientDto::class.asClassName().parameterizedBy(typeName))
+    }
 }

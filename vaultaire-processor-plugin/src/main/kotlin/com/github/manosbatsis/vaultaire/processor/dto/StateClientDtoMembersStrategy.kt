@@ -20,32 +20,36 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 import co.paralleluniverse.fibers.Suspendable
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy.Statement
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy.Statement
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoNameStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoMembersStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.service.dao.StateService
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec.Builder
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
 import javax.lang.model.element.VariableElement
 
-open class LiteDtoMemberStrategy(
+
+open class StateClientDtoMembersStrategy(
         annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: DtoNameStrategy,
-        dtoTypeStrategy: DtoTypeStrategy
-) : SimpleDtoMembersStrategy(
+        dtoNameStrategy: StateClientDtoNameStrategy,
+        dtoTypeStrategy: StateClientDtoTypeStrategy
+): ClientDtoMembersStrategyBase<StateClientDtoNameStrategy, StateClientDtoTypeStrategy>(
+        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+)
+
+open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
+        annotatedElementInfo: AnnotatedElementInfo,
+        dtoNameStrategy: N,
+        dtoTypeStrategy: T
+) : SimpleDtoMembersStrategy<N, T>(
         annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
 ) {
-
 
     override fun toTargetTypeStatement(fieldIndex: Int, variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
         return if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {

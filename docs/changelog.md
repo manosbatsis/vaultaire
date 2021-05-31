@@ -4,6 +4,46 @@
 The following sections describe major changes per version 
 and can be helpful with version upgrades.
 
+
+
+## 0.40
+
+This is a release with BREAKING CHANGES.
+
+- Annotations have been renamed:
+
+| Previous Name                     | New Name                 |
+|-----------------------------------|--------------------------|
+| VaultaireGenerate                 | VaultaireStateUtils      |
+| VaultaireGenerateForDependency    | VaultaireStateUtilsMixin |
+| VaultaireGenerateDto              | VaultaireStateDto        |
+| VaultaireGenerateDtoForDependency | VaultaireStateDtoMixin   |
+| VaultaireFlowInput                | VaultaireModelDto        |
+| VaultaireFlowInputForDependency   | VaultaireModelDtoMixin   |
+| VaultaireGenerateResponder        | VaultaireFlowResponder   |
+
+
+- Class and file names of generated state-based DTOs use new suffixes:
+  - `LiteDto` has changes to `StateClientDto`
+  - `Dto` has changes to `StateDto`
+- DTO generation strategies have been updated:
+  - `DEFAULT`is now `CORDAPP_LOCAL_DTO`
+  - `LITE` is now `CORDAPP_CLIENT_DTO`
+- The default DTO strategy is now `CORDAPP_CLIENT_DTO`
+
+
+This release also brings new features:
+
+- `VaultaireModelDto` and `VaultaireModelDtoMixin` are now focused in DTO generation 
+for non-state models. The resulting class and file name suffix is `ModelClientDto` with  
+support for the usual REST or otherwise client-friendly auto-conversion of Corda-specific types.
+- All DTO-generating annotations now have a `views: Array<VaultaireView>` member,  
+to allow additional classes to be generated, each with a subset of fields from the 
+target state or model type.
+- All DTO-generating annotations now have a `nonDataClass: Boolean` member,  
+that should be set to `true` for target state or model types that are NOT data classes. 
+
+
 ## 0.39
 
 - Added `@VaultaireFlowInput` and `@VaultaireFlowInputForDependency` to support

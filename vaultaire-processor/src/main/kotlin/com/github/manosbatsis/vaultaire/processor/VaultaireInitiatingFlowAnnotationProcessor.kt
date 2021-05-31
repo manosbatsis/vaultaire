@@ -22,35 +22,24 @@ package com.github.manosbatsis.vaultaire.processor
 import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder
-import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FunSpec
+import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowResponder
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.flows.FlowLogic
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatedBy
 import java.io.File
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.ProcessingEnvironment
-import javax.annotation.processing.RoundEnvironment
-import javax.annotation.processing.SupportedAnnotationTypes
-import javax.annotation.processing.SupportedOptions
-import javax.annotation.processing.SupportedSourceVersion
+import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.TypeElement
 
 /**
- * Kapt processor for the `@VaultaireGenerate` annotation.
- * Constructs a VaultaireGenerate for the annotated class.
+ * Kapt processor for the `@VaultaireStateUtils` annotation.
+ * Constructs a VaultaireStateUtils for the annotated class.
  */
-@SupportedAnnotationTypes("com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateResponder")
+@SupportedAnnotationTypes("com.github.manosbatsis.vaultaire.annotation.VaultaireFlowResponder")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED)
 class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), ProcessingEnvironmentAware {
@@ -65,7 +54,7 @@ class VaultaireInitiatingFlowAnnotationProcessor : AbstractProcessor(), Processi
     override val processingEnvironment by lazy {
         processingEnv
     }
-    val sourcesAnnotation = VaultaireGenerateResponder::class.java
+    val sourcesAnnotation = VaultaireFlowResponder::class.java
 
     val generatedSourcesRoot: String by lazy {
         processingEnv.options[AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED]

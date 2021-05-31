@@ -20,12 +20,19 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.processor.dto.VaultaireDtoStrategy
+import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.VaultaireAccountsAwareStateClientDto
+import com.github.manosbatsis.vaultaire.processor.dto.StateClientDtoTypeStrategy
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
 
-/** Vaultaire-specific overrides for building a "lite" DTO type spec */
-open class AccountsAwareLiteFlowInputStrategy(
+open class AccountsAwareStateClientDtoTypeStrategy(
         annotatedElementInfo: AnnotatedElementInfo
-) : VaultaireDtoStrategy(
-        annotatedElementInfo = annotatedElementInfo,
-        composition = AccountsAwareLiteFormInputStrategyComposition(annotatedElementInfo)
-)
+) : StateClientDtoTypeStrategy(annotatedElementInfo) {
+    // TODO: use fun getDtoInterface()?
+    override fun addSuperTypes(typeSpecBuilder: TypeSpec.Builder) {
+        typeSpecBuilder.addSuperinterface(
+                VaultaireAccountsAwareStateClientDto::class.asClassName()
+                        .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
+    }
+}

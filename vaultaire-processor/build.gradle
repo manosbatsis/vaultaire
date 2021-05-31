@@ -4,6 +4,7 @@ dependencies {
 
     compile project(':vaultaire')
     compile project(':vaultaire-processor-plugin')
+    compile("com.github.manosbatsis.kotlin-utils:kotlin-utils-api:$kotlinutils_version")
 
     implementation "$corda_release_group:corda-core:$corda_release_version"
     implementation "$corda_release_group:corda:$corda_release_version"

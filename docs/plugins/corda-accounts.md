@@ -36,12 +36,11 @@ Using the annotation for the last one is optional.
 
 The plugin also adds:
 
-- `AccountInfoDto` as a convenient model that maps from app-level users
+- `AccountInfoStateDto` as a convenient model that maps from app-level users
 or state properties (as supported by `@VaultaireAccountInfo` above) to Corda Accounts,
 i.e. `AccountInfo` states.
 
-- `AccountsAwareLiteDto` as the equivalent of `LiteDto`,
-including it's use as the base DTO type by the "lite" DTO strategy.
+- `AccountsAwareStateClientDto` as the equivalent of REST/client-friendly equivalent,.
 
 All the above effectively provide the "lite" DTO strategy with enhanced DTO<->state conversion
 and patching utilities, i.e. mainly with support for mapping between the applicable types
@@ -64,16 +63,18 @@ data class MagazineState(
 }
 ```
 
-The generated DTO for the above:
+The generated client DTO for the above:
 
 ```kotlin
-data class MagazineStateLiteDto(
-		var publisher: AccountInfoLiteDto? = null,
-		var author: AccountInfoLiteDto? = null,
-		var editor: AccountInfoLiteDto? = null,
+data class MagazineStateStateClientDto(
+		var publisher: AccountInfoStateClientDto? = null,
+		var author: AccountInfoStateClientDto? = null,
+		var editor: AccountInfoStateClientDto? = null,
 		//...
 		var linearId: UniqueIdentifier? = null
-) : AccountsAwareLiteDto<BookContract.MagazineState> {
+) : AccountsAwareStateClientDto<BookContract.MagazineState> {
+    //...
+}
 ```
 
 

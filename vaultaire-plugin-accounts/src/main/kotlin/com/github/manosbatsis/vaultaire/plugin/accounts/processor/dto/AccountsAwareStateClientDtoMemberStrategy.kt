@@ -19,19 +19,20 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoMembersStrategy.Statement
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy.Statement
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoNameStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.AccountInfoHelper
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_ABSTRACT_PARTY
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_ACCOUNT_PARTY
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_ANONYMOUS_PARTY
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_PUBLIC_KEY
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
-import com.github.manosbatsis.vaultaire.processor.dto.LiteDtoMemberStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.ClientDtoMembersStrategyBase
+import com.github.manosbatsis.vaultaire.processor.dto.StateClientDtoNameStrategy
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
@@ -39,18 +40,26 @@ import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import javax.lang.model.element.VariableElement
 
-open class AcountsAwareLiteDtoMemberStrategy(
+open class AccountsAwareClientDtoMemberStrategy(
         annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: DtoNameStrategy,
-        dtoTypeStrategy: DtoTypeStrategy
-) : LiteDtoMemberStrategy(annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy) {
+        dtoNameStrategy: StateClientDtoNameStrategy,
+        dtoTypeStrategy: AccountsAwareStateClientDtoTypeStrategy
+):AccountsAwareClientDtoMemberStrategyBase<StateClientDtoNameStrategy, AccountsAwareStateClientDtoTypeStrategy>(
+        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+)
+
+open class AccountsAwareClientDtoMemberStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
+        annotatedElementInfo: AnnotatedElementInfo,
+        dtoNameStrategy: N,
+        dtoTypeStrategy: T
+) : ClientDtoMembersStrategyBase<N, T>(annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy) {
 
     val accountInfoHelper = AccountInfoHelper(annotatedElementInfo)
     fun isAccountInfo(variableElement: VariableElement): Boolean = accountInfoHelper.isAccountInfo(variableElement)
 
     override fun toPropertyTypeName(variableElement: VariableElement): TypeName {
         return if (isAccountInfo(variableElement))
-            AccountInfoLiteDto::class.java.asTypeName().copy(nullable = true)
+            AccountInfoStateClientDto::class.java.asTypeName().copy(nullable = true)
         else super.toPropertyTypeName(variableElement)
     }
 
@@ -96,7 +105,7 @@ open class AcountsAwareLiteDtoMemberStrategy(
             commaOrEmpty: String
     ): Statement? {
         return if (isAccountInfo(variableElement)) {
-            creatorFunctionBuilder.addStatement("      val ${propertyName}Resolved = stateService.toAccountInfoLiteDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
+            creatorFunctionBuilder.addStatement("      val ${propertyName}Resolved = stateService.toAccountInfoClientDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
         } else return super.toCreatorStatement(fieldIndex, variableElement, propertyName, propertyType, commaOrEmpty)
     }
@@ -107,7 +116,7 @@ open class AcountsAwareLiteDtoMemberStrategy(
             commaOrEmpty: String
     ): DtoMembersStrategy.Statement? {
         return if (isAccountInfo(variableElement)) {
-            dtoAltConstructorCodeBuilder.addStatement("      val ${propertyName}Resolved = stateService.toAccountInfoLiteDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
+            dtoAltConstructorCodeBuilder.addStatement("      val ${propertyName}Resolved = stateService.toAccountInfoClientDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
         } else super.toAltConstructorStatement(fieldIndex, variableElement, propertyName, propertyType, commaOrEmpty)
     }

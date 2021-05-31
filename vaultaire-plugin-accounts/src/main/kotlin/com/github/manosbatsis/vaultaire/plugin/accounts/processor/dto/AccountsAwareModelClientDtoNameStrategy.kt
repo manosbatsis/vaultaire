@@ -17,28 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.processor.dto
+package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.service.node.NodeService
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.asClassName
+import com.github.manosbatsis.vaultaire.processor.dto.ModelClientDtoNameStrategy
 
-open class LiteFlowInputMemberStrategy(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: DtoNameStrategy,
-        dtoTypeStrategy: DtoTypeStrategy
-) : LiteDtoMemberStrategy(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-) {
+open class AccountsAwareModelClientDtoNameStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : ModelClientDtoNameStrategy(annotatedElementInfo) {
 
-
-
-    override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
-        functionBuilder.addParameter("stateService",
-                NodeService::class.java.asClassName())
-    }
 
 }

@@ -22,19 +22,11 @@ package com.github.manosbatsis.vaultaire.example.contract
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDto
+import com.github.manosbatsis.vaultaire.annotation.VaultaireStateDto
+import com.github.manosbatsis.vaultaire.annotation.VaultaireStateUtils
 import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Create
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Delete
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.Update
-import net.corda.core.contracts.CommandData
-import net.corda.core.contracts.Contract
-import net.corda.core.contracts.LinearState
-import net.corda.core.contracts.TypeOnlyCommandData
-import net.corda.core.contracts.UniqueIdentifier
-import net.corda.core.contracts.requireSingleCommand
-import net.corda.core.contracts.requireThat
+import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.*
+import net.corda.core.contracts.*
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
@@ -44,7 +36,7 @@ import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.math.BigDecimal
 import java.security.PublicKey
-import java.util.Date
+import java.util.*
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
@@ -126,10 +118,10 @@ class BookContract : Contract {
     }
 
     // States.
-    @VaultaireGenerateDto(
+    @VaultaireStateDto(
             copyAnnotationPackages = ["com.fasterxml.jackson.annotation"],
-            // Default is [VaultaireDtoStrategyKeys.DEFAULT]
-            strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+            // Default is [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO]
+            strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO])
     data class PrivateBookDraftState(
             val author: AccountParty,
             val publisher: AccountParty?,
@@ -159,7 +151,7 @@ class BookContract : Contract {
         object PrivateBookDraftSchemaV1 : MappedSchema(PrivateBookDraftSchema.javaClass, 1,
                 listOf(PrivateBookDraftSchemaV1.PersistentPrivateBookDraftState::class.java)) {
 
-            @VaultaireGenerate(/*name = "bookConditions", */contractStateType = PrivateBookDraftState::class)
+            @VaultaireStateUtils(/*name = "bookConditions", */contractStateType = PrivateBookDraftState::class)
             @Entity
             @Table(name = "books")
             class PersistentPrivateBookDraftState(
@@ -174,10 +166,10 @@ class BookContract : Contract {
     }
 
     // States.
-    @VaultaireGenerateDto(
+    @VaultaireStateDto(
             copyAnnotationPackages = ["com.fasterxml.jackson.annotation"],
-            // Default is [VaultaireDtoStrategyKeys.DEFAULT]
-            strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+            // Default is [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO]
+            strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO])
     data class BookState(
             val publisher: Party?,
             val author: Party,
@@ -217,7 +209,7 @@ class BookContract : Contract {
 
         object BookSchemaV1 : MappedSchema(BookSchema.javaClass, 1, listOf(BookSchemaV1.PersistentBookState::class.java)) {
 
-            @VaultaireGenerate(/*name = "bookConditions", */contractStateType = BookState::class)
+            @VaultaireStateUtils(/*name = "bookConditions", */contractStateType = BookState::class)
             @Entity
             @Table(name = "books")
             class PersistentBookState(

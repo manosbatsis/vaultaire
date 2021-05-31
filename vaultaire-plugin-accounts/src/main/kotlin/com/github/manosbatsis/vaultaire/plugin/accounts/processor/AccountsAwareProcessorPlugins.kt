@@ -25,8 +25,8 @@ import com.github.manosbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProces
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.plugin.BaseTypesConfigAnnotationProcessorPlugin
-import com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto.AccountsAwareLiteDtoStrategy
-import com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto.AccountsAwareLiteFlowInputStrategy
+import com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto.AccountsAwareModelClientDtoStrategy
+import com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto.AccountsAwareStateClientDtoStrategy
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.*
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.ClassName
@@ -48,27 +48,25 @@ class AccountsAwareBaseTypesConfigAnnotationProcessorPlugin : BaseTypesConfigAnn
             if (AccountInfoHelper(annotatedElementInfo).useAccountInfo()) 10 else 0
 }
 
-// TODO refactor to DTO property mappers config
+// TODO refactor to DTO property mappers config?
 @AutoService(DtoStrategyFactoryProcessorPlugin::class)
 class AccountsAwarDtoStrategyFactoryProcessorPlugin : AbstractDtoStrategyFactoryProcessorPlugin() {
 
     companion object {
         private val strategies = mapOf(
-                VaultaireDtoStrategyKeys.LITE to AccountsAwareLiteDtoStrategy::class.java,
-                VaultaireDtoStrategyKeys.FLOW_INPUT to AccountsAwareLiteFlowInputStrategy::class.java
+                VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO.toString() to AccountsAwareStateClientDtoStrategy::class.java,
+                AccountsAwareModelClientDtoStrategy.STRATEGY_KEY to AccountsAwareModelClientDtoStrategy::class.java
         )
     }
 
     override fun getStrategyClass(strategy: String): Class<out DtoStrategy> {
-        val strategyKey = VaultaireDtoStrategyKeys.getFromString(strategy)
-        return strategies[strategyKey]
+        return strategies[strategy] as Class<out DtoStrategy>?
                 ?: error("Strategy $strategy not supported by factory ${this.javaClass.simpleName}")
     }
 
     override fun getSupportPriority(annotatedElementInfo: AnnotatedElementInfo, strategy: String?): Int {
         if (strategy == null) return 0
-        val strategyKey = VaultaireDtoStrategyKeys.findFromString(strategy) ?: return 0
-        return if (strategies[strategyKey] != null
+        return if (strategies[strategy] != null
                 && AccountInfoHelper(annotatedElementInfo).useAccountInfo()) 10 else 0
     }
 }

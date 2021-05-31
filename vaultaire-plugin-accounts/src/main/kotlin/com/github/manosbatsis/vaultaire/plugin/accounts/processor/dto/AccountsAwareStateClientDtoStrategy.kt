@@ -20,19 +20,21 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.AccountsAwareLiteDto
-import com.github.manosbatsis.vaultaire.processor.dto.LiteDtoTypeStrategy
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
+import com.github.manosbatsis.vaultaire.processor.dto.BaseVaultaireDtoStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.StateClientDtoNameStrategy
 
-open class AccountAwareLiteDtoTypeStrategy(
+
+/** Accounts-aware alternative to StateClientDtoStrategy */
+open class AccountsAwareStateClientDtoStrategy(
         annotatedElementInfo: AnnotatedElementInfo
-) : LiteDtoTypeStrategy(annotatedElementInfo) {
+) : BaseVaultaireDtoStrategy<StateClientDtoNameStrategy, AccountsAwareStateClientDtoTypeStrategy, AccountsAwareClientDtoMemberStrategy>(
+        annotatedElementInfo = annotatedElementInfo,
+        dtoNameStrategyConstructor = ::StateClientDtoNameStrategy,
+        dtoTypeStrategyConstructor = ::AccountsAwareStateClientDtoTypeStrategy,
+        dtoMembersStrategyConstructor = ::AccountsAwareClientDtoMemberStrategy
+){
 
-    override fun addSuperTypes(typeSpecBuilder: TypeSpec.Builder) {
-        typeSpecBuilder.addSuperinterface(
-                AccountsAwareLiteDto::class.asClassName()
-                        .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
+    override fun with(annotatedElementInfo: AnnotatedElementInfo): AccountsAwareStateClientDtoStrategy{
+        return AccountsAwareStateClientDtoStrategy(annotatedElementInfo)
     }
 }

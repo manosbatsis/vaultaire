@@ -19,11 +19,20 @@
  */
 package com.github.manosbatsis.vaultaire.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoNameStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 
-open class LiteFlowInputNameStrategy(
+open class StateClientDtoNameStrategy(
         annotatedElementInfo: AnnotatedElementInfo
-) : LiteDtoNameStrategy(annotatedElementInfo) {
+) : SimpleDtoNameStrategy(annotatedElementInfo) {
 
-    override fun getClassNameSuffix(): String = "FlowInputDto"
+    companion object{
+        val STRATEGY_KEY = VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO.toString()
+        val OVERLAP = "State"
+    }
+
+    override fun getClassNameSuffix(): String = annotatedElementInfo.overrideClassNameSuffix
+            ?: if(annotatedElementInfo.primaryTargetTypeElementSimpleName.endsWith(OVERLAP)){STRATEGY_KEY.removePrefix(OVERLAP)}else{STRATEGY_KEY}
+
 }

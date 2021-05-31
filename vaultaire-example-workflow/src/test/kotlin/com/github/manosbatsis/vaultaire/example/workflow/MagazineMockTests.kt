@@ -24,14 +24,11 @@ import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.HISTORICAL
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.SCIENCE_FICTION
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.TECHNOLOGY
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.UNKNOWN
+import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.*
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.service.node.NotFoundException
@@ -44,9 +41,7 @@ import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowLogic
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.Vault.RelevancyStatus.RELEVANT
-import net.corda.core.node.services.Vault.StateStatus.ALL
-import net.corda.core.node.services.Vault.StateStatus.CONSUMED
-import net.corda.core.node.services.Vault.StateStatus.UNCONSUMED
+import net.corda.core.node.services.Vault.StateStatus.*
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
@@ -58,14 +53,9 @@ import net.corda.testing.node.MockNetworkNotarySpec
 import net.corda.testing.node.MockNetworkParameters
 import net.corda.testing.node.StartedMockNode
 import net.corda.testing.node.TestCordapp.Companion.findCordapp
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import java.math.BigDecimal
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -86,7 +76,7 @@ class MagazineMockTests {
             RequestKey::class.java.`package`.name,
             // Vaultaire
             AccountParty::class.java.`package`.name,
-            AccountInfoDto::class.java.`package`.name,
+            AccountInfoStateDto::class.java.`package`.name,
             // Partiture
             PartitureFlow::class.java.`package`.name,
             // Our coprdapp
@@ -145,12 +135,12 @@ class MagazineMockTests {
 
     @Test
     fun `Test DSL conditions`() {
-        val aPublisherDto = AccountInfoLiteDto.mapToDto(aPublisher)//aAccountService.toAccountInfoDto(aPublisher)
-        val bAuthorDto = AccountInfoLiteDto.mapToDto(bAuthor)// aAccountService.toAccountInfoDto(bAuthor)
+        val aPublisherDto = AccountInfoStateClientDto.mapToDto(aPublisher)//aAccountService.toAccountInfoDto(aPublisher)
+        val bAuthorDto = AccountInfoStateClientDto.mapToDto(bAuthor)// aAccountService.toAccountInfoDto(bAuthor)
         val magazineTitle = "Test DSL conditions ${UUID.randomUUID()}"
 
         val magazineState = flowWorksCorrectly(a,
-                CreateMagazineFlow(MagazineStateLiteDto(
+                CreateMagazineFlow(MagazineStateClientDto(
                         publisher = aPublisherDto,//AccountService.toAccountParty(aPublisherDto),
                         author = bAuthorDto,
                         price = BigDecimal.valueOf(10),
@@ -202,15 +192,15 @@ class MagazineMockTests {
         logger.info("AcountInfo for aPublisher: $aPublisher")
         logger.info("AcountInfo for bAuthor: $bAuthor")
 
-        val aPublisherDto = AccountInfoLiteDto.mapToDto(aPublisher)
-        val bAuthorDto = AccountInfoLiteDto.mapToDto(bAuthor)
+        val aPublisherDto = AccountInfoStateClientDto.mapToDto(aPublisher)
+        val bAuthorDto = AccountInfoStateClientDto.mapToDto(bAuthor)
         logger.info("AcountInfoDto for aPublisher: $aPublisherDto")
         logger.info("AcountInfoDto for bAuthor: $bAuthorDto")
 
         val identifier = UniqueIdentifier(id = UUID.randomUUID(), externalId = UUID.randomUUID().toString())
 
         val magazine = flowWorksCorrectly(a,
-                CreateMagazineFlow(MagazineStateLiteDto(
+                CreateMagazineFlow(MagazineStateClientDto(
                         publisher = aPublisherDto,
                         author = bAuthorDto,
                         price = BigDecimal.valueOf(82),
@@ -274,8 +264,8 @@ class MagazineMockTests {
 
     @Test
     fun `Test find with state status cases`() {
-        val aAuthorDto = AccountInfoLiteDto.mapToDto(aAuthor)
-        val bPublisherDto = AccountInfoLiteDto.mapToDto(bPublisher)
+        val aAuthorDto = AccountInfoStateClientDto.mapToDto(aAuthor)
+        val bPublisherDto = AccountInfoStateClientDto.mapToDto(bPublisher)
 
         logger.info("aAuthorDto: $aAuthorDto")
         logger.info("bPublisherDto: $bPublisherDto")
@@ -285,7 +275,7 @@ class MagazineMockTests {
         logger.info("Author creates draft...")
         // Author creates draft
         logger.info("Step 1 DTO")
-        val magazineDto = MagazineStateLiteDto(
+        val magazineDto = MagazineStateClientDto(
                 publisher = bPublisherDto,
                 author = aAuthorDto,
                 price = BigDecimal.valueOf(87),
@@ -307,7 +297,7 @@ class MagazineMockTests {
         logger.info("Author updates title and issues...")
         val updatedTitle = "${createdState.title} UPDATED"
         var updatedState: MagazineState = flowWorksCorrectly(a,
-                UpdateMagazineFlow(MagazineStateLiteDto.mapToDto(
+                UpdateMagazineFlow(MagazineStateClientDto.mapToDto(
                         createdState.copy(
                                 title = updatedTitle,
                                 issues = 2),
@@ -318,7 +308,7 @@ class MagazineMockTests {
         logger.info("Author updates title and issues again...")
         val updatedTitle2 = "${createdState.title} UPDATED2"
         val updatedState2: MagazineState = flowWorksCorrectly(a,
-                UpdateMagazineFlow(MagazineStateLiteDto.mapToDto(createdState.copy(
+                UpdateMagazineFlow(MagazineStateClientDto.mapToDto(createdState.copy(
                         title = updatedTitle2,
                         issues = 3
                 ), stateService))).single()
@@ -332,7 +322,7 @@ class MagazineMockTests {
 
     }
 
-    private fun testFindWithStatusesAndService(extendedService: MagazineStateService, bPublisherDto: AccountInfoLiteDto, createdState: MagazineState) {
+    private fun testFindWithStatusesAndService(extendedService: MagazineStateService, bPublisherDto: AccountInfoStateClientDto, createdState: MagazineState) {
         logger.info("testFindWithStatusesAndService all")
         val all = extendedService.buildQuery{
             and {  }

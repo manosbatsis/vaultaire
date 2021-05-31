@@ -21,16 +21,16 @@ To convert from DTO to state, use the DTO's `toTargetType()` method:
 // Using default strategy
 // ----------------------
 // Get the DTO
-val dto1: BookStateDto = //...
+val dto1: BookStateClientDto = //...
 // Convert to State
 val state1: BookState = dto1.toTargetType()
 
-// Using 'lite' strategy
+// Using the default strategy
 // ----------------------
 // Get the Service
 val stateService: BookStateService = //...
-// Get the 'lite' DTO
-val dto2: BookStateLiteDto = // ...
+// Get the 'client' DTO
+val dto2: BookStateClientDto = // ...
 // Convert to State
 val state2: BookState = dto2.toTargetType(stateService)
 ```
@@ -50,7 +50,7 @@ val state: BookState = stateService.getByLinearId(id)
 // ----------------------
 val patchedState1: BookState = dto1.toPatched(state)
 
-// Apply 'lite' DTO as patch
+// Apply 'client' DTO as patch
 // ----------------------
 val patchedState2: BookState = dto2.toPatched(state, stateService)
 ```
@@ -63,7 +63,7 @@ To convert from state to DTO, use the DTO's latter's alternative, state-based co
 // Get the state
 val state: BookState = stateService.getByLinearId(id)
 // Convert to DTO
-val dto = BookStateDto.mapToDto(state)
+val dto = BookStateClientDto.mapToDto(state)
 ```
 
 ## DTO Generation
@@ -75,10 +75,10 @@ This section explains the annotations and strategies involved in generating DTOs
 #### Local States
 
 To have Vaultaire generate DTOs for `ContractState`s within local (Gradle module) sources,
-annotate them with `@VaultaireGenerateDto`:
+annotate them with `@VaultaireStateDto`:
 
 ```kotlin
-@VaultaireGenerateDto(
+@VaultaireStateDto(
     // optional: properties to ignore
     ignoreProperties = ["foo"],
     // optional, default is false
@@ -104,7 +104,7 @@ data class BookState(
 To generate DTOs for `ContractState`s outside the sources in context,
 e.g. from a contract states module or a project dependency,
 create a "mixin" class as a placeholder and annotate it with
-`@VaultaireGenerateDtoForDependency`.
+`@VaultaireStateDtoMixin`.
 
 This approach might be preferred or necessary even for state sources in context or under your control,
 e.g. when having (the good practice of) separate cordapp modules for contracts/states and flows.
@@ -112,7 +112,7 @@ e.g. when having (the good practice of) separate cordapp modules for contracts/s
 Mixin example:
 
 ```kotlin
-@VaultaireGenerateDtoForDependency(
+@VaultaireStateDtoMixin(
     persistentStateType = PersistentBookState::class,
     contractStateType = BookState::class,
     // optional: properties to ignore
@@ -124,12 +124,12 @@ class BookStateMixin // just a placeholder for our annotation
 
 #### Non-State Models
 
-`@VaultaireFlowInput` and `@VaultaireFlowInputForDependency` cab be used for 
+`@VaultaireModelDto` and `@VaultaireModelDtoMixin` cab be used for 
 regular, non-ContractState data classes to similarly generate REST-friendly 
 DTOs and conversion utils focused op Corda-related types like accounts etc.
 
 ```kotlin
-@VaultaireFlowInputForDependency(baseType = MagazineModel::class)
+@VaultaireModelDtoMixin(baseType = MagazineModel::class)
 data class MagazineModelMixin
 ```
 
@@ -140,8 +140,8 @@ It can be used equally on either `ContractState` or "mixin" properties:
 
 
 ```kotlin
-@VaultaireGenerateForDependency(/*...*/)
-@VaultaireGenerateDtoForDependency(/*...*/)
+@VaultaireStateUtilsMixin(/*...*/)
+@VaultaireStateDtoMixin(/*...*/)
 data class MagazineMixin(
         @DefaultValue("1")
         var issues: Int,
@@ -164,7 +164,7 @@ or to patch an existing state:
  * A [BookState]-specific [Dto] implementation
  */
 @CordaSerializable
-data class BookStateDto(
+data class BookStateClientDto(
   var publisher: Party? = null,
   var author: Party? = null,
   var price: BigDecimal? = null,
@@ -242,15 +242,15 @@ data class BookStateDto(
 
 ### Strategies
 
-Both `@VaultaireGenerateDto` and `@VaultaireGenerateDtoForDependency` support generation strategy hints.
-By default the strategy used is `VaultaireDtoStrategyKeys.DEFAULT`. The only additional strategy provided
-is the more REST-friendly `VaultaireDtoStrategyKeys.LITE`. Using both, as in the following example,
-will generate separate DTOs for each.
+Both `@VaultaireStateDto` and `@VaultaireStateDtoMixin` support generation strategy hints.
+By default the strategy used is the REST-friendly `VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO`. 
+The only additional strategy provided is `VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO` that supports no 
+type conversions. Using both, as in the following example, will generate separate DTOs for each.
 
 ```kotlin
-@VaultaireGenerateDto(
+@VaultaireStateDto(
     ignoreProperties = ["foo"],
-    strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+    strategies = [VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO, VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO]
 )
 data class BookState(
 		//...
@@ -259,18 +259,15 @@ data class BookState(
 }
 ```
 
-The "lite" strategy is provided to help where deserialization would normally require
+The "client" strategy is provided to help where deserialization would normally require
 either a `ServiceHub` or `RpcOps`, e.g. when the target property is a `Party`,
 in which case the DTO will use a more manageable type like `CordaX500Name`,
 and require a service to convert to or patch a `ContractState` instance.
-Note that "lite" DTO classnames will also have a `LiteDto` suffix. Here's the "lite"
+Note that client DTO classnames will also have a `StateClientDto` suffix. Here's the "client"
 DTO generated for the above example:
 
 ```kotlin
-/**
- * A [BookContract.BookState]-specific [com.github.manosbatsis.kotlin.utils.api.Dto] implementation
- */
-data class BookStateLiteDto(
+data class BookStateClientDto(
   var publisher: CordaX500Name? = null,
   var author: CordaX500Name? = null,
   var price: BigDecimal? = null,
@@ -282,21 +279,7 @@ data class BookStateLiteDto(
   var alternativeTitle: String? = null,
   var linearId: UniqueIdentifier? = null
 ) : VaultaireDto<BookContract.BookState> {
-  /**
-   * Alternative constructor, used to map
-   * from the given [BookContract.BookState] instance.
-   */
-  constructor(original: BookContract.BookState) : this(
-        publisher = original.publisher.name,
-        author = original.author.name,
-        price = original.price,
-        genre = original.genre,
-        editions = original.editions,
-        title = original.title,
-        published = original.published,
-        alternativeTitle = original.alternativeTitle,
-        linearId = original.linearId
-  )
+  
 
   /**
    * Create a patched copy of the given [BookContract.BookState] instance,
@@ -304,19 +287,7 @@ data class BookStateLiteDto(
    */
   override fun toPatched(original: BookContract.BookState,
       stateService: StateService<BookContract.BookState>): BookContract.BookState {
-    val patched = BookContract.BookState(
-          publisher = if(this.publisher != null)
-        stateService.wellKnownPartyFromX500Name(this.publisher!!)!! else original.publisher!!,
-          author = if(this.author != null) stateService.wellKnownPartyFromX500Name(this.author!!)!!
-        else original.author!!,
-          price = this.price!!,
-          genre = this.genre!!,
-          editions = this.editions!!,
-          title = this.title!!,
-          published = this.published!!,
-          alternativeTitle = this.alternativeTitle,
-          linearId = this.linearId!!
-    )
+    val patched = //... path the original, applying non-null values from this DTO
     return patched
   }
 
@@ -327,26 +298,11 @@ data class BookStateLiteDto(
    */
   override fun toTargetType(stateService: StateService<BookContract.BookState>):
       BookContract.BookState {
-    try {
-       val originalTypeInstance = BookContract.BookState(
-          publisher = if(this.publisher != null)
-        stateService.wellKnownPartyFromX500Name(this.publisher!!)!! else throw
-        DtoInsufficientMappingException("No value given for property publisher"),
-          author = if(this.author != null) stateService.wellKnownPartyFromX500Name(this.author!!)!!
-        else throw DtoInsufficientMappingException("No value given for property author"),
-          price = this.price!!,
-          genre = this.genre!!,
-          editions = this.editions!!,
-          title = this.title!!,
-          published = this.published!!,
-          alternativeTitle = this.alternativeTitle,
-          linearId = this.linearId!!
-       )
-       return originalTypeInstance
-    }
-    catch(e: Exception) {
-       throw DtoInsufficientMappingException(exception = e)
-    }
+    val originalTypeInstance = BookContract.BookState(
+        // Use this DTO's values to create an new 
+        // instance of the target type
+    )
+    return originalTypeInstance
   }
 }
 ```

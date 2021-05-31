@@ -21,18 +21,12 @@ package com.github.manosbatsis.vaultaire.processor.dto
 
 
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.dto.VaultaireLiteDto
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import com.squareup.kotlinpoet.asClassName
+import com.github.manosbatsis.vaultaire.dto.VaultaireModelClientDto
 
-open class LiteDtoTypeStrategy(
+open class ModelClientDtoTypeStrategy(
         annotatedElementInfo: AnnotatedElementInfo
-) : DtoTypeStrategy(annotatedElementInfo) {
+) : StateClientDtoTypeStrategy(annotatedElementInfo) {
 
-    override fun addSuperTypes(typeSpecBuilder: Builder) {
-        val typeName = annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()
-        typeSpecBuilder.addSuperinterface(
-                VaultaireLiteDto::class.asClassName().parameterizedBy(typeName))
-    }
+    override fun getDtoInterface(): Class<*> = VaultaireModelClientDto::class.java
+
 }

@@ -17,22 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
-
+package com.github.manosbatsis.vaultaire.processor.dto
 
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.AccountsAwareDto
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.github.manosbatsis.vaultaire.service.node.NodeService
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
 
-open class AccountsAwareLiteFlowInputTypeStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : AccountAwareLiteDtoTypeStrategy(annotatedElementInfo) {
-
-    override fun addSuperTypes(typeSpecBuilder: Builder) {
-        val typeName = annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()
-        typeSpecBuilder.addSuperinterface(
-                AccountsAwareDto::class.asClassName().parameterizedBy(typeName))
+open class ModelClientDtoMembersStrategy(
+        annotatedElementInfo: AnnotatedElementInfo,
+        dtoNameStrategy: ModelClientDtoNameStrategy,
+        dtoTypeStrategy: ModelClientDtoTypeStrategy
+) : StateClientDtoMembersStrategy(
+        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+) {
+    override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
+        functionBuilder.addParameter("stateService",
+                NodeService::class.java.asClassName())
     }
+
 }

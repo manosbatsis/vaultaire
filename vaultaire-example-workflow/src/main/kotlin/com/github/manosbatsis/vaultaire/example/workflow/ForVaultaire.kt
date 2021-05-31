@@ -20,10 +20,7 @@
 package com.github.manosbatsis.vaultaire.example.workflow
 
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
-import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
-import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowInputForDependency
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateDtoForDependency
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
+import com.github.manosbatsis.vaultaire.annotation.*
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState.MagazineSchemaV1.PersistentMagazineState
@@ -33,7 +30,13 @@ import net.corda.core.contracts.UniqueIdentifier
 import java.util.*
 
 
-@VaultaireFlowInputForDependency(
+@VaultaireViews([
+      VaultaireView(name = "Author", namedFields = ["price", "customMixinField"]),
+      VaultaireView(name = "Price", namedFields = ["author", "customMixinField"])
+])
+@VaultaireView(name = "Author",
+        namedFields = ["genre", "customMixinField"])
+@VaultaireModelDtoMixin(
         baseType = MagazineContract.MagazineModel::class)
 data class MagazineModelMixin(
         @DefaultValue("1")
@@ -45,22 +48,31 @@ data class MagazineModelMixin(
         val customMixinField: Map<String, String> = emptyMap()
 )
 
-@VaultaireGenerateForDependency(name = "fungibleTokenConditions",
+@VaultaireStateUtilsMixin(name = "fungibleTokenConditions",
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class)
-@VaultaireGenerateDtoForDependency(
+@VaultaireStateDtoMixin(
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class,
-        strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+        strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO],
+        nonDataClass = true)
 class FungibleTokenMixin
 
-@VaultaireGenerateForDependency(name = "magazineConditions",
+
+
+@VaultaireStateUtilsMixin(name = "magazineConditions",
         persistentStateType = PersistentMagazineState::class,
         contractStateType = MagazineState::class)
-@VaultaireGenerateDtoForDependency(
+@VaultaireStateDtoMixin(
         persistentStateType = PersistentMagazineState::class,
         contractStateType = MagazineState::class,
-        strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+        strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO],
+        views = [
+            VaultaireView(name = "UpdateParties", viewFields = [
+                VaultaireViewField(name = "author"),
+                VaultaireViewField(name = "publisher")]),
+            VaultaireView(name = "AddIssue", namedFields = ["issues", "published"])]
+)
 data class MagazineMixin(
         @DefaultValue("1")
         var issues: Int,
@@ -71,12 +83,13 @@ data class MagazineMixin(
         val customMixinField: Map<String, String> = emptyMap()
 )
 
-/*TODO: move to module, have it generated
-@VaultaireGenerateForDependency(name = "accountInfoConditions",
+//TODO: move to module, have it generated
+/*
+@VaultaireStateUtilsMixin(name = "accountInfoConditions",
         persistentStateType = PersistentAccountInfo::class,
         contractStateType = AccountInfo::class)
-@VaultaireGenerateDtoForDependency(
+@VaultaireStateDtoMixin(
         persistentStateType = PersistentAccountInfo::class,
         contractStateType = AccountInfo::class,
-        strategies = [VaultaireDtoStrategyKeys.DEFAULT, VaultaireDtoStrategyKeys.LITE])
+        strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO])
 class AccountInfoMixin */

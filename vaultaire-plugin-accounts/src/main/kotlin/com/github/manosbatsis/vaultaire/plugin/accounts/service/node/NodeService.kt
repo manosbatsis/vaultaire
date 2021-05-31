@@ -23,8 +23,8 @@ import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoDto
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoLiteDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
+import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
@@ -47,11 +47,11 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
     @Suspendable
     fun toAccountInfoDtoOrNull(
             accountIdAndParty: AccountParty?
-    ): AccountInfoDto? {
+    ): AccountInfoStateDto? {
         return if (accountIdAndParty != null) {
             val accountInfo = findStoredAccountOrNull(accountIdAndParty.identifier)
             if (accountInfo != null) with(accountInfo!!.state!!.data) {
-                AccountInfoDto(
+                AccountInfoStateDto(
                         name = name,
                         host = host,
                         identifier = identifier)
@@ -61,13 +61,13 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
     }
 
     @Suspendable
-    fun toAccountInfoLiteDtoOrNull(
+    fun toAccountInfoClientDtoOrNull(
             accountIdAndParty: AccountParty?
-    ): AccountInfoLiteDto? {
+    ): AccountInfoStateClientDto? {
         return if (accountIdAndParty != null) {
             val accountInfo = findStoredAccountOrNull(accountIdAndParty.identifier)
             if (accountInfo != null) with(accountInfo!!.state!!.data) {
-                AccountInfoLiteDto(
+                AccountInfoStateClientDto(
                         name = name,
                         host = host.name,
                         identifier = identifier.id,
@@ -80,50 +80,50 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
     @Suspendable
     fun toAccountInfoDto(
             accountIdAndParty: AccountParty
-    ): AccountInfoDto {
+    ): AccountInfoStateDto {
         return toAccountInfoDtoOrNull(accountIdAndParty)
-                ?: error("Could not map input to AccountInfoDto")
+                ?: error("Could not map input to AccountInfoStateDto")
     }
 
     @Suspendable
-    fun toAccountInfoLiteDto(
+    fun toAccountInfoClientDto(
             accountIdAndParty: AccountParty
-    ): AccountInfoLiteDto {
-        return toAccountInfoLiteDtoOrNull(accountIdAndParty)
-                ?: error("Could not map input to AccountInfoDto")
+    ): AccountInfoStateClientDto {
+        return toAccountInfoClientDtoOrNull(accountIdAndParty)
+                ?: error("Could not map input to AccountInfoStateDto")
     }
 
     @Suspendable
     fun toAccountInfoDtoOrNull(
             anonymousParty: AnonymousParty?
-    ): AccountInfoDto? {
+    ): AccountInfoStateDto? {
         return toAccountInfoDtoOrNull(anonymousParty?.owningKey)
     }
 
 
     @Suspendable
-    fun toAccountInfoLiteDtoOrNull(
+    fun toAccountInfoClientDtoOrNull(
             anonymousParty: AnonymousParty?
-    ): AccountInfoLiteDto? {
-        return toAccountInfoLiteDtoOrNull(anonymousParty?.owningKey)
+    ): AccountInfoStateClientDto? {
+        return toAccountInfoClientDtoOrNull(anonymousParty?.owningKey)
     }
 
     @Suspendable
     fun toAccountInfoDtoOrNull(
             owningKey: PublicKey?
-    ): AccountInfoDto? {
+    ): AccountInfoStateDto? {
         return if (owningKey != null) {
-            AccountInfoDto.mapToDto(
+            AccountInfoStateDto.mapToDto(
                     findStoredAccountOrNull(owningKey)!!.state!!.data)
         } else null
     }
 
     @Suspendable
-    fun toAccountInfoLiteDtoOrNull(
+    fun toAccountInfoClientDtoOrNull(
             owningKey: PublicKey?
-    ): AccountInfoLiteDto? {
+    ): AccountInfoStateClientDto? {
         return if (owningKey != null) {
-            AccountInfoLiteDto.mapToDto(
+            AccountInfoStateClientDto.mapToDto(
                     findStoredAccountOrNull(owningKey)!!.state!!.data)
         } else null
     }
@@ -131,7 +131,7 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
 
     @Suspendable
     fun findAccountInfo(
-            accountInfoDto: AccountInfoDto?
+            accountInfoDto: AccountInfoStateDto?
     ): AccountInfo? {
         return when {
             // Return null input as is
@@ -144,21 +144,21 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
             accountInfoDto.name != null && accountInfoDto.host != null -> {
                 findStoredAccount(accountInfoDto.name!!, accountInfoDto.host!!).state.data
             }
-            else -> throw IllegalArgumentException("Invalid AccountInfoDto, must include either an id or name and host")
+            else -> throw IllegalArgumentException("Invalid AccountInfoStateDto, must include either an id or name and host")
         }
     }
 
     @Suspendable
     fun getAccountInfo(
-            accountInfoDto: AccountInfoDto?
+            accountInfoDto: AccountInfoStateDto?
     ): AccountInfo {
         return findAccountInfo(accountInfoDto)
-                ?: throw IllegalArgumentException("No stored AccountInfo could be matched to the given AccountInfoDto")
+                ?: throw IllegalArgumentException("No stored AccountInfo could be matched to the given AccountInfoStateDto")
     }
 
     @Suspendable
     fun toAbstractPartyOrNull(
-            accountInfoDto: AccountInfoDto?,
+            accountInfoDto: AccountInfoStateDto?,
             default: AbstractParty? = null
     ): AbstractParty? {
         val accountInfo = findAccountInfo(accountInfoDto)
@@ -168,16 +168,16 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
 
     @Suspendable
     fun toAbstractParty(
-            accountInfoDto: AccountInfoDto?,
+            accountInfoDto: AccountInfoStateDto?,
             default: AbstractParty? = null
     ): AbstractParty? {
         return toAbstractPartyOrNull(accountInfoDto, default)
-                ?: throw IllegalArgumentException("No party could be matched to the given AccountInfoDto")
+                ?: throw IllegalArgumentException("No party could be matched to the given AccountInfoStateDto")
     }
 
     @Suspendable
     fun toPublicKeyOrNull(
-            accountInfoDto: AccountInfoDto?,
+            accountInfoDto: AccountInfoStateDto?,
             default: PublicKey? = null
     ): PublicKey? {
         return toAbstractPartyOrNull(accountInfoDto)?.owningKey
@@ -186,11 +186,11 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
 
     @Suspendable
     fun toPublicKey(
-            accountInfoDto: AccountInfoDto?,
+            accountInfoDto: AccountInfoStateDto?,
             default: PublicKey? = null
     ): PublicKey? {
         return toPublicKeyOrNull(accountInfoDto)
-                ?: throw IllegalArgumentException("No public key could be matched to the given AccountInfoDto")
+                ?: throw IllegalArgumentException("No public key could be matched to the given AccountInfoStateDto")
     }
 /*
     fun  toParty(
@@ -206,24 +206,24 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
     // TODO: generate from/to Lite
     @Suspendable
     fun toAccountPartyOrNull(
-            accountInfoLiteDto: AccountInfoLiteDto?,
+            accountInfoClientDto: AccountInfoStateClientDto?,
             default: AccountParty? = null,
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
     ): AccountParty? {
-        val accountInfoDto = if (accountInfoLiteDto == null) {
+        val accountInfoDto = if (accountInfoClientDto == null) {
             null
         } else {
-            val host = if (accountInfoLiteDto.host == null) {
+            val host = if (accountInfoClientDto.host == null) {
                 null
             } else {
-                wellKnownPartyFromX500Name(accountInfoLiteDto.host!!)
+                wellKnownPartyFromX500Name(accountInfoClientDto.host!!)
             }
-            AccountInfoDto(
-                    accountInfoLiteDto.name,
+            AccountInfoStateDto(
+                    accountInfoClientDto.name,
                     host,
-                    accountInfoLiteDto.identifier?.let {
-                        UniqueIdentifier(accountInfoLiteDto.externalId, it)
+                    accountInfoClientDto.identifier?.let {
+                        UniqueIdentifier(accountInfoClientDto.externalId, it)
                     }
             )
         }
@@ -238,7 +238,7 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
     // TODO: needs cleanup
     @Suspendable
     fun toAccountPartyOrNull(
-            accountInfoDto: AccountInfoDto?,
+            accountInfoDto: AccountInfoStateDto?,
             default: AccountParty? = null,
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
@@ -274,7 +274,7 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
 
     @Suspendable
     fun toAccountParty(
-            accountInfoDto: AccountInfoDto?,
+            accountInfoDto: AccountInfoStateDto?,
             default: AccountParty? = null,
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
@@ -286,7 +286,7 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
 
     @Suspendable
     fun toAccountParty(
-            accountInfoDto: AccountInfoLiteDto?,
+            accountInfoDto: AccountInfoStateClientDto?,
             default: AccountParty? = null,
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"

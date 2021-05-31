@@ -17,14 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
+package com.github.manosbatsis.vaultaire.processor.dto
 
+
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.processor.dto.LiteFlowInputNameStrategy
+import com.github.manosbatsis.vaultaire.dto.VaultaireDto
+import com.squareup.kotlinpoet.TypeSpec.Builder
+import net.corda.core.serialization.CordaSerializable
 
-open class AccountsAwareLiteFlowInputNameStrategy(
+open class StateDtoTypeStrategy(
         annotatedElementInfo: AnnotatedElementInfo
-) : LiteFlowInputNameStrategy(annotatedElementInfo) {
+) : SimpleDtoTypeStrategy(annotatedElementInfo) {
 
-    override fun getClassNameSuffix(): String = "FlowInputDto"
+    override fun getDtoInterface(): Class<*> = VaultaireDto::class.java
+
+    override fun addAnnotations(typeSpecBuilder: Builder) {
+        super.addAnnotations(typeSpecBuilder)
+        typeSpecBuilder.addAnnotation(CordaSerializable::class.java)
+    }
 }

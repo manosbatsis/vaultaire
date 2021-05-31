@@ -19,24 +19,16 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.dto
 
-import com.github.manosbatsis.vaultaire.dto.VaultaireBaseLiteDto
-import com.github.manosbatsis.vaultaire.dto.VaultaireDto
+import com.github.manosbatsis.vaultaire.dto.VaultaireBaseStateClientDto
+import com.github.manosbatsis.vaultaire.dto.VaultaireModelClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeService
 import net.corda.core.contracts.ContractState
 
 
-/**
- * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
- * only bringing a [AccountsAwareStateService] in-context for
- * additional conversion or other utility functions.
- */
-interface AccountsAwareLiteDto<T : ContractState> : VaultaireBaseLiteDto<T, AccountsAwareStateService<T>>
+/** Accounts-aware alternative to [VaultaireStateClientDto]. */
+interface VaultaireAccountsAwareStateClientDto<T : ContractState> : VaultaireBaseStateClientDto<T, AccountsAwareStateService<T>>
 
 
-/**
- * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
- * only bringing a [AccountsAwareStateService] in-context for
- * additional conversion or other utility functions.
- */
-interface AccountsAwareDto<T : Any>: VaultaireDto<T, AccountsAwareNodeService>
+/** Accounts-aware alternative to [VaultaireModelClientDto]. */
+interface AccountsAwareVaultaireModelClientDto<T : Any>: VaultaireModelClientDto<T, AccountsAwareNodeService>

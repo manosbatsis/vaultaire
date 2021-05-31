@@ -19,18 +19,22 @@
  */
 package com.github.manosbatsis.vaultaire.processor.dto
 
-
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.SimpleDtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoNameStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
-import net.corda.core.serialization.CordaSerializable
 
-open class DtoTypeStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : SimpleDtoTypeStrategy(annotatedElementInfo) {
+open class StateDtoMembersStrategy(
+        annotatedElementInfo: AnnotatedElementInfo,
+        dtoNameStrategy: SimpleDtoNameStrategy,
+        dtoTypeStrategy: StateDtoTypeStrategy
+) : DtoMembersStrategy, SimpleDtoMembersStrategy<SimpleDtoNameStrategy, StateDtoTypeStrategy>(
+        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+) {
 
-    override fun addAnnotations(typeSpecBuilder: Builder) {
-        super.addAnnotations(typeSpecBuilder)
-        typeSpecBuilder.addAnnotation(CordaSerializable::class.java)
+    override fun addAltConstructor(typeSpecBuilder: Builder, dtoAltConstructorBuilder: FunSpec.Builder) {
+        // NO-OP
     }
 }

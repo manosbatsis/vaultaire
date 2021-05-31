@@ -19,7 +19,6 @@
  */
 package com.github.manosbatsis.vaultaire.dto
 
-import com.github.manosbatsis.kotlin.utils.api.DtoInsufficientMappingException
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
@@ -29,22 +28,24 @@ import net.corda.core.identity.Party
 
 
 /**
- * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
- * only bringing a [StateService] in-context for [toTargetType] and [toPatched].
+ * Implemented by client, REST-friendly DTOs, targeting [ContractState]  types,
+ * with type conversion support using a [StateService]  for [toTargetType] and [toPatched].
  */
-interface VaultaireLiteDto<T : ContractState> : VaultaireBaseLiteDto<T, StateService<T>>
+interface VaultaireStateClientDto<T : ContractState> : VaultaireBaseStateClientDto<T, StateService<T>>
+
 
 /**
- * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
- * only bringing a [StateService] in-context for [toTargetType] and [toPatched].
+ * Base interface for client, REST-friendly DTOs, targeting [ContractState]  types,
+ * with type conversion support using a [StateService]  for [toTargetType] and [toPatched].
  */
-interface VaultaireBaseLiteDto<T : ContractState, S : StateService<T>> : VaultaireDto<T, S>
+interface VaultaireBaseStateClientDto<T : ContractState, S : StateService<T>> : VaultaireModelClientDto<T, S>
 
 /**
- * Modeled after [com.github.manosbatsis.kotlin.utils.api.Dto]
- * only bringing a [NodeService] in-context for [toTargetType] and [toPatched].
+ * Implemented by client, REST-friendly DTOs targeting model classes, i.e. non-ContractState types,
+ * with type conversion support using a [NodeService]  for [toTargetType] and [toPatched].
  */
-interface VaultaireDto<T : Any, S : NodeServiceDelegate> {
+interface VaultaireModelClientDto<T : Any, S : NodeServiceDelegate>: VaultaireDtoBase{
+
     /**
      * Create a patched copy of the given [T] instance,
      * updated using this DTO's non-null properties
@@ -53,13 +54,13 @@ interface VaultaireDto<T : Any, S : NodeServiceDelegate> {
 
     /**
      * Create an instance of [T], using this DTO's properties.
-     * May throw a [DtoInsufficientMappingException]
+     * May throw a [IllegalStateException]
      * if there is mot enough information to do so.
      */
     fun toTargetType(stateService: S): T
 
     fun toName(party: Party?, propertyName: String = "unknown"): CordaX500Name = party?.name
-            ?: throw DtoInsufficientMappingException("Required property: $propertyName was null")
+            ?: throw IllegalStateException("Required property: $propertyName was null")
 
     fun toNameOrNull(party: Party?): CordaX500Name? = party?.name
 
@@ -68,15 +69,15 @@ interface VaultaireDto<T : Any, S : NodeServiceDelegate> {
             stateService: S,
             propertyName: String = "unknown"
     ): Party = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
-            ?: throw DtoInsufficientMappingException("Name ${partyName} not found for property: $propertyName")
-    else throw DtoInsufficientMappingException("Required property: $propertyName was null")
+            ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
+    else throw IllegalStateException("Required property: $propertyName was null")
 
     fun toPartyOrNull(
             partyName: CordaX500Name?,
             stateService: S,
             propertyName: String = "unknown"
     ): Party? = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
-            ?: throw DtoInsufficientMappingException("Name ${partyName} not found for property: $propertyName")
+            ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
     else null
 
     fun toPartyOrDefaultNullable(
@@ -85,7 +86,7 @@ interface VaultaireDto<T : Any, S : NodeServiceDelegate> {
             stateService: S,
             propertyName: String = "unknown"
     ): Party? = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
-            ?: throw DtoInsufficientMappingException("Name ${partyName} not found for property: $propertyName")
+            ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
     else defaultValue
 
     fun toPartyOrDefault(
@@ -94,9 +95,37 @@ interface VaultaireDto<T : Any, S : NodeServiceDelegate> {
             stateService: S,
             propertyName: String = "unknown"
     ): Party = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
-            ?: throw DtoInsufficientMappingException("Name ${partyName} not found for property: $propertyName")
+            ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
     else defaultValue
-            ?: throw DtoInsufficientMappingException("Name ${partyName} not found for property: $propertyName")
+            ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
 
+
+}
+
+/** Implemented by DTOs with no support for type conversion */
+interface VaultaireDto<T : Any>: VaultaireDtoBase {
+
+    /**
+     * Create a patched copy of the given [T] instance,
+     * updated using this DTO's non-null properties
+     */
+    fun toPatched(original: T): T
+
+    /**
+     * Create an instance of [T], using this DTO's properties.
+     * May throw a [IllegalStateException]
+     * if there is mot enough information to do so.
+     */
+    fun toTargetType(): T
+}
+
+interface VaultaireDtoBase{
+
+    companion object {
+        protected const val ERR_NULL = "Required property is null: "
+    }
+
+    fun <X> errNull(fieldName: String) :X =
+            throw IllegalArgumentException("$ERR_NULL$fieldName")
 
 }

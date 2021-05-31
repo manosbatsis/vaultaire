@@ -19,7 +19,7 @@ data class BookState(
 
 
 // Use Vaultaire's code generation!
-@VaultaireGenerate(name = "booksQuery", contractStateType = BookState::class)
+@VaultaireStateUtils(name = "booksQuery", contractStateType = BookState::class)
 @Entity
 @Table(name = "books")
 data class PersistentBookState(
@@ -59,7 +59,7 @@ A bit verbose so get's difficult to read as the query becomes more complex. Let'
 
 ## With Vaultaire DSL
 
-With Vaultaire's `@VaultaireGenerate` and the generated DSL this becomes:
+With Vaultaire's `@VaultaireStateUtils` and the generated DSL this becomes:
 
 ```kotlin
 // Use the generated DSL to create query criteria
@@ -87,11 +87,11 @@ queryBy(query.toCriteria(), query.toSort())
 ### Project Module States
 
 To create a query DSL for your state after [installing](#installation) Vaultaire, 
-annotate the corresponding `PersistentState` with `@VaultaireGenerate`:
+annotate the corresponding `PersistentState` with `@VaultaireStateUtils`:
 
 ```kotlin
 // Use Vaultaire's DSL generation!
-@VaultaireGenerate(
+@VaultaireStateUtils(
   // If you omit the name, the DSL function will be named by appending "Query"
   // to the decapitalized contract state name, e.g. "bookStateQuery"
   name = "booksQuery",
@@ -106,14 +106,14 @@ data class PersistentBookState(
 ### Project Dependency States
 
 To create a query DSL for a state from your project dependencies, annotate the
-any class in your project using the special `@VaultaireGenerateFor` annotation, 
+any class in your project using the special `@VaultaireStateUtilsFor` annotation, 
 providing the state's  `ContractState` and `PersistentState`:
 
 ```kotlin
-@VaultaireGenerateForDependency(name = "fungibleTokenConditions",
+@VaultaireStateUtilsMixin(name = "fungibleTokenConditions",
         persistentStateType = PersistentFungibleToken::class,
         contractStateType = FungibleToken::class)
-class Fungible
+class FungibleMixin
 ```
 
 ## Query Settings

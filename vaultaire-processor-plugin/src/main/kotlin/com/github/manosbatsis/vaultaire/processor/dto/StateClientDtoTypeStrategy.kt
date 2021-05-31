@@ -17,25 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
+package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoStrategyComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.processor.dto.LiteDtoNameStrategy
+import com.github.manosbatsis.vaultaire.dto.VaultaireStateClientDto
 
-open class AccountsAwareLiteDtoStrategyComposition(
-        override val annotatedElementInfo: AnnotatedElementInfo
-) : DtoStrategyComposition {
+open class StateClientDtoTypeStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : StateDtoTypeStrategy(annotatedElementInfo) {
 
-    override val dtoNameStrategy = LiteDtoNameStrategy(
-            annotatedElementInfo
-    )
-    override val dtoTypeStrategy = AccountAwareLiteDtoTypeStrategy(
-            annotatedElementInfo
-    )
-    override val dtoMembersStrategy = AcountsAwareLiteDtoMemberStrategy(
-            annotatedElementInfo,
-            dtoNameStrategy,
-            dtoTypeStrategy
-    )
+    override fun getDtoInterface(): Class<*> = VaultaireStateClientDto::class.java
 }

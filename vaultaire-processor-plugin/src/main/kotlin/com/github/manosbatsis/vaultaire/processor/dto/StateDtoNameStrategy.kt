@@ -17,28 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
+package com.github.manosbatsis.vaultaire.processor.dto
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoNameStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.DtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoNameStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeService
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.asClassName
+import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 
-open class AccountsAwareLiteFlowInputMemberStrategy(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: DtoNameStrategy,
-        dtoTypeStrategy: DtoTypeStrategy
-) : AcountsAwareLiteDtoMemberStrategy(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-) {
+open class StateDtoNameStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : SimpleDtoNameStrategy(annotatedElementInfo) {
 
-
-
-    override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
-        functionBuilder.addParameter("stateService",
-                AccountsAwareNodeService::class.java.asClassName())
+    companion object{
+        val STRATEGY_KEY = VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO.toString()
+        val OVERLAP = "State"
     }
+
+    override fun getClassNameSuffix(): String = annotatedElementInfo.overrideClassNameSuffix
+            ?: if(annotatedElementInfo.primaryTargetTypeElementSimpleName.endsWith(OVERLAP)){STRATEGY_KEY.removePrefix(OVERLAP)}else{STRATEGY_KEY}
+
 
 }

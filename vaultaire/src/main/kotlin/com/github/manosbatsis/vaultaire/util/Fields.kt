@@ -35,6 +35,9 @@ interface FieldWrapper<T> {
     val property: KProperty1<T, *>
 }
 
+
+interface ViewField
+
 /** Extended by Vaultaire's annotation processing to provide easy access to fields of a [StatePersistable] type */
 interface Fields<T> {
 

@@ -26,8 +26,8 @@ import com.github.manosbatsis.kotlin.utils.kapt.processor.AbstractAnnotatedModel
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotationProcessorBase
 import com.github.manosbatsis.vaultaire.annotation.ExtendedStateServiceBean
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate
-import com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency
+import com.github.manosbatsis.vaultaire.annotation.VaultaireStateUtils
+import com.github.manosbatsis.vaultaire.annotation.VaultaireStateUtilsMixin
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
 import com.github.manosbatsis.vaultaire.plugin.BaseTypesConfigAnnotationProcessorPlugin
 import com.github.manosbatsis.vaultaire.registry.Registry
@@ -37,21 +37,9 @@ import com.github.manosbatsis.vaultaire.util.FieldWrapper
 import com.github.manosbatsis.vaultaire.util.Fields
 import com.github.manosbatsis.vaultaire.util.GenericFieldWrapper
 import com.github.manosbatsis.vaultaire.util.NullableGenericFieldWrapper
-import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.FunSpec.Builder
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.LambdaTypeName
-import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.WildcardTypeName
-import com.squareup.kotlinpoet.asClassName
-import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.contracts.ContractState
 import net.corda.core.internal.packageName
 import net.corda.core.messaging.CordaRPCOps
@@ -68,12 +56,12 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 
 /**
- * Kapt processor for the `@VaultaireGenerate` annotation.
- * Constructs a VaultaireGenerate for the annotated class.
+ * Kapt processor for the `@VaultaireStateUtils` annotation.
+ * Constructs a VaultaireStateUtils for the annotated class.
  */
 @SupportedAnnotationTypes(
-        "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerate",
-        "com.github.manosbatsis.vaultaire.annotation.VaultaireGenerateForDependency")
+        "com.github.manosbatsis.vaultaire.annotation.VaultaireStateUtils",
+        "com.github.manosbatsis.vaultaire.annotation.VaultaireStateUtilsMixin")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedOptions(AnnotationProcessorBase.KAPT_OPTION_NAME_KAPT_KOTLIN_GENERATED)
 class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModelInfoProcessor(
@@ -98,8 +86,8 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     override fun processElementInfos(elementInfos: List<AnnotatedElementInfo>) =
             elementInfos.forEach { processElementInfo(it) }
 
-    //override val sourcesAnnotation = VaultaireGenerate::class.java
-    //override val dependenciesAnnotation = VaultaireGenerateForDependency::class.java
+    //override val sourcesAnnotation = VaultaireStateUtils::class.java
+    //override val dependenciesAnnotation = VaultaireStateUtilsMixin::class.java
 
     fun getBaseClassesConfigService(annotatedElementInfo: AnnotatedElementInfo) =
             AnnotationProcessorPluginService.getInstance()
@@ -160,9 +148,9 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
             generatedConditionsClassName: ClassName, annotatedElement: TypeElement, contractStateTypeElement: Element
     ): FunSpec {
 
-        var extFunName: String = annotatedElement.findAnnotationMirror(VaultaireGenerate::class.java)?.findAnnotationValue("name").toString()
+        var extFunName: String = annotatedElement.findAnnotationMirror(VaultaireStateUtils::class.java)?.findAnnotationValue("name").toString()
         if (extFunName.isNotBlank()) extFunName =
-                annotatedElement.findAnnotationMirror(VaultaireGenerateForDependency::class.java)?.findAnnotationValue("name").toString()
+                annotatedElement.findAnnotationMirror(VaultaireStateUtilsMixin::class.java)?.findAnnotationValue("name").toString()
         if (extFunName.isNotBlank()) extFunName = contractStateTypeElement.simpleName.toString().decapitalize() + "Query"
 
         return buildDslFunSpec(extFunName, generatedConditionsClassName)

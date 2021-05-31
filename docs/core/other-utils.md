@@ -8,13 +8,13 @@ Some times you might want to use the same responding flow with multiple initiati
 Since `@InitiatedBy` is not a repeatable annotation, the only option would be to subclass 
 the same responder for each initiating flow, adding the appropriate `@InitiatedBy`.
 
-Vaultaire's annotation processor can help you automate this using a `@VaultaireGenerateResponder` instead of 
+Vaultaire's annotation processor can help you automate this using a `@VaultaireFlowResponder` instead of 
 maintaning such responders manually. Usage example:
 
 
 ```kotlin
-// or simply: @VaultaireGenerateResponder(BaseBookFlowResponder::class) 
-@VaultaireGenerateResponder(
+// or simply: @VaultaireFlowResponder(BaseBookFlowResponder::class) 
+@VaultaireFlowResponder(
     value = BaseBookFlowResponder::class,
     comment = "A basic responder to listen for finality"
 )
@@ -74,7 +74,7 @@ val dtosPage = ResultsPage.from(
     vaultPage, pageSpecification, sort
 ) { stateAndRefs ->
     stateAndRefs.map {
-        MyStateLiteDto
+        MyStateClientDto
             .mapToDto(it.state.data, stateService)
     }
 }
