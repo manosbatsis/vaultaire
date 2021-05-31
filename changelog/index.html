@@ -1089,12 +1089,16 @@ and can be helpful with version upgrades.</p>
 </tbody>
 </table>
 <ul>
-<li>Class and file names of generated state-based DTOs use new suffixes:</li>
-<li><code>LiteDto</code> has changes to <code>StateClientDto</code></li>
-<li><code>Dto</code> has changes to <code>StateDto</code></li>
-<li>DTO generation strategies have been updated:</li>
+<li>Class and file names of generated state-based DTOs use new suffixes:<ul>
+<li><code>LiteDto</code> has changed to <code>StateClientDto</code></li>
+<li><code>Dto</code> has changed to <code>StateDto</code></li>
+</ul>
+</li>
+<li>DTO generation strategies have been updated:<ul>
 <li><code>DEFAULT</code>is now <code>CORDAPP_LOCAL_DTO</code></li>
 <li><code>LITE</code> is now <code>CORDAPP_CLIENT_DTO</code></li>
+</ul>
+</li>
 <li>The default DTO strategy is now <code>CORDAPP_CLIENT_DTO</code></li>
 </ul>
 <p>This release also brings new features:</p>
