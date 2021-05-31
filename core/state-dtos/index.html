@@ -831,84 +831,95 @@ It can be used equally on either <code>ContractState</code> or &ldquo;mixin&rdqu
 <span class="p">)</span>
 </code></pre></div>
 <h4 id="sample-dto">Sample DTO<a class="headerlink" href="#sample-dto" title="Permanent link">&para;</a></h4>
-<p>In both cases above the following DTO will be generated.
-Note the nullable var members and utilities to convert between the two types
-or to patch an existing state:</p>
+<p>Sample (state) client DTO: nullable var members and utilities to convert from/to<br />
+or patch an instance of the target type:</p>
 <div class="highlight"><pre><span></span><code><span class="cm">/**</span>
-<span class="cm"> * A [BookState]-specific [Dto] implementation</span>
+<span class="cm"> * A [MagazineContract.MagazineState]-specific</span>
+<span class="cm"> * [com.github.manosbatsis.vaultaire.dto.VaultaireStateClientDto] implementation</span>
 <span class="cm"> */</span>
 <span class="nd">@CordaSerializable</span>
-<span class="kd">data</span> <span class="kd">class</span> <span class="nc">BookStateClientDto</span><span class="p">(</span>
-  <span class="kd">var</span> <span class="nv">publisher</span><span class="p">:</span> <span class="n">Party? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">author</span><span class="p">:</span> <span class="n">Party? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">price</span><span class="p">:</span> <span class="n">BigDecimal? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">genre</span><span class="p">:</span> <span class="n">BookContract</span><span class="p">.</span><span class="na">Genre</span><span class="o">?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">editions</span><span class="p">:</span> <span class="kt">Int?</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">published</span><span class="p">:</span> <span class="n">Date? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="nd">@field</span><span class="p">:</span><span class="n">JsonProperty</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;alias&quot;</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="nv">alternativeTitle</span><span class="p">:</span> <span class="kt">String?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier? </span><span class="o">=</span> <span class="kc">null</span>
-<span class="p">)</span> <span class="p">:</span> <span class="n">Dto</span><span class="o">&lt;</span><span class="n">BookState</span><span class="o">&gt;</span> <span class="p">{</span>
-  <span class="cm">/**</span>
-<span class="cm">   * Alternative constructor, used to map </span>
-<span class="cm">   * from the given [BookState] instance.</span>
-<span class="cm">   */</span>
-  <span class="k">constructor</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">BookState</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span>
-        <span class="n">publisher</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">publisher</span><span class="p">,</span>
-        <span class="n">author</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">author</span><span class="p">,</span>
-        <span class="n">price</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">price</span><span class="p">,</span>
-        <span class="n">genre</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">genre</span><span class="p">,</span>
-        <span class="n">editions</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">editions</span><span class="p">,</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">title</span><span class="p">,</span>
-        <span class="n">published</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">published</span><span class="p">,</span>
-        <span class="n">alternativeTitle</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">alternativeTitle</span><span class="p">,</span>
-        <span class="n">linearId</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">linearId</span>
-  <span class="p">)</span>
-
-  <span class="cm">/**</span>
-<span class="cm">   * Create a patched copy of the given [BookState] instance,</span>
-<span class="cm">   * updated using this DTO&#39;s non-null properties.</span>
-<span class="cm">   */</span>
-  <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">toPatched</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">BookState</span><span class="p">):</span> <span class="n">BookState</span> <span class="p">{</span>
-    <span class="kd">val</span> <span class="nv">patched</span> <span class="o">=</span> <span class="n">BookState</span><span class="p">(</span>
-          <span class="n">publisher</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">publisher</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">publisher</span><span class="p">,</span>
-          <span class="n">author</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">author</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">author</span><span class="p">,</span>
-          <span class="n">price</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">price</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">price</span><span class="p">,</span>
-          <span class="n">genre</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">genre</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">genre</span><span class="p">,</span>
-          <span class="n">editions</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">editions</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">editions</span><span class="p">,</span>
-          <span class="n">title</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">title</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">title</span><span class="p">,</span>
-          <span class="n">published</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">published</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">published</span><span class="p">,</span>
-          <span class="n">alternativeTitle</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">alternativeTitle</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">alternativeTitle</span><span class="p">,</span>
-          <span class="n">linearId</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">linearId</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">linearId</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">patched</span>
-  <span class="p">}</span>
-
-  <span class="cm">/**</span>
-<span class="cm">   * Create an instance of [BookState], using this DTO&#39;s properties.</span>
-<span class="cm">   * May throw a [DtoInsufficientStateMappingException] </span>
-<span class="cm">   * if there is mot enough information to do so.</span>
-<span class="cm">   */</span>
-  <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">toState</span><span class="p">():</span> <span class="n">BookState</span> <span class="p">{</span>
-    <span class="k">try</span> <span class="p">{</span>
-       <span class="kd">val</span> <span class="nv">state</span> <span class="o">=</span> <span class="n">BookState</span><span class="p">(</span>
-          <span class="n">publisher</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">publisher</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">author</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">author</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">price</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">price</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">genre</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">genre</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">editions</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">editions</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">title</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">title</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">published</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">published</span><span class="o">!!</span><span class="p">,</span>
-          <span class="n">alternativeTitle</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">alternativeTitle</span><span class="p">,</span>
-          <span class="n">linearId</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">linearId</span><span class="o">!!</span>
-       <span class="p">)</span>
-       <span class="k">return</span> <span class="n">state</span>
+<span class="kd">data</span> <span class="kd">class</span> <span class="nc">MagazineStateClientDto</span><span class="p">(</span>
+        <span class="kd">var</span> <span class="nv">publisher</span><span class="p">:</span> <span class="n">AccountInfoStateClientDto? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="kd">var</span> <span class="nv">author</span><span class="p">:</span> <span class="n">AccountInfoStateClientDto? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="kd">var</span> <span class="nv">price</span><span class="p">:</span> <span class="n">BigDecimal? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="kd">var</span> <span class="nv">genre</span><span class="p">:</span> <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineGenre</span><span class="o">?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="kd">var</span> <span class="nv">issues</span><span class="p">:</span> <span class="kt">Int?</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+        <span class="kd">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="kd">var</span> <span class="nv">published</span><span class="p">:</span> <span class="n">Date? </span><span class="o">=</span> <span class="n">Date</span><span class="p">(),</span>
+        <span class="kd">var</span> <span class="nv">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier? </span><span class="o">=</span> <span class="n">UniqueIdentifier</span><span class="p">(),</span>
+        <span class="kd">var</span> <span class="nv">customMixinField</span><span class="p">:</span> <span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;?</span> <span class="o">=</span> <span class="kc">null</span>
+<span class="p">)</span> <span class="p">:</span> <span class="n">VaultaireAccountsAwareStateClientDto</span><span class="o">&lt;</span><span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Create a patched copy of the given [MagazineContract.MagazineState] instance,</span>
+<span class="cm">     * updated using this DTO&#39;s non-null properties.</span>
+<span class="cm">     */</span>
+    <span class="nd">@Suspendable</span>
+    <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">toPatched</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="p">,</span>
+                           <span class="n">stateService</span><span class="p">:</span> <span class="n">AccountsAwareStateService</span><span class="o">&lt;</span><span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="o">&gt;</span><span class="p">):</span>
+            <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">publisherResolved</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">toAccountPartyOrNull</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">publisher</span><span class="p">,</span>
+                <span class="n">original</span><span class="p">.</span><span class="na">publisher</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="nv">authorResolved</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">toAccountParty</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">author</span><span class="p">,</span> <span class="n">original</span><span class="p">.</span><span class="na">author</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="nv">patched</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">copy</span><span class="p">(</span>
+                <span class="n">publisher</span> <span class="o">=</span> <span class="n">publisherResolved</span><span class="p">,</span>
+                <span class="n">author</span> <span class="o">=</span> <span class="n">authorResolved</span><span class="p">,</span>
+                <span class="n">price</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">price</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">price</span><span class="p">,</span>
+                <span class="n">genre</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">genre</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">genre</span><span class="p">,</span>
+                <span class="n">issues</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">issues</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">issues</span><span class="p">,</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">title</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">title</span><span class="p">,</span>
+                <span class="n">published</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">published</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">published</span><span class="p">,</span>
+                <span class="n">linearId</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">linearId</span> <span class="o">?:</span> <span class="n">original</span><span class="p">.</span><span class="na">linearId</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">patched</span>
     <span class="p">}</span>
-    <span class="k">catch</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Exception</span><span class="p">)</span> <span class="p">{</span>
-       <span class="k">throw</span> <span class="n">DtoInsufficientStateMappingException</span><span class="p">(</span><span class="n">exception</span> <span class="o">=</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Create an instance of [MagazineContract.MagazineState], using this DTO&#39;s properties.</span>
+<span class="cm">     * May throw a [DtoInsufficientStateMappingException]</span>
+<span class="cm">     * if there is mot enough information to do so.</span>
+<span class="cm">     */</span>
+    <span class="nd">@Suspendable</span>
+    <span class="kd">override</span>
+    <span class="kd">fun</span> <span class="nf">toTargetType</span><span class="p">(</span><span class="n">stateService</span><span class="p">:</span> <span class="n">AccountsAwareStateService</span><span class="o">&lt;</span><span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="o">&gt;</span><span class="p">):</span>
+            <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="nv">publisherResolved</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">toAccountPartyOrNull</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">publisher</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="s">&quot;publisher&quot;</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="nv">authorResolved</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">toAccountParty</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">author</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="s">&quot;author&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="p">(</span>
+                <span class="n">publisher</span> <span class="o">=</span> <span class="n">publisherResolved</span><span class="p">,</span>
+                <span class="n">author</span> <span class="o">=</span> <span class="n">authorResolved</span><span class="p">,</span>
+                <span class="n">price</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">price</span><span class="o">?:</span><span class="n">errNull</span><span class="p">(</span><span class="s">&quot;price&quot;</span><span class="p">),</span>
+                <span class="n">genre</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">genre</span><span class="o">?:</span><span class="n">errNull</span><span class="p">(</span><span class="s">&quot;genre&quot;</span><span class="p">),</span>
+                <span class="n">issues</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">issues</span><span class="o">?:</span><span class="n">errNull</span><span class="p">(</span><span class="s">&quot;issues&quot;</span><span class="p">),</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">title</span><span class="o">?:</span><span class="n">errNull</span><span class="p">(</span><span class="s">&quot;title&quot;</span><span class="p">),</span>
+                <span class="n">published</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">published</span><span class="o">?:</span><span class="n">errNull</span><span class="p">(</span><span class="s">&quot;published&quot;</span><span class="p">),</span>
+                <span class="n">linearId</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="na">linearId</span><span class="o">?:</span><span class="n">errNull</span><span class="p">(</span><span class="s">&quot;linearId&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="p">}</span>
-  <span class="p">}</span>
+
+    <span class="kd">companion</span> <span class="kd">object</span> <span class="err">{</span>
+        <span class="cm">/**</span>
+<span class="cm">         * Create a new DTO instance using the given [MagazineContract.MagazineState] as source.</span>
+<span class="cm">         */</span>
+        <span class="nd">@Suspendable</span>
+        <span class="kd">fun</span> <span class="nf">mapToDto</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="p">,</span>
+                     <span class="n">stateService</span><span class="p">:</span> <span class="n">AccountsAwareStateService</span><span class="o">&lt;</span><span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="o">&gt;</span><span class="p">):</span>
+                <span class="n">MagazineStateClientDto</span> <span class="p">{</span>
+            <span class="kd">val</span> <span class="nv">publisherResolved</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">toAccountInfoClientDtoOrNull</span><span class="p">(</span><span class="n">original</span><span class="p">.</span><span class="na">publisher</span><span class="p">)</span>
+            <span class="kd">val</span> <span class="nv">authorResolved</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">toAccountInfoClientDto</span><span class="p">(</span><span class="n">original</span><span class="p">.</span><span class="na">author</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">MagazineStateClientDto</span><span class="p">(</span>
+                    <span class="n">publisher</span> <span class="o">=</span> <span class="n">publisherResolved</span><span class="p">,</span>
+                    <span class="n">author</span> <span class="o">=</span> <span class="n">authorResolved</span><span class="p">,</span>
+                    <span class="n">price</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">price</span><span class="p">,</span>
+                    <span class="n">genre</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">genre</span><span class="p">,</span>
+                    <span class="n">issues</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">issues</span><span class="p">,</span>
+                    <span class="n">title</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">title</span><span class="p">,</span>
+                    <span class="n">published</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">published</span><span class="p">,</span>
+                    <span class="n">linearId</span> <span class="o">=</span> <span class="n">original</span><span class="p">.</span><span class="na">linearId</span>
+            <span class="p">)</span>
+
+        <span class="p">}</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="strategies">Strategies<a class="headerlink" href="#strategies" title="Permanent link">&para;</a></h3>
@@ -924,51 +935,6 @@ type conversions. Using both, as in the following example, will generate separat
         <span class="c1">//...</span>
 <span class="p">)</span> <span class="p">:</span> <span class="n">LinearState</span><span class="p">,</span> <span class="n">QueryableState</span><span class="p">{</span>
         <span class="c1">//...</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>The &ldquo;client&rdquo; strategy is provided to help where deserialization would normally require
-either a <code>ServiceHub</code> or <code>RpcOps</code>, e.g. when the target property is a <code>Party</code>,
-in which case the DTO will use a more manageable type like <code>CordaX500Name</code>,
-and require a service to convert to or patch a <code>ContractState</code> instance.
-Note that client DTO classnames will also have a <code>StateClientDto</code> suffix. Here&rsquo;s the &ldquo;client&rdquo;
-DTO generated for the above example:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">data</span> <span class="kd">class</span> <span class="nc">BookStateClientDto</span><span class="p">(</span>
-  <span class="kd">var</span> <span class="nv">publisher</span><span class="p">:</span> <span class="n">CordaX500Name? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">author</span><span class="p">:</span> <span class="n">CordaX500Name? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">price</span><span class="p">:</span> <span class="n">BigDecimal? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">genre</span><span class="p">:</span> <span class="n">BookContract</span><span class="p">.</span><span class="na">Genre</span><span class="o">?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">editions</span><span class="p">:</span> <span class="kt">Int?</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">published</span><span class="p">:</span> <span class="n">Date? </span><span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="nd">@field</span><span class="p">:</span><span class="n">JsonProperty</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;alias&quot;</span><span class="p">)</span>
-  <span class="kd">var</span> <span class="nv">alternativeTitle</span><span class="p">:</span> <span class="kt">String?</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-  <span class="kd">var</span> <span class="nv">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier? </span><span class="o">=</span> <span class="kc">null</span>
-<span class="p">)</span> <span class="p">:</span> <span class="n">VaultaireDto</span><span class="o">&lt;</span><span class="n">BookContract</span><span class="p">.</span><span class="na">BookState</span><span class="o">&gt;</span> <span class="p">{</span>
-
-
-  <span class="cm">/**</span>
-<span class="cm">   * Create a patched copy of the given [BookContract.BookState] instance,</span>
-<span class="cm">   * updated using this DTO&#39;s non-null properties.</span>
-<span class="cm">   */</span>
-  <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">toPatched</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">BookContract</span><span class="p">.</span><span class="na">BookState</span><span class="p">,</span>
-      <span class="n">stateService</span><span class="p">:</span> <span class="n">StateService</span><span class="o">&lt;</span><span class="n">BookContract</span><span class="p">.</span><span class="na">BookState</span><span class="o">&gt;</span><span class="p">):</span> <span class="n">BookContract</span><span class="p">.</span><span class="na">BookState</span> <span class="p">{</span>
-    <span class="kd">val</span> <span class="nv">patched</span> <span class="o">=</span> <span class="c1">//... path the original, applying non-null values from this DTO</span>
-    <span class="k">return</span> <span class="n">patched</span>
-  <span class="p">}</span>
-
-  <span class="cm">/**</span>
-<span class="cm">   * Create an instance of [BookContract.BookState], using this DTO&#39;s properties.</span>
-<span class="cm">   * May throw a [DtoInsufficientStateMappingException]</span>
-<span class="cm">   * if there is mot enough information to do so.</span>
-<span class="cm">   */</span>
-  <span class="kd">override</span> <span class="kd">fun</span> <span class="nf">toTargetType</span><span class="p">(</span><span class="n">stateService</span><span class="p">:</span> <span class="n">StateService</span><span class="o">&lt;</span><span class="n">BookContract</span><span class="p">.</span><span class="na">BookState</span><span class="o">&gt;</span><span class="p">):</span>
-      <span class="n">BookContract</span><span class="p">.</span><span class="na">BookState</span> <span class="p">{</span>
-    <span class="kd">val</span> <span class="nv">originalTypeInstance</span> <span class="o">=</span> <span class="n">BookContract</span><span class="p">.</span><span class="na">BookState</span><span class="p">(</span>
-        <span class="c1">// Use this DTO&#39;s values to create an new </span>
-        <span class="c1">// instance of the target type</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">originalTypeInstance</span>
-  <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
                 

@@ -626,14 +626,13 @@ the following query DSL without RSQL:</p>
 <span class="n">bookStateService</span><span class="p">.</span><span class="na">queryBy</span><span class="p">(</span><span class="n">query</span><span class="p">.</span><span class="na">toCriteria</span><span class="p">(),</span> <span class="n">query</span><span class="p">.</span><span class="na">toSort</span><span class="p">())</span>
 </code></pre></div>
 <p>The equivalent using RSQL:</p>
-<div class="highlight"><pre><span></span><code><span class="kd">val</span> <span class="nv">rsql</span> <span class="o">=</span> <span class="s">&quot;title=like=*Corda*;price&gt;=12&quot;</span>
-<span class="c1">// Use the generated DSL to create query criteria</span>
+<div class="highlight"><pre><span></span><code><span class="c1">// Use the generated DSL to create query criteria</span>
 <span class="kd">val</span> <span class="nv">query</span> <span class="o">=</span> <span class="n">bookStateService</span><span class="p">.</span><span class="na">buildQuery</span> <span class="p">{</span>
     <span class="c1">// blah</span>
 <span class="p">}</span>
 <span class="c1">// Use the RSQL extension function</span>
 <span class="p">.</span><span class="na">withRsql</span><span class="p">(</span>
-    <span class="n">rsql</span><span class="p">,</span>
+    <span class="s">&quot;title=like=*Corda*;price&gt;=12&quot;</span><span class="p">,</span>
     <span class="c1">// Optional, default is </span>
     <span class="c1">// SimpleRsqlArgumentsConverter.Factory()</span>
     <span class="n">converterFactory</span>  

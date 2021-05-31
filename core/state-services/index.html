@@ -559,7 +559,8 @@
 <p>Vaultaire&rsquo;s <code>StateService</code>s provide a simple, consistent API to
 load, query and track vault states.</p>
 <p><code>StateService</code> implementations are usually auto-generated at build time
-and specific to a single <code>ContractState</code> type.</p>
+based on <code>VaultaireStateUtils</code> or <code>VaultaireStateUtilsMixin</code> annotations, 
+i.e. specific to a single <code>ContractState</code> type.</p>
 <p>State Services can also decouple you code from <code>ServiceHub</code> and <code>CordaRPCOps</code>
 by providing constructors for either, thus helping increase code reuse 
 between cordapps and their clients. They also support RPC connection pooling, 
@@ -575,8 +576,8 @@ less easy to use than generated ones but functional nevertheless:</p>
 <h2 id="state-services_1">State Services<a class="headerlink" href="#state-services_1" title="Permanent link">&para;</a></h2>
 <p>Vaultaire&rsquo;s annotation processor  will generate optimal <code>StateService</code> implementations,
 each specific to one of the <code>ContractState</code>-<code>PersistentState</code> pairs found at build-time
-based on the annotations found in your code. Service classnames are based on the contract state
-classname, suffixed by &ldquo;Service&rdquo;.</p>
+based on the <code>VaultaireStateUtils</code> or <code>VaultaireStateUtilsMixin</code> annotations found in 
+your code. Service classnames are based on the contract state classname, suffixed by &ldquo;Service&rdquo;.</p>
 <p>Usage example:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// Create an instance of the generated service type,</span>
 <span class="c1">// passing a ServiceHub, CordaRPCOps, NodeRpcConnection</span>
