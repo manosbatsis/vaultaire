@@ -6,6 +6,10 @@ and can be helpful with version upgrades.
 
 
 
+## 0.41 
+
+Minor view fixes
+
 ## 0.40
 
 This is a release with BREAKING CHANGES.
