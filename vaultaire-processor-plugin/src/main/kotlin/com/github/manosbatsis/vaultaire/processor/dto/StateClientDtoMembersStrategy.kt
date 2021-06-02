@@ -33,6 +33,7 @@ import com.squareup.kotlinpoet.TypeSpec.Builder
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.identity.Party
 import javax.lang.model.element.VariableElement
+import kotlin.reflect.KClass
 
 
 open class StateClientDtoMembersStrategy(
@@ -52,7 +53,18 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
 ) {
 
     override fun toTargetTypeStatement(fieldIndex: Int, variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
-        return if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
+
+        val partyCollection = partyCollection(variableElement)
+
+
+        return if (partyCollection != null) {
+            val propertyName = toPropertyName(variableElement)
+            targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = $propertyName?.filterNotNull()", propertyName)
+            targetTypeFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, stateService, %S) } ", propertyName)
+            if (!variableElement.isNullable())
+            targetTypeFunctionBuilder.addStatement("     ?:errNull(%S) ", propertyName)
+            DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
+        }else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
 
             val propertyName = toPropertyName(variableElement)
             if (variableElement.isNullable()) {
@@ -66,7 +78,18 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
     }
 
     override fun toPatchStatement(fieldIndex: Int, variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
-        return if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
+
+        val partyCollection = partyCollection(variableElement)
+
+        return if (partyCollection != null) {
+            val propertyName = toPropertyName(variableElement)
+            patchFunctionBuilder.addStatement("val ${propertyName}Resolved = $propertyName?.filterNotNull()", propertyName)
+            patchFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, stateService, %S) } ", propertyName)
+            patchFunctionBuilder.addStatement("     ?.let{ if(it.isNotEmpty()) it else null } ")
+            patchFunctionBuilder.addStatement("     ?:original.$propertyName ")
+            DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
+        }
+        else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
             val propertyName = toPropertyName(variableElement)
             if (variableElement.isNullable()) {
                 patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefaultNullable(this.$propertyName, original.$propertyName, stateService, %S)", propertyName)
@@ -76,6 +99,13 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
                 DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
             }
         } else super.toPatchStatement(fieldIndex, variableElement, commaOrEmpty)
+    }
+
+    private fun partyCollection(variableElement: VariableElement): KClass<out Any>? {
+        val variableElementSig = "${variableElement.asKotlinTypeName()}"
+        val partyParam = "<${Party::class.java.canonicalName}>"
+        return listOf(List::class, Set::class, Sequence::class)
+                .find { variableElementSig.endsWith("${it.simpleName}$partyParam") }
     }
 
     override fun getCreatorFunctionBuilder(originalTypeParameter: ParameterSpec): FunSpec.Builder {
@@ -99,12 +129,13 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
             propertyName: String, propertyType: TypeName,
             commaOrEmpty: String
     ): Statement? {
-        return if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
-            DtoMembersStrategy.Statement(
-                    if (variableElement.isNullable())
-                        "      $propertyName = original.$propertyName?.name$commaOrEmpty"
-                    else "      $propertyName = original.$propertyName.name$commaOrEmpty"
-            )
+        val partyCollection = partyCollection(variableElement)
+        val safeDot = if(variableElement.isNullable()) "?." else "."
+        return if (partyCollection != null) {
+            Statement("      $propertyName = original.$propertyName${safeDot}map{it.name}$commaOrEmpty")
+        }
+        else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
+            Statement("      $propertyName = original.$propertyName${safeDot}name$commaOrEmpty")
         } else return super.toCreatorStatement(index, variableElement, propertyName, propertyType, commaOrEmpty)
     }
 
@@ -113,12 +144,15 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
             propertyName: String, propertyType: TypeName,
             commaOrEmpty: String
     ): DtoMembersStrategy.Statement? {
-        return if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
-            DtoMembersStrategy.Statement(
-                    if (variableElement.isNullable())
-                        "      $propertyName = original.$propertyName?.name$commaOrEmpty"
-                    else "      $propertyName = original.$propertyName.name$commaOrEmpty"
-            )
+
+        val partyCollection = partyCollection(variableElement)
+        val safeDot = if(variableElement.isNullable()) "?." else "."
+
+        return if (partyCollection != null) {
+            Statement("      $propertyName = original.$propertyName${safeDot}map{it.name}$commaOrEmpty")
+        }
+        else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
+            Statement("      $propertyName = original.$propertyName${safeDot}name$commaOrEmpty")
         } else super.toAltConstructorStatement(index, variableElement, propertyName, propertyType, commaOrEmpty)
     }
 
@@ -143,10 +177,16 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
                         .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
     }
 
+    // TODO: handle party/account collections
     override fun toPropertyTypeName(variableElement: VariableElement): TypeName {
-        return if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName())
-            CordaX500Name::class.java.asTypeName().copy(nullable = true)
-        else super.toPropertyTypeName(variableElement)
+        val partyCollection = partyCollection(variableElement)
+        val params = variableElement.asType().asTypeElement().typeParameters
+        return partyCollection?.asClassName()
+                ?.parameterizedBy(CordaX500Name::class.java.asTypeName())
+                ?.copy(nullable = true)
+                ?: if (variableElement.asType().asTypeElement().asClassName() .canonicalName == Party::class.java.asClassName().canonicalName)
+                    CordaX500Name::class.java.asTypeName().copy(nullable = true)
+                else super.toPropertyTypeName(variableElement)
     }
 
     override fun addAltConstructor(typeSpecBuilder: Builder, dtoAltConstructorBuilder: FunSpec.Builder) {

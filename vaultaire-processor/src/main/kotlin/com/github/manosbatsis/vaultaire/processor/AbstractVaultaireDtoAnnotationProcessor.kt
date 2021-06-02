@@ -58,7 +58,24 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
             val fileName = dtoClassName.simpleName
             val packageName = dtoClassName.packageName
             // Generate the Kotlin file
-            getFileSpecBuilder(packageName, fileName)
+
+            val annElem = strategy.annotatedElementInfo
+            val fileBuilder = getFileSpecBuilder(packageName, fileName)
+            fileBuilder.addComment("\n")
+                    .addComment("----------------------------------------------------\n")
+                    .addComment("Strategies\n")
+                    .addComment("Main Strategy: ${strategy.javaClass.simpleName}\n")
+                    .addComment("Name: ${strategy.dtoNameStrategy.javaClass.simpleName}\n")
+                    .addComment("Type: ${strategy.dtoTypeStrategy.javaClass.simpleName}\n")
+                    .addComment("Members: ${strategy.dtoMembersStrategy.javaClass.simpleName}\n")
+                    .addComment("----------------------------------------------------\n")
+                    .addComment("\n")
+                    .addComment("----------------------------------------------------\n")
+                    .addComment("Annotation: ${annElem.annotation.annotationType}\n")
+                    .addComment("Primary Element: ${annElem.primaryTargetTypeElement.javaClass.canonicalName}\n")
+                    .addComment("Second Element: ${annElem.secondaryTargetTypeElement?.javaClass?.canonicalName?:"none"}\n")
+                    .addComment("Mixin Element: ${annElem.mixinTypeElement?.javaClass?.canonicalName?:"none"}\n")
+                    .addComment("----------------------------------------------------\n")
                     .addType(dto)
                     .build()
                     .writeTo(sourceRootFile)
