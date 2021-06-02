@@ -23,7 +23,6 @@ import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.Commands.*
 import net.corda.core.contracts.*
-import net.corda.core.identity.Party
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.QueryableState
@@ -131,7 +130,6 @@ class MagazineContract : Contract {
                              val title: String,
                              @DefaultValue("Date()")
                              val published: Date,
-                             val maintainers: List<Party> = emptyList(),
                              @DefaultValue("UniqueIdentifier()")
                              override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
         override val participants get() = listOfNotNull(publisher?.party, author.party)
