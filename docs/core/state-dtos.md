@@ -91,6 +91,7 @@ data class BookState(
     val genre: Genre,
     @DefaultValue("1")
     val editions: Int = 1,
+    val foo: String = "foo1",
     val title: String = "Uknown",
     val published: Date = Date(),
     @field:JsonProperty("alias")
@@ -124,14 +125,36 @@ class BookStateMixin // just a placeholder for our annotation
 
 #### Non-State Models
 
-`@VaultaireModelDto` and `@VaultaireModelDtoMixin` cab be used for 
-regular, non-ContractState data classes to similarly generate REST-friendly 
+`@VaultaireModelDto` and `@VaultaireModelDtoMixin` can be used for generation of DTOs 
+for regular, non-ContractState data classes.  to similarly generate REST-friendly 
 DTOs and conversion utils focused op Corda-related types like accounts etc.
 
 ```kotlin
-@VaultaireModelDtoMixin(baseType = MagazineModel::class)
-data class MagazineModelMixin
+@VaultaireModelDtoMixin(baseType = SomeModel::class)
+data class SomeModelMixin
 ```
+
+#### Views
+
+Some times using DTOs with a subset of the original state or model's members is desired. 
+Vaultaire allows automating generation for those DTOs as well using the `views` property 
+of the annotation in context.
+
+For example, to generate a view of `SomeModel` that only includes `title` and `description`:
+
+```kotlin
+@VaultaireModelDtoMixin(
+        baseType = SomeModel::class,
+        views = [VaultaireView(
+                name = "UpdateTitleAndDesc",
+                namedFields = ["title", "description"])]
+)
+data class SomeModelMixin
+```
+
+The `views` property is supported by `@VaultaireStateDto`, `@VaultaireStateDtoMixin`, 
+`@VaultaireModelDto` and `@VaultaireModelDtoMixin`.
+
 
 #### Utility Annotations
 
