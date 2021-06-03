@@ -395,6 +395,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#views" class="md-nav__link">
+    Views
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#utility-annotations" class="md-nav__link">
     Utility Annotations
   </a>
@@ -669,6 +676,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#views" class="md-nav__link">
+    Views
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#utility-annotations" class="md-nav__link">
     Utility Annotations
   </a>
@@ -786,6 +800,7 @@ annotate them with <code>@VaultaireStateDto</code>:</p>
     <span class="kd">val</span> <span class="nv">genre</span><span class="p">:</span> <span class="n">Genre</span><span class="p">,</span>
     <span class="nd">@DefaultValue</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">)</span>
     <span class="kd">val</span> <span class="nv">editions</span><span class="p">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+    <span class="kd">val</span> <span class="nv">foo</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;foo1&quot;</span><span class="p">,</span>
     <span class="kd">val</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;Uknown&quot;</span><span class="p">,</span>
     <span class="kd">val</span> <span class="nv">published</span><span class="p">:</span> <span class="n">Date</span> <span class="o">=</span> <span class="n">Date</span><span class="p">(),</span>
     <span class="nd">@field</span><span class="p">:</span><span class="n">JsonProperty</span><span class="p">(</span><span class="s">&quot;alias&quot;</span><span class="p">)</span>
@@ -810,12 +825,27 @@ e.g. when having (the good practice of) separate cordapp modules for contracts/s
 <span class="kd">class</span> <span class="nc">BookStateMixin</span> <span class="c1">// just a placeholder for our annotation</span>
 </code></pre></div>
 <h4 id="non-state-models">Non-State Models<a class="headerlink" href="#non-state-models" title="Permanent link">&para;</a></h4>
-<p><code>@VaultaireModelDto</code> and <code>@VaultaireModelDtoMixin</code> cab be used for 
-regular, non-ContractState data classes to similarly generate REST-friendly 
+<p><code>@VaultaireModelDto</code> and <code>@VaultaireModelDtoMixin</code> can be used for generation of DTOs 
+for regular, non-ContractState data classes.  to similarly generate REST-friendly 
 DTOs and conversion utils focused op Corda-related types like accounts etc.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@VaultaireModelDtoMixin</span><span class="p">(</span><span class="n">baseType</span> <span class="o">=</span> <span class="n">MagazineModel</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
-<span class="kd">data</span> <span class="kd">class</span> <span class="nc">MagazineModelMixin</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@VaultaireModelDtoMixin</span><span class="p">(</span><span class="n">baseType</span> <span class="o">=</span> <span class="n">SomeModel</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">data</span> <span class="kd">class</span> <span class="nc">SomeModelMixin</span>
 </code></pre></div>
+<h4 id="views">Views<a class="headerlink" href="#views" title="Permanent link">&para;</a></h4>
+<p>Some times using DTOs with a subset of the original state or model&rsquo;s members is desired. 
+Vaultaire allows automating generation for those DTOs as well using the <code>views</code> property 
+of the annotation in context.</p>
+<p>For example, to generate a view of <code>SomeModel</code> that only includes <code>title</code> and <code>description</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@VaultaireModelDtoMixin</span><span class="p">(</span>
+        <span class="n">baseType</span> <span class="o">=</span> <span class="n">SomeModel</span><span class="o">::</span><span class="n">class</span><span class="p">,</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="o">[</span><span class="n">VaultaireView</span><span class="p">(</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;UpdateTitleAndDesc&quot;</span><span class="p">,</span>
+                <span class="n">namedFields</span> <span class="o">=</span> <span class="o">[</span><span class="s">&quot;title&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="o">]</span><span class="p">)</span><span class="o">]</span>
+<span class="p">)</span>
+<span class="kd">data</span> <span class="kd">class</span> <span class="nc">SomeModelMixin</span>
+</code></pre></div>
+<p>The <code>views</code> property is supported by <code>@VaultaireStateDto</code>, <code>@VaultaireStateDtoMixin</code>, 
+<code>@VaultaireModelDto</code> and <code>@VaultaireModelDtoMixin</code>.</p>
 <h4 id="utility-annotations">Utility Annotations<a class="headerlink" href="#utility-annotations" title="Permanent link">&para;</a></h4>
 <p>The<code>@DefaultValue</code> can be used to provide default property initializers. 
 It can be used equally on either <code>ContractState</code> or &ldquo;mixin&rdquo; properties:</p>
