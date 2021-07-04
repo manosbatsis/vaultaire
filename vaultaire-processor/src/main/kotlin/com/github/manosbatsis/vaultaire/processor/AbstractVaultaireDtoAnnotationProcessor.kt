@@ -49,7 +49,7 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
             originalStrategies.map { (strategyKey, dtoStrategy) ->
                 viewInfos.filter { it.allowsStrategy(strategyKey) }.map { viewInfo ->
                     // Set unique file name
-                    viewInfo.viewAnnotation.name to DtoViewStrategy(viewInfo, dtoStrategy)
+                    viewInfo.viewAnnotation.nameSuffix to DtoViewStrategy(viewInfo, dtoStrategy)
                 }
             }.flatten().toMap()
         }
@@ -87,11 +87,19 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
             val viewAnnotation: VaultaireView,
             val processingEnvironmentAware: ProcessingEnvironmentAware
     ): ProcessingEnvironmentAware by processingEnvironmentAware {
+
+        val targetName: String?
+            get() = if(viewAnnotation.name.isNotBlank()) viewAnnotation.name else null
+        val targetNameSuffix: String?
+            get() = if(viewAnnotation.nameSuffix.isNotBlank()) viewAnnotation.nameSuffix else null
+
+
         val excludedStrategies: List<String> = viewAnnotation.excludeStrategies.map{ "$it" }
 
         fun allowsStrategy(strategyKey: String): Boolean{
             return !excludedStrategies.contains(strategyKey)
         }
+
 
     }
 

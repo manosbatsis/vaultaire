@@ -31,10 +31,10 @@ import java.util.*
 
 
 @VaultaireViews([
-      VaultaireView(name = "AuthorView", includeNamedFields = ["price", "customMixinField"]),
-      VaultaireView(name = "PriceView", includeNamedFields = ["author", "customMixinField"])
+      VaultaireView(nameSuffix = "AuthorView", includeNamedFields = ["price", "customMixinField"]),
+      VaultaireView(nameSuffix = "PriceView", includeNamedFields = ["author", "customMixinField"])
 ])
-@VaultaireView(name = "AuthorView",
+@VaultaireView(nameSuffix = "AuthorView",
         includeNamedFields = ["genre", "customMixinField"])
 @VaultaireModelDtoMixin(
         baseType = MagazineContract.MagazineModel::class)
@@ -68,10 +68,11 @@ class FungibleTokenMixin
         contractStateType = MagazineState::class,
         strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO],
         views = [
-            VaultaireView(name = "UpdatePartiesView", viewFields = [
+            VaultaireView(nameSuffix = "UpdatePartiesView", viewFields = [
                 VaultaireViewField(name = "author"),
                 VaultaireViewField(name = "publisher")]),
-            VaultaireView(name = "AddIssueView", includeNamedFields = ["issues", "published"])]
+            VaultaireView(name = "FullNameAddIssueView", includeNamedFields = ["issues", "published"]),
+            VaultaireView(nameSuffix = "AddIssueView", includeNamedFields = ["issues", "published"])]
 )
 data class MagazineMixin(
         @DefaultValue("1")

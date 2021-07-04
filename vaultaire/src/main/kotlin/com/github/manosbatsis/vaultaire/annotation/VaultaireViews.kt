@@ -9,10 +9,27 @@ annotation class VaultaireViews(
 
 )
 
+
+/**
+ * Definition of a view as annotation, The generated classname is created as follows:
+ *
+ * - By default both [name] and [nameSuffix] are empty.
+ * If neither is given an error will be thrown during annotation processing.
+ * - If only [nameSuffix] is given, it will replace the target type's (DTO) suffix.
+ * - When a [name] is given, the target classname is `"$name$nameSuffix"`
+ *
+ * The fields are filtered using [includeNamedFields] and [excludeNamedFields].
+ * Both can be used concurrently to define the subset of fields for the generated view.
+ *
+ * The [viewFields] provide some more control and are included by default,
+ * the latter is controlled per field by  [VaultaireViewField.ignoreIfNotIncludeNamedField].
+ *
+ */
 @Retention(AnnotationRetention.SOURCE)
 @Repeatable
 annotation class VaultaireView(
-        val name: String,
+        val name: String = "",
+        val nameSuffix: String = "",
         val includeNamedFields: Array<String> = [],
         val excludeNamedFields: Array<String> = [],
         val viewFields: Array<VaultaireViewField> = [],

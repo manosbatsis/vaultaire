@@ -73,15 +73,12 @@ class DtoViewStrategy(
 
     override fun getClassName(): ClassName {
         val mappedPackageName = mapPackageName(annotatedElementInfo.generatedPackageName)
-        return ClassName(mappedPackageName, "${annotatedElementInfo.primaryTargetTypeElement.simpleName}${getClassNameSuffix()}")
-    }
-
-    override fun getClassNameSuffix(): String {
-        return  "${super.getClassNameSuffix()}${viewInfo.viewAnnotation.name}"
-    }
-
-    override fun addAnnotations(typeSpecBuilder: TypeSpec.Builder) {
-        super.addAnnotations(typeSpecBuilder)
+        val simpleName = when {
+            viewInfo.targetName != null -> "${viewInfo.targetName}${viewInfo.targetNameSuffix}"
+            viewInfo.targetNameSuffix != null -> "${annotatedElementInfo.primaryTargetTypeElement.simpleName}${viewInfo.targetNameSuffix}"
+            else -> throw IllegalArgumentException("A @VaultaireView must define either a name, a nameSuffix, or both ")
+        }
+        return ClassName(mappedPackageName, simpleName)
     }
 
     fun getAllProcessedFieldNames(): Set<String> {

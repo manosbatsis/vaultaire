@@ -208,7 +208,7 @@ class MagazineMockTests {
         // Test DTO > View > DTO > State
         val updatedIssues = contractState.issues + 1
         val updatedPublished = Date()
-        val addIssueView = MagazineStateClientDtoAddIssueView.from(fullDto)
+        val addIssueView = MagazineStateAddIssueView.from(fullDto)
         assertEquals(contractState.issues, addIssueView.issues)
         assertEquals(contractState.published, addIssueView.published)
 

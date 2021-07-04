@@ -6,9 +6,10 @@ and can be helpful with version upgrades.
 
 
 
-## 0.42 - 0.43
+## 0.42 - 0.44
 
 - `VaultaireView` annotation changes:
+  - Enhanced control of the generated Class name with `name` and `nameSuffix` attributes, check the KDoc
   - The `namedFields` property has been renamed to `includeNamedFields`. The property is optional.
   - An optional `excludeNamedFields` has been added. 
   - An optional `viewFields` property has been added as an array of `VaultaireViewField`, allowing 
