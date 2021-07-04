@@ -734,6 +734,8 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Maintaining Data Transfer Objects for your contract states can be a mundane, error-prone task. 
 Vaultaire’s annotation processing automates this by (re)generating those DTOs for you.</p>
+<p>DTOs generation may require a <code>VaultaireStateUtils</code> annotation to be present 
+for the target model/state.</p>
 <h2 id="usage-patterns">Usage Patterns<a class="headerlink" href="#usage-patterns" title="Permanent link">&para;</a></h2>
 <p>A typical use for generated DTOs is messaging over HTTP REST or RPC as 
 input and output of Corda Flows. The provided conversion utilities 
@@ -779,7 +781,7 @@ an existing state:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// Get the state</span>
 <span class="kd">val</span> <span class="nv">state</span><span class="p">:</span> <span class="n">BookState</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">getByLinearId</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
 <span class="c1">// Convert to DTO</span>
-<span class="kd">val</span> <span class="nv">dto</span> <span class="o">=</span> <span class="n">BookStateClientDto</span><span class="p">.</span><span class="na">mapToDto</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+<span class="kd">val</span> <span class="nv">dto</span> <span class="o">=</span> <span class="n">BookStateClientDto</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="dto-generation">DTO Generation<a class="headerlink" href="#dto-generation" title="Permanent link">&para;</a></h2>
 <p>This section explains the annotations and strategies involved in generating DTOs.</p>
@@ -835,17 +837,34 @@ DTOs and conversion utils focused op Corda-related types like accounts etc.</p>
 <p>Some times using DTOs with a subset of the original state or model&rsquo;s members is desired. 
 Vaultaire allows automating generation for those DTOs as well using the <code>views</code> property 
 of the annotation in context.</p>
-<p>For example, to generate a view of <code>SomeModel</code> that only includes <code>title</code> and <code>description</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@VaultaireModelDtoMixin</span><span class="p">(</span>
-        <span class="n">baseType</span> <span class="o">=</span> <span class="n">SomeModel</span><span class="o">::</span><span class="n">class</span><span class="p">,</span>
-        <span class="n">views</span> <span class="o">=</span> <span class="o">[</span><span class="n">VaultaireView</span><span class="p">(</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="s">&quot;UpdateTitleAndDesc&quot;</span><span class="p">,</span>
-                <span class="n">namedFields</span> <span class="o">=</span> <span class="o">[</span><span class="s">&quot;title&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="o">]</span><span class="p">)</span><span class="o">]</span>
+<p>For example, to generate a <code>MagazineStateClientDto</code> as a DTO for <code>MagazineState</code> along 
+with a couple of DTO Views like <code>UpdatePartiesView</code> and <code>AddIssueView</code> that include onle 
+with only (<code>issues</code>, <code>published</code>) and (<code>issues</code>, <code>published</code>) respectively:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@VaultaireStateUtilsMixin</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;magazineConditions&quot;</span><span class="p">,</span>
+        <span class="n">persistentStateType</span> <span class="o">=</span> <span class="n">PersistentMagazineState</span><span class="o">::</span><span class="n">class</span><span class="p">,</span>
+        <span class="n">contractStateType</span> <span class="o">=</span> <span class="n">MagazineState</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="nd">@VaultaireStateDtoMixin</span><span class="p">(</span>
+        <span class="n">persistentStateType</span> <span class="o">=</span> <span class="n">PersistentMagazineState</span><span class="o">::</span><span class="n">class</span><span class="p">,</span>
+        <span class="n">contractStateType</span> <span class="o">=</span> <span class="n">MagazineState</span><span class="o">::</span><span class="n">class</span><span class="p">,</span>
+        <span class="n">strategies</span> <span class="o">=</span> <span class="o">[</span><span class="n">VaultaireDtoStrategyKeys</span><span class="p">.</span><span class="na">CORDAPP_LOCAL_DTO</span><span class="p">,</span> <span class="n">VaultaireDtoStrategyKeys</span><span class="p">.</span><span class="na">CORDAPP_CLIENT_DTO</span><span class="o">]</span><span class="p">,</span>
+        <span class="n">views</span> <span class="o">=</span> <span class="o">[</span>
+            <span class="n">VaultaireView</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;UpdatePartiesView&quot;</span><span class="p">,</span> <span class="n">viewFields</span> <span class="o">=</span> <span class="o">[</span>
+                <span class="n">VaultaireViewField</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;author&quot;</span><span class="p">),</span>
+                <span class="n">VaultaireViewField</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;publisher&quot;</span><span class="p">)</span><span class="o">]</span><span class="p">),</span>
+            <span class="n">VaultaireView</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;AddIssueView&quot;</span><span class="p">,</span> <span class="n">includeNamedFields</span> <span class="o">=</span> <span class="o">[</span><span class="s">&quot;issues&quot;</span><span class="p">,</span> <span class="s">&quot;published&quot;</span><span class="o">]</span><span class="p">)</span><span class="o">]</span>
 <span class="p">)</span>
-<span class="kd">data</span> <span class="kd">class</span> <span class="nc">SomeModelMixin</span>
+<span class="kd">data</span> <span class="kd">class</span> <span class="nc">MagazineMixin</span><span class="p">(</span>
+        <span class="nd">@DefaultValue</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">)</span>
+        <span class="kd">var</span> <span class="nv">issues</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span>
+        <span class="nd">@DefaultValue</span><span class="p">(</span><span class="s">&quot;Date()&quot;</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="nv">published</span><span class="p">:</span> <span class="n">Date</span><span class="p">,</span>
+        <span class="nd">@DefaultValue</span><span class="p">(</span><span class="s">&quot;UniqueIdentifier()&quot;</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="nv">linearId</span><span class="p">:</span> <span class="n">UniqueIdentifier</span><span class="p">,</span>
+        <span class="kd">val</span> <span class="nv">customMixinField</span><span class="p">:</span> <span class="n">Map</span><span class="o">&lt;</span><span class="kt">String</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">emptyMap</span><span class="p">()</span>
+<span class="p">)</span>
 </code></pre></div>
-<p>The <code>views</code> property is supported by <code>@VaultaireStateDto</code>, <code>@VaultaireStateDtoMixin</code>, 
-<code>@VaultaireModelDto</code> and <code>@VaultaireModelDtoMixin</code>.</p>
+<p>The <code>views</code> property is available in <code>@VaultaireStateDto</code>, <code>@VaultaireStateDtoMixin</code>, 
+<code>@VaultaireModelDto</code> and <code>@VaultaireModelDtoMixin</code>. </p>
 <h4 id="utility-annotations">Utility Annotations<a class="headerlink" href="#utility-annotations" title="Permanent link">&para;</a></h4>
 <p>The<code>@DefaultValue</code> can be used to provide default property initializers. 
 It can be used equally on either <code>ContractState</code> or &ldquo;mixin&rdquo; properties:</p>
@@ -932,7 +951,7 @@ or patch an instance of the target type:</p>
 <span class="cm">         * Create a new DTO instance using the given [MagazineContract.MagazineState] as source.</span>
 <span class="cm">         */</span>
         <span class="nd">@Suspendable</span>
-        <span class="kd">fun</span> <span class="nf">mapToDto</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="p">,</span>
+        <span class="kd">fun</span> <span class="nf">from</span><span class="p">(</span><span class="n">original</span><span class="p">:</span> <span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="p">,</span>
                      <span class="n">stateService</span><span class="p">:</span> <span class="n">AccountsAwareStateService</span><span class="o">&lt;</span><span class="n">MagazineContract</span><span class="p">.</span><span class="na">MagazineState</span><span class="o">&gt;</span><span class="p">):</span>
                 <span class="n">MagazineStateClientDto</span> <span class="p">{</span>
             <span class="kd">val</span> <span class="nv">publisherResolved</span> <span class="o">=</span> <span class="n">stateService</span><span class="p">.</span><span class="na">toAccountInfoClientDtoOrNull</span><span class="p">(</span><span class="n">original</span><span class="p">.</span><span class="na">publisher</span><span class="p">)</span>

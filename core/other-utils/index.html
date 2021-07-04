@@ -597,7 +597,7 @@ on mapping <code>StateAndRef</code> query results to either contract states or D
 <span class="p">)</span> <span class="p">{</span> <span class="n">stateAndRefs</span> <span class="o">-&gt;</span>
     <span class="n">stateAndRefs</span><span class="p">.</span><span class="na">map</span> <span class="p">{</span>
         <span class="n">MyStateClientDto</span>
-            <span class="p">.</span><span class="na">mapToDto</span><span class="p">(</span><span class="nb">it</span><span class="p">.</span><span class="na">state</span><span class="p">.</span><span class="na">data</span><span class="p">,</span> <span class="n">stateService</span><span class="p">)</span>
+            <span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="nb">it</span><span class="p">.</span><span class="na">state</span><span class="p">.</span><span class="na">data</span><span class="p">,</span> <span class="n">stateService</span><span class="p">)</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
