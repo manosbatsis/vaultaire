@@ -222,7 +222,7 @@ class MagazineMockTests {
         assertEquals(toTargetFullDto.issues, updatedIssues)
         assertEquals(toTargetFullDto.published, updatedPublished)
 
-        val patchedContractState = toTargetFullDto.toPatched(contractState, stateService)
+        val patchedContractState = patchedFullDto.toPatched(contractState, stateService)
         assertEquals(patchedContractState.issues, updatedIssues)
         assertEquals(patchedContractState.published, updatedPublished)
 

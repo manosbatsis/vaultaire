@@ -1,5 +1,6 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
+import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoMembersStrategy
@@ -17,11 +18,11 @@ open class ViewDtoMembersStrategy(
         // NO-OP
     }
 
-
     override fun getToPatchedFunctionBuilder(
             originalTypeParameter: ParameterSpec
     ): FunSpec.Builder {
         val patchFunctionBuilder = FunSpec.builder("toPatched")
+                .addAnnotation(Suspendable::class)
                 .addModifiers(KModifier.OVERRIDE)
                 .addKdoc(CodeBlock.builder()
                         .addStatement("Create a patched copy of the given [%T] instance,", dtoTypeStrategy.getDtoTarget())
@@ -36,6 +37,7 @@ open class ViewDtoMembersStrategy(
         with(annotatedElementInfo.toTargetTypeFunctionConfig) {
             val useTargetTypeName = targetTypeNameOverride ?: dtoTypeStrategy.getDtoTarget()
             val toStateFunctionBuilder = FunSpec.builder("toTargetType")
+                    .addAnnotation(Suspendable::class)
                     .addModifiers(KModifier.OVERRIDE)
                     .addKdoc(if (skip)
                         CodeBlock.builder().addStatement("Not yet implemented").build()

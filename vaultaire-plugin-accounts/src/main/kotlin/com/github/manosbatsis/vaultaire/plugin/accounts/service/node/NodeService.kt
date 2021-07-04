@@ -33,9 +33,12 @@ import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.AnonymousParty
+import net.corda.core.identity.CordaX500Name
+import net.corda.core.identity.Party
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.node.ServiceHub
 import java.security.PublicKey
+import java.util.*
 
 
 /**
@@ -203,74 +206,87 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
 
  */
 
-    // TODO: generate from/to Lite
+    @Suspendable
+    fun toAccountPartyOrNull(accountInfo: AccountInfo?): AccountParty? {
+        return if(accountInfo != null) {
+            val anonymousParty = createPublicKey(accountInfo)
+            AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty, accountInfo.identifier.externalId)
+        } else null
+    }
+
+
     @Suspendable
     fun toAccountPartyOrNull(
             accountInfoClientDto: AccountInfoStateClientDto?,
             default: AccountParty? = null,
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
+    ): AccountParty? = toAccountPartyOrNull(
+            name = accountInfoClientDto?.name,
+            host = accountInfoClientDto?.host,
+            identifier = accountInfoClientDto?.identifier,
+            externalId = accountInfoClientDto?.externalId,
+            default = default,
+            ignoreMatching = ignoreMatching,
+            propertyName = propertyName
+    )
+
+    // TODO: generate from/to Lite
+    @Suspendable
+    fun toAccountPartyOrNull(
+            name: String? = null,
+            host: Party? = null,
+            identifier: UUID? = null,
+            externalId: String? = null,
+            default: AccountParty? = null,
+            ignoreMatching: Boolean = false,
+            propertyName: String = "unknown"
+    ): AccountParty? = toAccountPartyOrNull(
+            name = name,
+            host = host?.name,
+            identifier = identifier,
+            externalId = externalId,
+            default = default,
+            ignoreMatching = ignoreMatching,
+            propertyName = propertyName
+    )
+
+    @Suspendable
+    fun toAccountPartyOrNull(
+            name: String? = null,
+            host: CordaX500Name? = null,
+            identifier: UUID? = null,
+            externalId: String? = null,
+            default: AccountParty? = null,
+            ignoreMatching: Boolean = false,
+            propertyName: String = "unknown"
     ): AccountParty? {
-        val accountInfoDto = if (accountInfoClientDto == null) {
-            null
-        } else {
-            val host = if (accountInfoClientDto.host == null) {
-                null
-            } else {
-                wellKnownPartyFromX500Name(accountInfoClientDto.host!!)
-            }
-            AccountInfoStateDto(
-                    accountInfoClientDto.name,
-                    host,
-                    accountInfoClientDto.identifier?.let {
-                        UniqueIdentifier(accountInfoClientDto.externalId, it)
-                    }
-            )
+
+        val accountParty = when{
+            host != null && identifier != null ->  toAccountPartyOrNull(findAccountOrNull(identifier, host))
+            // TODO host != null && name != null ->  toAccountPartyOrNull(findAccountOrNull(name, host))
+            host == null && identifier != null -> toAccountPartyOrNull(findStoredAccountOrNull(identifier)?.state?.data)
+            else -> null
         }
-        val accountParty = toAccountPartyOrNull(
-                accountInfoDto,
-                default,
-                ignoreMatching,
-                propertyName)
         return accountParty
     }
 
     // TODO: needs cleanup
     @Suspendable
     fun toAccountPartyOrNull(
-            accountInfoDto: AccountInfoStateDto?,
+            accountInfoStateDto: AccountInfoStateDto?,
             default: AccountParty? = null,
             ignoreMatching: Boolean = false,
             propertyName: String = "unknown"
-    ): AccountParty? {
-
-        // Return null input as is
-        return if (accountInfoDto == null) {
-            default
-        }
-        // Reuse available if IDs match
-        //!ignoreMatching && accountInfoDto.hasMatchingIdentifierAndName(default) -> default
-        // Build instance otherwise, try by id first...
-        else if (accountInfoDto.identifier != null && accountInfoDto.host != null) {
-            val accountInfo = findAccountOrNull(accountInfoDto.identifier!!.id, accountInfoDto.host!!.name)
-            if (accountInfo != null) {
-                val anonymousParty = createPublicKey(accountInfo)
-                with(accountInfo){
-                    AccountParty(identifier.id, name, anonymousParty, identifier.externalId)
-                }
-            } else null
-        } else if (accountInfoDto.identifier != null) {
-            val accountInfo = findStoredAccountOrNull(accountInfoDto.identifier!!.id)?.state?.data
-            if (accountInfo != null) {
-                val anonymousParty = createPublicKey(accountInfo)
-                with(accountInfo){
-                    AccountParty(identifier.id, name, anonymousParty, identifier.externalId)
-                }
-            } else null
-        } else throw IllegalArgumentException("Failed converting property to AccountParty, name: $propertyName, " +
-                "value: $accountInfoDto to AccountParty")
-
-    }
+    ): AccountParty? = toAccountPartyOrNull(
+            name = accountInfoStateDto?.name,
+            host = accountInfoStateDto?.host?.name,
+            identifier = accountInfoStateDto?.identifier?.id,
+            externalId = accountInfoStateDto?.identifier?.externalId,
+            default = default,
+            ignoreMatching = ignoreMatching,
+            propertyName = propertyName
+    )
 
     @Suspendable
     fun toAccountParty(

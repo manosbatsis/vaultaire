@@ -122,6 +122,14 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
      * with the given [name] and [host] if found, null otherwise
      */
     @Suspendable
+    fun findStoredAccount(name: String, host: Party) = findStoredAccountOrNull(name, host)
+            ?: throw IllegalStateException("No stored account found matching the given name and host")
+
+    /**
+     * Get the account that is already stored locally
+     * with the given [name] and [host] if found, null otherwise
+     */
+    @Suspendable
     fun findStoredAccountOrNull(name: String, host: Party): StateAndRef<AccountInfo>? {
         val nameCriteria = accountNameCriteria(name)
         val results = queryBy(
@@ -137,23 +145,37 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
         }
     }
 
+
     /**
      * Get the account that is already stored locally
-     * with the given [name] and [host] if found, null otherwise
+     * with the given [name] and [host] if found,
+     * request from host otherwise. May be null.
      */
     @Suspendable
-    fun findStoredAccountOrNull(name: String, host: CordaX500Name): StateAndRef<AccountInfo>? {
-        return findStoredAccountOrNull(name, wellKnownPartyFromX500Name(host)
+    fun findAccountOrNull(name: String, host: Party): AccountInfo? {
+        return findStoredAccountOrNull(name, host)?.state?.data
+                ?: requestAccount(name, host)
+    }
+    /**
+     * Get the account that is already stored locally
+     * with the given [name] and [host] if found,
+     * request from host otherwise. May be null.
+     */
+    @Suspendable
+    fun findAccountOrNull(name: String, host: CordaX500Name): AccountInfo? {
+        return findAccountOrNull(name, wellKnownPartyFromX500Name(host)
                 ?: throw IllegalStateException("No well known party found matching the given X500"))
     }
 
     /**
      * Get the account that is already stored locally
-     * with the given [name] and [host]
+     * with the given [name] and [host] if found,
+     * request from host otherwise. Will throw an erro if
+     * no match isd found.
      */
     @Suspendable
-    fun findStoredAccount(name: String, host: Party): StateAndRef<AccountInfo> {
-        return findStoredAccountOrNull(name, host)
+    fun findAccount(name: String, host: CordaX500Name): AccountInfo {
+        return findAccountOrNull(name, host)
                 ?: throw IllegalStateException("No account found matching the given name and host")
     }
 
@@ -162,10 +184,11 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
      * with the given [name] and [host]
      */
     @Suspendable
-    fun findStoredAccount(name: String, host: CordaX500Name): StateAndRef<AccountInfo> {
-        return findStoredAccount(name, wellKnownPartyFromX500Name(host)
-                ?: throw IllegalStateException("No well known host found matching the given party name"))
+    fun findAccount(name: String, host: Party): AccountInfo {
+        return findAccountOrNull(name, host)
+                ?: throw IllegalStateException("No account found matching the given name and host")
     }
+
 
     /** Create a public key for the given [accountInfo] */
     @Suspendable
@@ -216,6 +239,9 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
     fun requestAccount(identifier: UUID, host: Party): AccountInfo?
 
     @Suspendable
+    fun requestAccount(name: String, host: Party): AccountInfo?
+
+    @Suspendable
     fun toParty(owningKey: PublicKey): Party
 }
 
@@ -225,6 +251,7 @@ open class AccountsAwareNodeServicePoolBoyDelegate(
         defaults: ServiceDefaults = SimpleServiceDefaults()
 ) : NodeServiceRpcPoolBoyDelegate(poolBoy, defaults), AccountsAwareNodeServiceDelegate {
 
+    //@Suspendable
     override fun findStoredAccountOrNull(owningKey: PublicKey?): StateAndRef<AccountInfo>? {
         return if (owningKey != null) poolBoy.withConnection { connection ->
             connection.proxy.startFlow(::AccountInfoByKey, owningKey).returnValue.get()
@@ -243,6 +270,7 @@ open class AccountsAwareNodeServicePoolBoyDelegate(
                 connection.proxy.startFlow(::CreateAccount, key).returnValue.get()
             }
 
+    //@Suspendable
     override fun findAccountOrNull(identifier: UUID, host: CordaX500Name): AccountInfo? {
         var account = findStoredAccountOrNull(identifier)?.state?.data
         if (account == null) {
@@ -253,14 +281,24 @@ open class AccountsAwareNodeServicePoolBoyDelegate(
         return account
     }
 
+    //@Suspendable
     override fun findAccount(identifier: UUID, host: CordaX500Name): AccountInfo =
             findAccountOrNull(identifier, host) ?: error("Failed resolving well known party")
 
+    //@Suspendable
     override fun requestAccount(identifier: UUID, host: Party): AccountInfo? =
             poolBoy.withConnection { connection ->
                 connection.proxy.startFlow(::RequestAccountInfo, identifier, host).returnValue.get()
             }
 
+    //@Suspendable
+    override fun requestAccount(name: String, host: Party): AccountInfo? =
+            // TODO
+            null /*poolBoy.withConnection { connection ->
+                connection.proxy.startFlow(::RequestAccountInfo, identifier, host).returnValue.get()
+            }*/
+
+    //@Suspendable
     override fun toParty(owningKey: PublicKey): Party {
         return poolBoy.withConnection { connection ->
             connection.proxy.partyFromKey(owningKey)
@@ -334,5 +372,11 @@ open class AccountsAwareNodeCordaServiceDelegate(
         val future = flowAwareStartFlow(requestAccountInfoFlow)
         logger.debug("requestAccount, return value")
         return future.get()
+    }
+
+    @Suspendable
+    override fun requestAccount(name: String, host: Party): AccountInfo? {
+        // TODO
+        return  null
     }
 }
