@@ -18,7 +18,7 @@
     
     
       
-        <title>init - Vaultaire</title>
+        <title>Name suffix - Vaultaire</title>
       
     
     
@@ -71,7 +71,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#init" class="md-skip">
+        <a href="#namesuffix" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-               init 
+              Name suffix
             
           </span>
         </div>
@@ -450,25 +450,14 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/0.x/com.github.manosbatsis.vaultaire.annotation/-vaultaire-view/-init-.md" title="Edit this page" class="md-content__button md-icon">
+                  <a href="https://github.com/manosbatsis/vaultaire/edit/master/docs/0.x/com.github.manosbatsis.vaultaire.annotation/-vaultaire-view/name-suffix.md" title="Edit this page" class="md-content__button md-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
                   </a>
                 
                 
-                <p><a href="../../">com.github.manosbatsis.vaultaire.annotation</a> / <a href="../">VaultaireView</a> / <a href="./">&lt;init&gt;</a></p>
-<h1 id="init">&lt;init&gt;<a class="headerlink" href="#init" title="Permanent link">&para;</a></h1>
-<p><code>VaultaireView(name: String = "", nameSuffix: String = "", includeNamedFields: Array&lt;String&gt; = [], excludeNamedFields: Array&lt;String&gt; = [], viewFields: Array&lt;</code><a href="../../-vaultaire-view-field/"><code>VaultaireViewField</code></a><code>&gt; = [], excludeStrategies: Array&lt;</code><a href="../../-vaultaire-dto-strategy-keys/"><code>VaultaireDtoStrategyKeys</code></a><code>&gt; = [])</code></p>
-<p>Definition of a view as annotation, The generated classname is created as follows:</p>
-<ul>
-<li>By default both <a href="../name/">name</a> and <a href="../name-suffix/">nameSuffix</a> are empty.
-If neither is given an error will be thrown during annotation processing.</li>
-<li>If only <a href="../name-suffix/">nameSuffix</a> is given, it will replace the target type&rsquo;s (DTO) suffix.</li>
-<li>When a <a href="../name/">name</a> is given, the target classname is <code>"$name$nameSuffix"</code></li>
-</ul>
-<p>The fields are filtered using <a href="../include-named-fields/">includeNamedFields</a> and <a href="../exclude-named-fields/">excludeNamedFields</a>.
-Both can be used concurrently to define the subset of fields for the generated view.</p>
-<p>The <a href="../view-fields/">viewFields</a> provide some more control and are included by default,
-the latter is controlled per field by  <a href="../../-vaultaire-view-field/ignore-if-not-include-named-field/">VaultaireViewField.ignoreIfNotIncludeNamedField</a>.</p>
+                <p><a href="../../">com.github.manosbatsis.vaultaire.annotation</a> / <a href="../">VaultaireView</a> / <a href="./">nameSuffix</a></p>
+<h1 id="namesuffix">nameSuffix<a class="headerlink" href="#namesuffix" title="Permanent link">&para;</a></h1>
+<p><code>val nameSuffix: String</code></p>
                 
               
               
