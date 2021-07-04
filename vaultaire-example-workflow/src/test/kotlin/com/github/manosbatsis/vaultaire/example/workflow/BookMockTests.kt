@@ -378,7 +378,7 @@ class BookMockTests {
         // Update title
         val updatedTitle = "${createdState.title} UPDATED"
         val updatedState: BookState = flowWorksCorrectly(a,
-                UpdateBookFlow(BookStateDto.mapToDto(createdState.copy(
+                UpdateBookFlow(BookStateDto.from(createdState.copy(
                         title = updatedTitle,
                         editions = 2
                 )))).single()
@@ -387,7 +387,7 @@ class BookMockTests {
         // Update title and editions
         val updatedTitle2 = "${createdState.title} UPDATED2"
         val updatedState2: BookState = flowWorksCorrectly(a,
-                UpdateBookFlow(BookStateDto.mapToDto(createdState.copy(
+                UpdateBookFlow(BookStateDto.from(createdState.copy(
                         title = updatedTitle2,
                         editions = 3
                 )))).single()

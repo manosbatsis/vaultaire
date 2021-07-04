@@ -19,21 +19,20 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.node.AccountsAwareNodeService
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
 
 open class AccountsAwareModelClientDtoMembersStrategy(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: AccountsAwareModelClientDtoNameStrategy,
-        dtoTypeStrategy: AccountsAwareModelClientDtoTypeStrategy
+        rootDtoStrategy: DtoStrategyLesserComposition
 ) : AccountsAwareClientDtoMemberStrategyBase<AccountsAwareModelClientDtoNameStrategy, AccountsAwareModelClientDtoTypeStrategy>(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+        rootDtoStrategy
 ) {
 
     override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
-        functionBuilder.addParameter("stateService",
+        functionBuilder.addParameter("service",
                 AccountsAwareNodeService::class.java.asClassName())
     }
 

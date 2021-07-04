@@ -23,9 +23,11 @@ import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.ConstructorRefsCompositeDtoStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoNameStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import kotlin.reflect.KFunction1
+import kotlin.reflect.KFunction2
 import kotlin.reflect.KFunction3
 
 /** Base Vaultaire-specific class for building a DTO type spec */
@@ -33,7 +35,7 @@ abstract class BaseVaultaireDtoStrategy<N: DtoNameStrategy, T: DtoTypeStrategy, 
         annotatedElementInfo: AnnotatedElementInfo,
         dtoNameStrategyConstructor: KFunction1<AnnotatedElementInfo, N>,
         dtoTypeStrategyConstructor: KFunction1<AnnotatedElementInfo, T>,
-        dtoMembersStrategyConstructor: KFunction3<AnnotatedElementInfo, N, T, M>
+        dtoMembersStrategyConstructor: KFunction1<DtoStrategyLesserComposition, M>
 ) : ConstructorRefsCompositeDtoStrategy<N, T, M>(
         annotatedElementInfo, dtoNameStrategyConstructor, dtoTypeStrategyConstructor, dtoMembersStrategyConstructor
 ), ProcessingEnvironmentAware, AnnotatedElementInfo by annotatedElementInfo {
@@ -41,8 +43,8 @@ abstract class BaseVaultaireDtoStrategy<N: DtoNameStrategy, T: DtoTypeStrategy, 
     private fun ignoreParticipants() = annotatedElementInfo.annotation
         .getAnnotationValue("includeParticipants").value as Boolean
 
-    override fun getIgnoredFieldNames(): List<String> =
-        super.getIgnoredFieldNames().run {
+    override fun getFieldExcludes(): List<String> =
+        super.getFieldExcludes().run {
             if (ignoreParticipants())  plusElement( "participants")
             else this
         }

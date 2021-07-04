@@ -20,11 +20,8 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 import co.paralleluniverse.fibers.Suspendable
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.*
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy.Statement
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoNameStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoTypeStrategy
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoMembersStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.squareup.kotlinpoet.*
@@ -37,20 +34,12 @@ import kotlin.reflect.KClass
 
 
 open class StateClientDtoMembersStrategy(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: StateClientDtoNameStrategy,
-        dtoTypeStrategy: StateClientDtoTypeStrategy
-): ClientDtoMembersStrategyBase<StateClientDtoNameStrategy, StateClientDtoTypeStrategy>(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-)
+        rootDtoStrategy: DtoStrategyLesserComposition
+): ClientDtoMembersStrategyBase(rootDtoStrategy)
 
-open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: N,
-        dtoTypeStrategy: T
-) : SimpleDtoMembersStrategy<N, T>(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-) {
+open class ClientDtoMembersStrategyBase(
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : SimpleDtoMembersStrategy(rootDtoStrategy) {
 
     override fun toTargetTypeStatement(fieldIndex: Int, variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
 
@@ -60,7 +49,7 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
         return if (partyCollection != null) {
             val propertyName = toPropertyName(variableElement)
             targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = $propertyName?.filterNotNull()", propertyName)
-            targetTypeFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, stateService, %S) } ", propertyName)
+            targetTypeFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, service, %S) } ", propertyName)
             if (!variableElement.isNullable())
             targetTypeFunctionBuilder.addStatement("     ?:errNull(%S) ", propertyName)
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
@@ -68,10 +57,10 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
 
             val propertyName = toPropertyName(variableElement)
             if (variableElement.isNullable()) {
-                targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrNull(this.$propertyName, stateService, %S)", propertyName)
+                targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrNull(this.$propertyName, service, %S)", propertyName)
                 DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
             } else {
-                targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = toParty(this.$propertyName, stateService, %S)", propertyName)
+                targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = toParty(this.$propertyName, service, %S)", propertyName)
                 DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
             }
         } else super.toTargetTypeStatement(fieldIndex, variableElement, commaOrEmpty)
@@ -84,7 +73,7 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
         return if (partyCollection != null) {
             val propertyName = toPropertyName(variableElement)
             patchFunctionBuilder.addStatement("val ${propertyName}Resolved = $propertyName?.filterNotNull()", propertyName)
-            patchFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, stateService, %S) } ", propertyName)
+            patchFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, service, %S) } ", propertyName)
             patchFunctionBuilder.addStatement("     ?.let{ if(it.isNotEmpty()) it else null } ")
             patchFunctionBuilder.addStatement("     ?:original.$propertyName ")
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
@@ -92,10 +81,10 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
         else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
             val propertyName = toPropertyName(variableElement)
             if (variableElement.isNullable()) {
-                patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefaultNullable(this.$propertyName, original.$propertyName, stateService, %S)", propertyName)
+                patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefaultNullable(this.$propertyName, original.$propertyName, service, %S)", propertyName)
                 DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
             } else {
-                patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefault(this.$propertyName, original.$propertyName, stateService, %S)", arrayOf(propertyName))
+                patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefault(this.$propertyName, original.$propertyName, service, %S)", arrayOf(propertyName))
                 DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
             }
         } else super.toPatchStatement(fieldIndex, variableElement, commaOrEmpty)
@@ -172,7 +161,7 @@ open class ClientDtoMembersStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
 
     open fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
         functionBuilder.addParameter(
-                "stateService",
+                "service",
                 StateService::class.java.asClassName()
                         .parameterizedBy(annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
     }

@@ -19,20 +19,17 @@
  */
 package com.github.manosbatsis.vaultaire.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.asClassName
 
 open class ModelClientDtoMembersStrategy(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: ModelClientDtoNameStrategy,
-        dtoTypeStrategy: ModelClientDtoTypeStrategy
-) : StateClientDtoMembersStrategy(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
-) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : StateClientDtoMembersStrategy(rootDtoStrategy) {
     override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
-        functionBuilder.addParameter("stateService",
+        functionBuilder.addParameter("service",
                 NodeService::class.java.asClassName())
     }
 

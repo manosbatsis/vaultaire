@@ -27,6 +27,6 @@ open class ModelClientDtoTypeStrategy(
         annotatedElementInfo: AnnotatedElementInfo
 ) : StateClientDtoTypeStrategy(annotatedElementInfo) {
 
-    override fun getDtoInterface(): Class<*> = VaultaireModelClientDto::class.java
+    override fun getDtoInterface(): Class<*> = annotatedElementInfo.overrideDtoInterface ?: VaultaireModelClientDto::class.java
 
 }

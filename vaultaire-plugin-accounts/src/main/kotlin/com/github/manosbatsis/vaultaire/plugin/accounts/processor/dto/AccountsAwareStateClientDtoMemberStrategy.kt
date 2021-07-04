@@ -22,6 +22,7 @@ package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy.Statement
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoNameStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
@@ -41,18 +42,14 @@ import com.squareup.kotlinpoet.asTypeName
 import javax.lang.model.element.VariableElement
 
 open class AccountsAwareClientDtoMemberStrategy(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: StateClientDtoNameStrategy,
-        dtoTypeStrategy: AccountsAwareStateClientDtoTypeStrategy
+        rootDtoStrategy: DtoStrategyLesserComposition
 ):AccountsAwareClientDtoMemberStrategyBase<StateClientDtoNameStrategy, AccountsAwareStateClientDtoTypeStrategy>(
-        annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy
+        rootDtoStrategy
 )
 
 open class AccountsAwareClientDtoMemberStrategyBase<N: DtoNameStrategy, T: DtoTypeStrategy>(
-        annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategy: N,
-        dtoTypeStrategy: T
-) : ClientDtoMembersStrategyBase<N, T>(annotatedElementInfo, dtoNameStrategy, dtoTypeStrategy) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : ClientDtoMembersStrategyBase(rootDtoStrategy) {
 
     val accountInfoHelper = AccountInfoHelper(annotatedElementInfo)
     fun isAccountInfo(variableElement: VariableElement): Boolean = accountInfoHelper.isAccountInfo(variableElement)
@@ -70,11 +67,11 @@ open class AccountsAwareClientDtoMemberStrategyBase<N: DtoNameStrategy, T: DtoTy
         return if (isAccountInfo(variableElement)) {
             when (fieldClassName) {
                 CLASSNAME_ACCOUNT_PARTY -> targetTypeFunctionBuilder
-                        .addStatement("      val ${propertyName}Resolved = stateService.toAccountParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, null, false, %S)", propertyName)
+                        .addStatement("      val ${propertyName}Resolved = service.toAccountParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, null, false, %S)", propertyName)
                 CLASSNAME_ABSTRACT_PARTY, CLASSNAME_ANONYMOUS_PARTY -> targetTypeFunctionBuilder
-                        .addStatement("      val ${propertyName}Resolved = stateService.toAbstractParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, null, false, %S)", propertyName)
+                        .addStatement("      val ${propertyName}Resolved = service.toAbstractParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, null, false, %S)", propertyName)
                 CLASSNAME_PUBLIC_KEY -> targetTypeFunctionBuilder
-                        .addStatement("      val ${propertyName}Resolved = stateService.toPublicKey${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName)")
+                        .addStatement("      val ${propertyName}Resolved = service.toPublicKey${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName)")
                 else -> throw IllegalStateException("Unhandled patch statement case for AccountInfo compatible type: $fieldClassName")
             }
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
@@ -88,11 +85,11 @@ open class AccountsAwareClientDtoMemberStrategyBase<N: DtoNameStrategy, T: DtoTy
         return if (isAccountInfo(variableElement)) {
             when (fieldClassName) {
                 CLASSNAME_ACCOUNT_PARTY -> patchFunctionBuilder
-                        .addStatement("      val ${propertyName}Resolved = stateService.toAccountParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, original.$propertyName)")
+                        .addStatement("      val ${propertyName}Resolved = service.toAccountParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, original.$propertyName)")
                 CLASSNAME_ABSTRACT_PARTY, CLASSNAME_ANONYMOUS_PARTY -> patchFunctionBuilder
-                        .addStatement("      val ${propertyName}Resolved = stateService.toAbstractParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, original.$propertyName)")
+                        .addStatement("      val ${propertyName}Resolved = service.toAbstractParty${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, original.$propertyName)")
                 CLASSNAME_PUBLIC_KEY -> patchFunctionBuilder
-                        .addStatement("      val ${propertyName}Resolved = stateService.toPublicKey${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, original.$propertyName)")
+                        .addStatement("      val ${propertyName}Resolved = service.toPublicKey${if (variableElement.isNullable()) "OrNull" else ""}(this.$propertyName, original.$propertyName)")
                 else -> throw IllegalStateException("Unhandled patch statement case for AccountInfo compatible type: $fieldClassName")
             }
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
@@ -105,7 +102,7 @@ open class AccountsAwareClientDtoMemberStrategyBase<N: DtoNameStrategy, T: DtoTy
             commaOrEmpty: String
     ): Statement? {
         return if (isAccountInfo(variableElement)) {
-            creatorFunctionBuilder.addStatement("      val ${propertyName}Resolved = stateService.toAccountInfoClientDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
+            creatorFunctionBuilder.addStatement("      val ${propertyName}Resolved = service.toAccountInfoClientDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
         } else return super.toCreatorStatement(fieldIndex, variableElement, propertyName, propertyType, commaOrEmpty)
     }
@@ -116,7 +113,7 @@ open class AccountsAwareClientDtoMemberStrategyBase<N: DtoNameStrategy, T: DtoTy
             commaOrEmpty: String
     ): DtoMembersStrategy.Statement? {
         return if (isAccountInfo(variableElement)) {
-            dtoAltConstructorCodeBuilder.addStatement("      val ${propertyName}Resolved = stateService.toAccountInfoClientDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
+            dtoAltConstructorCodeBuilder.addStatement("      val ${propertyName}Resolved = service.toAccountInfoClientDto${if (variableElement.isNullable()) "OrNull" else ""}(original.$propertyName)")
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
         } else super.toAltConstructorStatement(fieldIndex, variableElement, propertyName, propertyType, commaOrEmpty)
     }
@@ -124,7 +121,7 @@ open class AccountsAwareClientDtoMemberStrategyBase<N: DtoNameStrategy, T: DtoTy
 
     override fun addStateServiceParameter(functionBuilder: FunSpec.Builder) {
         functionBuilder.addParameter(
-                "stateService",
+                "service",
                 AccountsAwareStateService::class.asClassName().parameterizedBy(
                         annotatedElementInfo.primaryTargetTypeElement.asKotlinTypeName()))
     }

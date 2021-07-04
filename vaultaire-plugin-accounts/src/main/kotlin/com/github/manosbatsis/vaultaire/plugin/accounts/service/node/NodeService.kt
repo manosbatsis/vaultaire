@@ -113,7 +113,7 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
             owningKey: PublicKey?
     ): AccountInfoStateDto? {
         return if (owningKey != null) {
-            AccountInfoStateDto.mapToDto(
+            AccountInfoStateDto.from(
                     findStoredAccountOrNull(owningKey)!!.state!!.data)
         } else null
     }
@@ -123,7 +123,7 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
             owningKey: PublicKey?
     ): AccountInfoStateClientDto? {
         return if (owningKey != null) {
-            AccountInfoStateClientDto.mapToDto(
+            AccountInfoStateClientDto.from(
                     findStoredAccountOrNull(owningKey)!!.state!!.data)
         } else null
     }

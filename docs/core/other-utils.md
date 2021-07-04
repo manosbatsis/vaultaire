@@ -75,7 +75,7 @@ val dtosPage = ResultsPage.from(
 ) { stateAndRefs ->
     stateAndRefs.map {
         MyStateClientDto
-            .mapToDto(it.state.data, stateService)
+            .from(it.state.data, stateService)
     }
 }
 ```

@@ -68,8 +68,7 @@ data class AccountInfoStateDto(
     /**
      * Create a new DTO instance using the given [AccountInfo] as source.
      */
-    fun mapToDto(original: AccountInfo): AccountInfoStateDto =
-        com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto(
+    fun from(original: AccountInfo): AccountInfoStateDto = AccountInfoStateDto(
           name = original.name,
           host = original.host,
           identifier = original.identifier

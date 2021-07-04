@@ -5,6 +5,9 @@
 Maintaining Data Transfer Objects for your contract states can be a mundane, error-prone task. 
 Vaultaire’s annotation processing automates this by (re)generating those DTOs for you.
 
+DTOs generation may require a `VaultaireStateUtils` annotation to be present 
+for the target model/state.
+
 ## Usage Patterns
 
 A typical use for generated DTOs is messaging over HTTP REST or RPC as 
@@ -63,7 +66,7 @@ To convert from state to DTO, use the DTO's latter's alternative, state-based co
 // Get the state
 val state: BookState = stateService.getByLinearId(id)
 // Convert to DTO
-val dto = BookStateClientDto.mapToDto(state)
+val dto = BookStateClientDto.from(state)
 ```
 
 ## DTO Generation
@@ -140,20 +143,37 @@ Some times using DTOs with a subset of the original state or model's members is 
 Vaultaire allows automating generation for those DTOs as well using the `views` property 
 of the annotation in context.
 
-For example, to generate a view of `SomeModel` that only includes `title` and `description`:
+For example, to generate a `MagazineStateClientDto` as a DTO for `MagazineState` along 
+with a couple of DTO Views like `UpdatePartiesView` and `AddIssueView` that include onle 
+with only (`issues`, `published`) and (`issues`, `published`) respectively:
 
 ```kotlin
-@VaultaireModelDtoMixin(
-        baseType = SomeModel::class,
-        views = [VaultaireView(
-                name = "UpdateTitleAndDesc",
-                namedFields = ["title", "description"])]
+@VaultaireStateUtilsMixin(name = "magazineConditions",
+        persistentStateType = PersistentMagazineState::class,
+        contractStateType = MagazineState::class)
+@VaultaireStateDtoMixin(
+        persistentStateType = PersistentMagazineState::class,
+        contractStateType = MagazineState::class,
+        strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO],
+        views = [
+            VaultaireView(name = "UpdatePartiesView", viewFields = [
+                VaultaireViewField(name = "author"),
+                VaultaireViewField(name = "publisher")]),
+            VaultaireView(name = "AddIssueView", includeNamedFields = ["issues", "published"])]
 )
-data class SomeModelMixin
+data class MagazineMixin(
+        @DefaultValue("1")
+        var issues: Int,
+        @DefaultValue("Date()")
+        val published: Date,
+        @DefaultValue("UniqueIdentifier()")
+        val linearId: UniqueIdentifier,
+        val customMixinField: Map<String, String> = emptyMap()
+)
 ```
 
-The `views` property is supported by `@VaultaireStateDto`, `@VaultaireStateDtoMixin`, 
-`@VaultaireModelDto` and `@VaultaireModelDtoMixin`.
+The `views` property is available in `@VaultaireStateDto`, `@VaultaireStateDtoMixin`, 
+`@VaultaireModelDto` and `@VaultaireModelDtoMixin`. 
 
 
 #### Utility Annotations
@@ -251,7 +271,7 @@ data class MagazineStateClientDto(
          * Create a new DTO instance using the given [MagazineContract.MagazineState] as source.
          */
         @Suspendable
-        fun mapToDto(original: MagazineContract.MagazineState,
+        fun from(original: MagazineContract.MagazineState,
                      stateService: AccountsAwareStateService<MagazineContract.MagazineState>):
                 MagazineStateClientDto {
             val publisherResolved = stateService.toAccountInfoClientDtoOrNull(original.publisher)

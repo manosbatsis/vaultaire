@@ -50,14 +50,14 @@ interface VaultaireModelClientDto<T : Any, S : NodeServiceDelegate>: VaultaireDt
      * Create a patched copy of the given [T] instance,
      * updated using this DTO's non-null properties
      */
-    fun toPatched(original: T, stateService: S): T
+    fun toPatched(original: T, service: S): T
 
     /**
      * Create an instance of [T], using this DTO's properties.
      * May throw a [IllegalStateException]
      * if there is mot enough information to do so.
      */
-    fun toTargetType(stateService: S): T
+    fun toTargetType(service: S): T
 
     fun toName(party: Party?, propertyName: String = "unknown"): CordaX500Name = party?.name
             ?: throw IllegalStateException("Required property: $propertyName was null")
@@ -66,35 +66,35 @@ interface VaultaireModelClientDto<T : Any, S : NodeServiceDelegate>: VaultaireDt
 
     fun toParty(
             partyName: CordaX500Name?,
-            stateService: S,
+            service: S,
             propertyName: String = "unknown"
-    ): Party = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
+    ): Party = if (partyName != null) service.wellKnownPartyFromX500Name(partyName)
             ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
     else throw IllegalStateException("Required property: $propertyName was null")
 
     fun toPartyOrNull(
             partyName: CordaX500Name?,
-            stateService: S,
+            service: S,
             propertyName: String = "unknown"
-    ): Party? = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
+    ): Party? = if (partyName != null) service.wellKnownPartyFromX500Name(partyName)
             ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
     else null
 
     fun toPartyOrDefaultNullable(
             partyName: CordaX500Name?,
             defaultValue: Party?,
-            stateService: S,
+            service: S,
             propertyName: String = "unknown"
-    ): Party? = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
+    ): Party? = if (partyName != null) service.wellKnownPartyFromX500Name(partyName)
             ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
     else defaultValue
 
     fun toPartyOrDefault(
             partyName: CordaX500Name?,
             defaultValue: Party?,
-            stateService: S,
+            service: S,
             propertyName: String = "unknown"
-    ): Party = if (partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
+    ): Party = if (partyName != null) service.wellKnownPartyFromX500Name(partyName)
             ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")
     else defaultValue
             ?: throw IllegalStateException("Name ${partyName} not found for property: $propertyName")

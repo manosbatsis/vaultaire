@@ -46,17 +46,15 @@ class VaultaireStateDtoAnnotationProcessor : AbstractVaultaireDtoAnnotationProce
     /** Get a list of DTO strategies to apply per annotated element */
     override fun getDtoStrategies(annotatedElementInfo: AnnotatedElementInfo): Map<String, ConstructorRefsCompositeDtoStrategy<*, *, *>> {
         val pluginServiceLoader = AnnotationProcessorPluginService.getInstance()
-        val strategyKeys = annotatedElementInfo.annotation
-                .findAnnotationValueListEnum("strategies", VaultaireDtoStrategyKeys::class.java)
-                ?: error("Could not find annotation member: strategies")
-        return strategyKeys.map {
-            val strategyKey = it.toString() //.toString()
-            val pluginLoader = pluginServiceLoader.getPlugin(
-                    DtoStrategyFactoryProcessorPlugin::class.java,
-                    annotatedElementInfo, strategyKey)
-            val strategy = pluginLoader.createStrategy(annotatedElementInfo, strategyKey) as ConstructorRefsCompositeDtoStrategy<*, *, *>
-            strategyKey to strategy
-        }.toMap()
+        return getSelectedStrategyKeys(annotatedElementInfo)
+                .map {
+                    val strategyKey = it.toString() //.toString()
+                    val pluginLoader = pluginServiceLoader.getPlugin(
+                            DtoStrategyFactoryProcessorPlugin::class.java,
+                            annotatedElementInfo, strategyKey)
+                    val strategy = pluginLoader.createStrategy(annotatedElementInfo, strategyKey) as ConstructorRefsCompositeDtoStrategy<*, *, *>
+                    strategyKey to strategy
+                }.toMap()
     }
 
 }

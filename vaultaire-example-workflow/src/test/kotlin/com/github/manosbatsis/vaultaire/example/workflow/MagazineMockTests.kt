@@ -135,8 +135,8 @@ class MagazineMockTests {
 
     @Test
     fun `Test DSL conditions`() {
-        val aPublisherDto = AccountInfoStateClientDto.mapToDto(aPublisher)//aAccountService.toAccountInfoDto(aPublisher)
-        val bAuthorDto = AccountInfoStateClientDto.mapToDto(bAuthor)// aAccountService.toAccountInfoDto(bAuthor)
+        val aPublisherDto = AccountInfoStateClientDto.from(aPublisher)//aAccountService.toAccountInfoDto(aPublisher)
+        val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)// aAccountService.toAccountInfoDto(bAuthor)
         val magazineTitle = "Test DSL conditions ${UUID.randomUUID()}"
 
         val magazineState = flowWorksCorrectly(a,
@@ -187,13 +187,54 @@ class MagazineMockTests {
 
     }
 
+
+    @Test
+    fun `Test conversions for DTOs and Views`() {
+
+        val aPublisherDto = AccountInfoStateClientDto.from(aPublisher)
+        val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)
+        val stateService = MagazineStateService(b.services)
+
+        // Test DTO > State > DTO
+        val fullDto = MagazineStateClientDto(
+                publisher = aPublisherDto,
+                author = bAuthorDto,
+                price = BigDecimal.valueOf(82),
+                genre = HISTORICAL,
+                issues = 24,
+                title = "Vault diaries, Volume 29")
+        val contractState = fullDto.toTargetType(stateService)
+        assertEquals(fullDto, MagazineStateClientDto.from(contractState, stateService))
+        // Test DTO > View > DTO > State
+        val updatedIssues = contractState.issues + 1
+        val updatedPublished = Date()
+        val addIssueView = MagazineStateClientDtoAddIssueView.from(fullDto)
+        assertEquals(contractState.issues, addIssueView.issues)
+        assertEquals(contractState.published, addIssueView.published)
+
+        addIssueView.issues = updatedIssues
+        addIssueView.published = updatedPublished
+        val patchedFullDto = addIssueView.toPatched(fullDto)
+        assertEquals(patchedFullDto.issues, updatedIssues)
+        assertEquals(patchedFullDto.published, updatedPublished)
+
+        val toTargetFullDto = addIssueView.toTargetType()
+        assertEquals(toTargetFullDto.issues, updatedIssues)
+        assertEquals(toTargetFullDto.published, updatedPublished)
+
+        val patchedContractState = toTargetFullDto.toPatched(contractState, stateService)
+        assertEquals(patchedContractState.issues, updatedIssues)
+        assertEquals(patchedContractState.published, updatedPublished)
+
+    }
+
     @Test
     fun `Test get or find by id`() {
         logger.info("AcountInfo for aPublisher: $aPublisher")
         logger.info("AcountInfo for bAuthor: $bAuthor")
 
-        val aPublisherDto = AccountInfoStateClientDto.mapToDto(aPublisher)
-        val bAuthorDto = AccountInfoStateClientDto.mapToDto(bAuthor)
+        val aPublisherDto = AccountInfoStateClientDto.from(aPublisher)
+        val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)
         logger.info("AcountInfoDto for aPublisher: $aPublisherDto")
         logger.info("AcountInfoDto for bAuthor: $bAuthorDto")
 
@@ -264,8 +305,8 @@ class MagazineMockTests {
 
     @Test
     fun `Test find with state status cases`() {
-        val aAuthorDto = AccountInfoStateClientDto.mapToDto(aAuthor)
-        val bPublisherDto = AccountInfoStateClientDto.mapToDto(bPublisher)
+        val aAuthorDto = AccountInfoStateClientDto.from(aAuthor)
+        val bPublisherDto = AccountInfoStateClientDto.from(bPublisher)
 
         logger.info("aAuthorDto: $aAuthorDto")
         logger.info("bPublisherDto: $bPublisherDto")
@@ -297,7 +338,7 @@ class MagazineMockTests {
         logger.info("Author updates title and issues...")
         val updatedTitle = "${createdState.title} UPDATED"
         var updatedState: MagazineState = flowWorksCorrectly(a,
-                UpdateMagazineFlow(MagazineStateClientDto.mapToDto(
+                UpdateMagazineFlow(MagazineStateClientDto.from(
                         createdState.copy(
                                 title = updatedTitle,
                                 issues = 2),
@@ -308,7 +349,7 @@ class MagazineMockTests {
         logger.info("Author updates title and issues again...")
         val updatedTitle2 = "${createdState.title} UPDATED2"
         val updatedState2: MagazineState = flowWorksCorrectly(a,
-                UpdateMagazineFlow(MagazineStateClientDto.mapToDto(createdState.copy(
+                UpdateMagazineFlow(MagazineStateClientDto.from(createdState.copy(
                         title = updatedTitle2,
                         issues = 3
                 ), stateService))).single()

@@ -48,10 +48,10 @@ data class AccountInfoStateClientDto(
    * updated using this DTO's non-null properties.
    */
   @Suspendable
-  override fun toPatched(original: AccountInfo, stateService: AccountsAwareStateService<AccountInfo>):
+  override fun toPatched(original: AccountInfo, service: AccountsAwareStateService<AccountInfo>):
           AccountInfo {
 
-    val hostResolved = toPartyOrDefault(this.host, original.host, stateService, "host")
+    val hostResolved = toPartyOrDefault(this.host, original.host, service, "host")
     val patched = AccountInfo(
             name = this.name ?: original.name ?:errNull("name"),
             host = hostResolved,
@@ -67,9 +67,9 @@ data class AccountInfoStateClientDto(
    * if there is mot enough information to do so.
    */
   @Suspendable
-  override fun toTargetType(stateService: AccountsAwareStateService<AccountInfo>): AccountInfo {
+  override fun toTargetType(service: AccountsAwareStateService<AccountInfo>): AccountInfo {
     try {
-      val hostResolved = toParty(this.host, stateService, "host")
+      val hostResolved = toParty(this.host, service, "host")
       return AccountInfo(
               name = this.name?:errNull("name"),
               host = hostResolved,
@@ -85,7 +85,7 @@ data class AccountInfoStateClientDto(
     /**
      * Create a new DTO instance using the given [AccountInfo] as source.
      */
-    fun mapToDto(original: AccountInfo, stateService: StateService<AccountInfo>? = null): AccountInfoStateClientDto = AccountInfoStateClientDto(
+    fun from(original: AccountInfo, service: StateService<AccountInfo>? = null): AccountInfoStateClientDto = AccountInfoStateClientDto(
             name = original.name,
             host = original.host.name,
             identifier = original.identifier.id,
