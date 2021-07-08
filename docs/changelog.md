@@ -6,7 +6,7 @@ and can be helpful with version upgrades.
 
 
 
-## 0.42 - 0.44
+## 0.42 - 0.45
 
 - `VaultaireView` annotation changes:
   - Enhanced control of the generated Class name with `name` and `nameSuffix` attributes, check the KDoc
@@ -18,6 +18,11 @@ and can be helpful with version upgrades.
   parent annotation. Thus, views generated e.g. for a DTO will now include `toPatched` and 
   `toTargetType` methods targeting the full DTO.
 - DTO Companion's `mapToDto` was renamed to `from`.
+- Services' `queryBy` no longer provides defaults for paging, sorting etc. 
+  to make different signatures in `serviceHub`, RPC etc.  more accessible; 
+  they do have their uses e.g. in aggregate quries. In short expect you'll 
+  need `queryBy(criteria, 1, 10)` VS `queryBy(criteria)`for it to work as expected.
+
 
 ## 0.41
 

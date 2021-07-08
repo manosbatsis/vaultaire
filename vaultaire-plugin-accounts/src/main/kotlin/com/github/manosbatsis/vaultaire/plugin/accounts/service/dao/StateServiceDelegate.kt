@@ -43,29 +43,25 @@ interface AccountsAwareStateServiceDelegate<T : ContractState> :
 
 open class AccountsAwareStateServicePoolBoyDelegate<T : ContractState>(
         poolBoy: PoolBoyConnection,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : AccountsAwareNodeServicePoolBoyDelegate(poolBoy, defaults), AccountsAwareStateServiceDelegate<T>
+        override val contractStateType: Class<T>
+) : AccountsAwareNodeServicePoolBoyDelegate(poolBoy), AccountsAwareStateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareStateServiceRpcDelegate<T : ContractState>(
         rpcOps: CordaRPCOps,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults), AccountsAwareStateServiceDelegate<T>
+        override val contractStateType: Class<T>
+) : AccountsAwareNodeServiceRpcDelegate(rpcOps), AccountsAwareStateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServicePoolBoyDelegate] with a pool boy connection pool instead")
 class AccountsAwareStateServiceRpcConnectionDelegate<T : ContractState>(
         nodeRpcConnection: NodeRpcConnection,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), AccountsAwareStateServiceDelegate<T>
+        override val contractStateType: Class<T>
+) : AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection), AccountsAwareStateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
 abstract class AccountsAwareStateCordaServiceDelegate<T : ContractState>(
         serviceHub: AppServiceHub,
-        override val contractStateType: Class<T>,
-        override val defaults: ServiceDefaults = SimpleServiceDefaults()
+        override val contractStateType: Class<T>
 ) : AccountsAwareNodeCordaServiceDelegate(serviceHub), AccountsAwareStateServiceDelegate<T>

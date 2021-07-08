@@ -24,6 +24,7 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.dto
 
 import com.github.manosbatsis.vaultaire.dto.VaultaireDto
+import com.github.manosbatsis.vaultaire.dto.VaultaireDtoBase.Companion.errNull
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.Party

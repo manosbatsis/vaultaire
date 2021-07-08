@@ -324,23 +324,23 @@ open class BasicAccountsAwareNodeService(
 
     /** [PoolBoyConnection]-based constructor */
     constructor(
-            poolBoy: PoolBoyConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(AccountsAwareNodeServicePoolBoyDelegate(poolBoy, defaults))
+            poolBoy: PoolBoyConnection
+    ) : this(AccountsAwareNodeServicePoolBoyDelegate(poolBoy))
 
     /** [NodeRpcConnection]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
+            nodeRpcConnection: NodeRpcConnection
+    ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection))
 
     /** [CordaRPCOps]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults))
+            rpcOps: CordaRPCOps
+    ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub
     ) : this(serviceHub.cordaService(AccountsAwareNodeCordaServiceDelegate::class.java))
 }

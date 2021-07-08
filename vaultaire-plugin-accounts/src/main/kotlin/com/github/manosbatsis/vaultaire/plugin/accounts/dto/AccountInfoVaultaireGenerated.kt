@@ -166,30 +166,29 @@ open class AccountInfoService(
   /**
    * ServiceHub-based constructor, creates a Corda Service delegate
    */
-  constructor(serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()) :
+  constructor(serviceHub: ServiceHub) :
       this(serviceHub.cordaService(AccountInfoCordaServiceDelegate::class.java))
 
   /**
    * PoolBopy-based RPC connection pool constructor
    */
-  constructor(poolBoy: PoolBoyConnection, defaults: ServiceDefaults = SimpleServiceDefaults()) :
-      this(AccountsAwareStateServicePoolBoyDelegate(poolBoy, AccountInfo::class.java, defaults))
+  constructor(poolBoy: PoolBoyConnection) :
+      this(AccountsAwareStateServicePoolBoyDelegate(poolBoy, AccountInfo::class.java))
 
   /**
    * Legacy constructor without pool support
    */
   @Deprecated(message = "Legacy constructor without pool support, use pool boy constructor instead")
-  constructor(rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()) :
-      this(AccountsAwareStateServiceRpcDelegate(rpcOps, AccountInfo::class.java, defaults))
+  constructor(rpcOps: CordaRPCOps) :
+      this(AccountsAwareStateServiceRpcDelegate(rpcOps, AccountInfo::class.java))
 
   /**
    * Legacy constructor without pool support
    */
   @Deprecated(message = "Legacy constructor without pool support, use pool boy constructor instead")
-  constructor(nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults =
-      SimpleServiceDefaults()) :
+  constructor(nodeRpcConnection: NodeRpcConnection) :
       this(AccountsAwareStateServiceRpcConnectionDelegate(nodeRpcConnection,
-      AccountInfo::class.java, defaults))
+      AccountInfo::class.java))
 
   /**
    * DSL entry point function for [PersistentAccountInfoConditions]

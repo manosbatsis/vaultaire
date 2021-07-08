@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.dto
 
+import com.github.manosbatsis.kotlin.utils.api.Dto
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
@@ -123,9 +124,12 @@ interface VaultaireDtoBase{
 
     companion object {
         protected const val ERR_NULL = "Required property is null: "
+
+        inline fun errNull(fieldName: String): Nothing =
+                throw IllegalArgumentException("${ERR_NULL}$fieldName")
     }
 
-    fun <X> errNull(fieldName: String) :X =
-            throw IllegalArgumentException("$ERR_NULL$fieldName")
+
+    fun errNull(fieldName: String): Nothing = Dto.errNull(fieldName)
 
 }

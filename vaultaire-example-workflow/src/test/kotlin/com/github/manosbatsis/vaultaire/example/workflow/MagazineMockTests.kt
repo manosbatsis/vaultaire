@@ -389,7 +389,7 @@ class MagazineMockTests {
             }
         }
         val criteria = consumed.toCriteria()
-        val results = extendedService.queryBy(criteria)
+        val results = extendedService.queryBy(criteria, 1, 10)
         // Get/find by external ID
         assertEquals(2, results.totalStatesAvailable.toInt())
         assertTrue(results.states.first().state.data.issues < 3)
@@ -408,7 +408,7 @@ class MagazineMockTests {
             }
         }
 
-        val unconsumedResults = extendedService.queryBy(unconsumedCriteria.toCriteria())
+        val unconsumedResults = extendedService.queryBy(unconsumedCriteria.toCriteria(), 1, 10)
 
         assertEquals(1, unconsumedResults.totalStatesAvailable.toInt())
         assertTrue(unconsumedResults.states.single().state.data.issues == 3)
@@ -425,7 +425,7 @@ class MagazineMockTests {
             }
         }
 
-        val defaultResults = extendedService.queryBy(defaultCriteria.toCriteria())
+        val defaultResults = extendedService.queryBy(defaultCriteria.toCriteria(), 1, 10)
 
         assertEquals(1, defaultResults.totalStatesAvailable.toInt())
         assertTrue(defaultResults.states.single().state.data.issues == 3)
@@ -443,7 +443,7 @@ class MagazineMockTests {
             }
         }
 
-        val allResults = extendedService.queryBy(allCriteria.toCriteria())
+        val allResults = extendedService.queryBy(allCriteria.toCriteria(), 1, 10)
 
         assertEquals(3, allResults.totalStatesAvailable.toInt())
     }
@@ -455,7 +455,7 @@ class MagazineMockTests {
             magazineState: MagazineContract.MagazineState) {
 
         val magazineSearchPage = stateService.queryBy(
-                criteria, 1, 10, sort
+            criteria, 1, 10, sort
         )
         assertEquals(UNCONSUMED, magazineSearchPage.stateTypes,
         "Result states must be unconsumed1")

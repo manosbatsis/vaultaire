@@ -45,14 +45,12 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
 
     open fun processElementInfo(elementInfo: AnnotatedElementInfo) {
         val originalStrategies = getDtoStrategies(elementInfo)
-        val viewStrategies = getViewInfos(elementInfo).let { viewInfos ->
-            originalStrategies.map { (strategyKey, dtoStrategy) ->
-                viewInfos.filter { it.allowsStrategy(strategyKey) }.map { viewInfo ->
-                    // Set unique file name
-                    viewInfo.viewAnnotation.nameSuffix to DtoViewStrategy(viewInfo, dtoStrategy)
-                }
-            }.flatten().toMap()
-        }
+        val viewInfos = getViewInfos(elementInfo)
+        val viewStrategies = viewInfos.flatMap { viewInfo ->
+            originalStrategies.filter { viewInfo.allowsStrategy(it.key) }
+                .map { DtoViewStrategy(viewInfo, it.value) }
+        }.associateBy { it.getClassName() }
+
         val allStrategies = originalStrategies + viewStrategies
         allStrategies.map { (_, strategy) ->
             val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
@@ -88,16 +86,16 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
             val processingEnvironmentAware: ProcessingEnvironmentAware
     ): ProcessingEnvironmentAware by processingEnvironmentAware {
 
-        val targetName: String?
-            get() = if(viewAnnotation.name.isNotBlank()) viewAnnotation.name else null
-        val targetNameSuffix: String?
-            get() = if(viewAnnotation.nameSuffix.isNotBlank()) viewAnnotation.nameSuffix else null
+        val targetName: String
+            get() = viewAnnotation.name
+        val targetNameSuffix: String
+            get() = viewAnnotation.nameSuffix
 
 
-        val excludedStrategies: List<String> = viewAnnotation.excludeStrategies.map{ "$it" }
+        val strategies: List<String> = viewAnnotation.strategies.map{ "$it" }
 
         fun allowsStrategy(strategyKey: String): Boolean{
-            return !excludedStrategies.contains(strategyKey)
+            return strategies.contains(strategyKey)
         }
 
 

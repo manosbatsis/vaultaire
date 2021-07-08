@@ -176,8 +176,6 @@ abstract class BaseMagazineFlow<IN, OUT>(
             inner.missing.forEach {
                 val accountInfoDto = accountInfoService.toAccountInfoDtoOrNull(it)
                 val accountInfo = accountInfoService.findAccountInfo(accountInfoDto)
-                println("Missing signature, account: ${accountInfoDto?.name}, host: ${accountInfoDto?.host}, signer: ${accountInfo?.host?.name}")
-                logger.error("Missing signature, account: ${accountInfoDto?.name}, host: ${accountInfoDto?.host}, signer: ${accountInfo?.host?.name}")
             }
             inner.printStackTrace()
             throw e

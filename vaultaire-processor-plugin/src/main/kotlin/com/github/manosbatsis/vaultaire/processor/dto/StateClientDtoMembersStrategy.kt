@@ -22,6 +22,7 @@ package com.github.manosbatsis.vaultaire.processor.dto
 import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.*
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoMembersStrategy.Statement
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.util.FieldContext
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.squareup.kotlinpoet.*
@@ -43,50 +44,38 @@ open class ClientDtoMembersStrategyBase(
 
     override fun toTargetTypeStatement(fieldIndex: Int, variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
 
+        val propertyName = toPropertyName(variableElement)
         val partyCollection = partyCollection(variableElement)
 
+        val maybeNullFallback = maybeCheckForNull(variableElement, assignmentCtxForToTargetType(propertyName) )
 
         return if (partyCollection != null) {
-            val propertyName = toPropertyName(variableElement)
             targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = $propertyName?.filterNotNull()", propertyName)
             targetTypeFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, service, %S) } ", propertyName)
-            if (!variableElement.isNullable())
-            targetTypeFunctionBuilder.addStatement("     ?:errNull(%S) ", propertyName)
-            DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
+            targetTypeFunctionBuilder.addStatement("     ")
+            DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved${maybeNullFallback.fallbackValue}$commaOrEmpty", maybeNullFallback.fallbackArgs)
         }else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
-
-            val propertyName = toPropertyName(variableElement)
-            if (variableElement.isNullable()) {
-                targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrNull(this.$propertyName, service, %S)", propertyName)
-                DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
-            } else {
-                targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = toParty(this.$propertyName, service, %S)", propertyName)
-                DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
-            }
+            targetTypeFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrNull(this.$propertyName, service, %S)", propertyName)
+            DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved${maybeNullFallback.fallbackValue}$commaOrEmpty", maybeNullFallback.fallbackArgs)
         } else super.toTargetTypeStatement(fieldIndex, variableElement, commaOrEmpty)
     }
 
     override fun toPatchStatement(fieldIndex: Int, variableElement: VariableElement, commaOrEmpty: String): DtoMembersStrategy.Statement? {
 
+        val propertyName = toPropertyName(variableElement)
         val partyCollection = partyCollection(variableElement)
 
+        val maybeNullFallback = maybeCheckForNull(variableElement, assignmentCtxForToPatched(propertyName) )
         return if (partyCollection != null) {
-            val propertyName = toPropertyName(variableElement)
             patchFunctionBuilder.addStatement("val ${propertyName}Resolved = $propertyName?.filterNotNull()", propertyName)
             patchFunctionBuilder.addStatement("     ?.mapNotNull{ toPartyOrNull(it, service, %S) } ", propertyName)
             patchFunctionBuilder.addStatement("     ?.let{ if(it.isNotEmpty()) it else null } ")
-            patchFunctionBuilder.addStatement("     ?:original.$propertyName ")
+            patchFunctionBuilder.addStatement("     ${maybeNullFallback.fallbackValue}", maybeNullFallback.fallbackArgs)
             DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
         }
         else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
-            val propertyName = toPropertyName(variableElement)
-            if (variableElement.isNullable()) {
-                patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefaultNullable(this.$propertyName, original.$propertyName, service, %S)", propertyName)
-                DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
-            } else {
-                patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefault(this.$propertyName, original.$propertyName, service, %S)", arrayOf(propertyName))
-                DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved$commaOrEmpty")
-            }
+            patchFunctionBuilder.addStatement("val ${propertyName}Resolved = toPartyOrDefault(this.$propertyName, original.$propertyName, service, %S)", propertyName)
+            DtoMembersStrategy.Statement("      $propertyName = ${propertyName}Resolved${maybeNullFallback.fallbackValue}$commaOrEmpty", maybeNullFallback.fallbackArgs)
         } else super.toPatchStatement(fieldIndex, variableElement, commaOrEmpty)
     }
 
@@ -118,13 +107,17 @@ open class ClientDtoMembersStrategyBase(
             propertyName: String, propertyType: TypeName,
             commaOrEmpty: String
     ): Statement? {
+
+        val maybeNullFallback = maybeCheckForNull(variableElement, assignmentCtxForOwnCreator(propertyName) )
         val partyCollection = partyCollection(variableElement)
-        val safeDot = if(variableElement.isNullable()) "?." else "."
+        val safeDot = if(isNullable(variableElement, FieldContext.TARGET_TYPE)) "?." else "."
         return if (partyCollection != null) {
-            Statement("      $propertyName = original.$propertyName${safeDot}map{it.name}$commaOrEmpty")
+            Statement("      $propertyName = original.$propertyName${safeDot}map{it.name}${maybeNullFallback.fallbackValue}$commaOrEmpty",
+                    maybeNullFallback.fallbackArgs)
         }
         else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
-            Statement("      $propertyName = original.$propertyName${safeDot}name$commaOrEmpty")
+            Statement("      $propertyName = original.$propertyName${safeDot}name${maybeNullFallback.fallbackValue}$commaOrEmpty",
+                    maybeNullFallback.fallbackArgs)
         } else return super.toCreatorStatement(index, variableElement, propertyName, propertyType, commaOrEmpty)
     }
 
@@ -134,14 +127,15 @@ open class ClientDtoMembersStrategyBase(
             commaOrEmpty: String
     ): DtoMembersStrategy.Statement? {
 
+        val maybeNullFallback = maybeCheckForNull(variableElement, assignmentCtxForToAltConstructor(propertyName) )
         val partyCollection = partyCollection(variableElement)
-        val safeDot = if(variableElement.isNullable()) "?." else "."
-
+        val safeDot = if(isNullable(variableElement, FieldContext.TARGET_TYPE)) "?." else "."
         return if (partyCollection != null) {
             Statement("      $propertyName = original.$propertyName${safeDot}map{it.name}$commaOrEmpty")
         }
         else if (variableElement.asType().asTypeElement().asClassName() == Party::class.java.asClassName()) {
-            Statement("      $propertyName = original.$propertyName${safeDot}name$commaOrEmpty")
+            Statement("      $propertyName = original.$propertyName${safeDot}name${maybeNullFallback.fallbackValue}$commaOrEmpty",
+                    maybeNullFallback.fallbackArgs)
         } else super.toAltConstructorStatement(index, variableElement, propertyName, propertyType, commaOrEmpty)
     }
 

@@ -21,6 +21,7 @@ package com.github.manosbatsis.vaultaire.example.workflow
 
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.*
+import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState.MagazineSchemaV1.PersistentMagazineState

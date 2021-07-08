@@ -28,8 +28,6 @@ import com.github.manosbatsis.vaultaire.dto.attachment.Attachment
 import com.github.manosbatsis.vaultaire.dto.attachment.AttachmentReceipt
 import com.github.manosbatsis.vaultaire.dto.info.ExtendedNodeInfo
 import com.github.manosbatsis.vaultaire.registry.Registry
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
-import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import net.corda.core.concurrent.CordaFuture
 import net.corda.core.contracts.ContractState
@@ -65,7 +63,6 @@ interface NodeServiceDelegate {
         private val logger = contextLogger()
     }
 
-    val defaults: ServiceDefaults
     val nodeLegalName: CordaX500Name
     val nodeIdentity: Party
     val nodeIdentityCriteria: QueryCriteria.LinearStateQueryCriteria
@@ -192,9 +189,9 @@ interface NodeServiceDelegate {
     @Suspendable
     fun <T : ContractState> queryBy(
         contractStateType: Class<T>,
-        criteria: QueryCriteria = defaults.criteria,
-        paging: PageSpecification = defaults.paging,
-        sort: Sort = defaults.sort
+        criteria: QueryCriteria? = null,
+        paging: PageSpecification? = null,
+        sort: Sort? = null
     ): Vault.Page<T>
 
     /**
@@ -204,9 +201,9 @@ interface NodeServiceDelegate {
     @Suspendable
     fun <T : ContractState> trackBy(
         contractStateType: Class<T>,
-        criteria: QueryCriteria = defaults.criteria,
-        paging: PageSpecification = defaults.paging,
-        sort: Sort = defaults.sort
+        criteria: QueryCriteria? = null,
+        paging: PageSpecification? = null,
+        sort: Sort? = null
     ): DataFeed<Vault.Page<T>, Vault.Update<T>>
 
     /** Uploads a jar to the node, returns it's hash. */
@@ -221,8 +218,7 @@ interface NodeServiceDelegate {
 
 /** RPC implementation base */
 open class NodeServiceRpcPoolBoyDelegate(
-    val poolBoy: PoolBoyConnection,
-    override val defaults: ServiceDefaults = SimpleServiceDefaults()
+    val poolBoy: PoolBoyConnection
 ) : NodeServiceDelegate {
 
     companion object {
@@ -276,25 +272,49 @@ open class NodeServiceRpcPoolBoyDelegate(
             connection.proxy.wellKnownPartyFromX500Name(name)
         }
 
+    fun noneNull(vararg elements: Any?): Boolean  = elements.all { it != null }
+
     override fun <T : ContractState> queryBy(
         contractStateType: Class<T>,
-        criteria: QueryCriteria,
-        paging: PageSpecification,
-        sort: Sort
+        criteria: QueryCriteria?,
+        paging: PageSpecification?,
+        sort: Sort?
     ): Vault.Page<T> {
         return poolBoy.withConnection { connection ->
-            connection.proxy.vaultQueryBy(criteria, paging, sort, contractStateType)
+            when{
+                noneNull(criteria, paging,  sort) ->
+                    connection.proxy.vaultQueryBy(criteria!!, paging!!, sort!!, contractStateType)
+                noneNull(criteria, paging) ->
+                    connection.proxy.vaultQueryByWithPagingSpec(contractStateType = contractStateType, criteria = criteria!!, paging = paging!!)
+                noneNull(criteria, sort) ->
+                    connection.proxy.vaultQueryByWithSorting(contractStateType = contractStateType, criteria = criteria!!, sorting = sort!!)
+                noneNull(criteria) ->
+                    connection.proxy.vaultQueryByCriteria(criteria = criteria!!, contractStateType = contractStateType)
+                else ->
+                    connection.proxy.vaultQuery(contractStateType)
+            }
         }
     }
 
     override fun <T : ContractState> trackBy(
         contractStateType: Class<T>,
-        criteria: QueryCriteria,
-        paging: PageSpecification,
-        sort: Sort
+        criteria: QueryCriteria?,
+        paging: PageSpecification?,
+        sort: Sort?
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
         return poolBoy.withConnection { connection ->
-            connection.proxy.vaultTrackBy(criteria, paging, sort, contractStateType)
+            when{
+                noneNull(criteria, paging,  sort) ->
+                    connection.proxy.vaultTrackBy(criteria!!, paging!!, sort!!, contractStateType)
+                noneNull(criteria, paging) ->
+                    connection.proxy.vaultTrackByWithPagingSpec(contractStateType = contractStateType, criteria = criteria!!, paging = paging!!)
+                noneNull(criteria, sort) ->
+                    connection.proxy.vaultTrackByWithSorting(contractStateType = contractStateType, criteria = criteria!!, sorting = sort!!)
+                noneNull(criteria) ->
+                    connection.proxy.vaultTrackByCriteria(contractStateType = contractStateType, criteria = criteria!!)
+                else ->
+                    connection.proxy.vaultTrack(contractStateType)
+            }
         }
     }
 
@@ -327,11 +347,8 @@ open class NodeServiceRpcPoolBoyDelegate(
     ): S {
         val stateServiceType = Registry.getStateServiceType(contractStateType)
         return stateServiceType
-            ?.run {
-                this.getConstructor(PoolBoyConnection::class.java, ServiceDefaults::class.java)
-                    ?: this.getConstructor(PoolBoyConnection::class.java)
-            }
-            ?.newInstance(poolBoy, SimpleServiceDefaults()) as S?
+            ?.run { this.getConstructor(PoolBoyConnection::class.java) }
+            ?.newInstance(poolBoy) as S?
             ?: error("No state service type found for type ${contractStateType.canonicalName}")
     }
 
@@ -366,17 +383,15 @@ open class NodeServiceRpcPoolBoyDelegate(
 /** [CordaRPCOps]-based [NodeServiceDelegate] implementation */
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate] with a pool boy connection pool instead")
 open class NodeServiceRpcDelegate(
-    rpcOps: CordaRPCOps,
-    defaults: ServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceRpcPoolBoyDelegate(PoolBoyNonPooledRawRpcConnection(rpcOps), defaults)
+    rpcOps: CordaRPCOps
+) : NodeServiceRpcPoolBoyDelegate(PoolBoyNonPooledRawRpcConnection(rpcOps))
 
 
 /** [NodeRpcConnection]-based [NodeServiceDelegate] implementation */
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate] with a pool boy connection pool instead")
 open class NodeServiceRpcConnectionDelegate(
-    nodeRpcConnection: NodeRpcConnection,
-    override val defaults: ServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceRpcPoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection), defaults)
+    nodeRpcConnection: NodeRpcConnection
+) : NodeServiceRpcPoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection))
 
 /**
  * Simple [ServiceHub]-based [NodeServiceDelegate] implementation
@@ -384,15 +399,13 @@ open class NodeServiceRpcConnectionDelegate(
 
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate] with a pool boy connection pool instead")
 open class NodeServiceHubDelegate(
-    serviceHub: ServiceHub,
-    override val defaults: ServiceDefaults = SimpleServiceDefaults()
+    serviceHub: ServiceHub
 ) : AbstractNodeServiceHubDelegate<ServiceHub>(serviceHub)
 
 /** Abstract [AppServiceHub]-based implementation of [NodeServiceDelegate] as a CordaService */
 abstract class NodeCordaServiceDelegate(
     serviceHub: AppServiceHub
 ) : AbstractNodeServiceHubDelegate<AppServiceHub>(serviceHub) {
-    override val defaults: ServiceDefaults = SimpleServiceDefaults()
 
 }
 
@@ -480,21 +493,29 @@ abstract class AbstractNodeServiceHubDelegate<S : ServiceHub>(
     @Suspendable
     override fun <T : ContractState> queryBy(
         contractStateType: Class<T>,
-        criteria: QueryCriteria,
-        paging: PageSpecification,
-        sort: Sort
+        criteria: QueryCriteria?,
+        paging: PageSpecification?,
+        sort: Sort?
     ): Vault.Page<T> {
-        return serviceHub.vaultService.queryBy(contractStateType, criteria, paging, sort)
+        return serviceHub.vaultService.queryBy(
+            contractStateType,
+            criteria ?: QueryCriteria.VaultQueryCriteria(),
+            paging ?: PageSpecification(),
+            sort ?: Sort(emptySet()))
     }
 
     @Suspendable
     override fun <T : ContractState> trackBy(
         contractStateType: Class<T>,
-        criteria: QueryCriteria,
-        paging: PageSpecification,
-        sort: Sort
+        criteria: QueryCriteria?,
+        paging: PageSpecification?,
+        sort: Sort?
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
-        return serviceHub.vaultService.trackBy(contractStateType, criteria, paging, sort)
+        return serviceHub.vaultService.trackBy(
+            contractStateType,
+            criteria ?: QueryCriteria.VaultQueryCriteria(),
+            paging ?: PageSpecification(),
+            sort ?: Sort(emptySet()))
     }
 
     override fun uploadAttachment(inputStream: InputStream): SecureHash {

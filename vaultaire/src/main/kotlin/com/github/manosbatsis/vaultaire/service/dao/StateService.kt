@@ -153,8 +153,8 @@ interface StateService<T : ContractState> :
 
     /** Count states of type [T] matching stored in the vault and matching any given criteria */
     @Suspendable
-    fun countBy(criteria: QueryCriteria = defaults.criteria): Long {
-        return countBy(contractStateType, criteria)
+    fun countBy(criteria: QueryCriteria? = null): Long {
+        return countBy(contractStateType = contractStateType, criteria = criteria)
     }
 
     /**
@@ -163,12 +163,12 @@ interface StateService<T : ContractState> :
      */
     @Suspendable
     fun queryBy(
-            criteria: QueryCriteria = defaults.criteria,
-            pageNumber: Int = defaults.pageNumber,
-            pageSize: Int = defaults.pageSize,
-            sort: Sort = defaults.sort
+            criteria: QueryCriteria? = null,
+            pageNumber: Int,
+            pageSize: Int,
+            sort: Sort? = null
     ): Vault.Page<T> {
-        return queryBy(contractStateType, criteria, pageNumber, pageSize, sort)
+        return queryBy(contractStateType = contractStateType, criteria = criteria, pageNumber = pageNumber, pageSize = pageSize, sort = sort)
     }
 
     /**
@@ -177,12 +177,12 @@ interface StateService<T : ContractState> :
      */
     @Suspendable
     fun trackBy(
-            criteria: QueryCriteria = defaults.criteria,
-            pageNumber: Int = defaults.pageNumber,
-            pageSize: Int = defaults.pageSize,
-            sort: Sort = defaults.sort
+            criteria: QueryCriteria? = null,
+            pageNumber: Int,
+            pageSize: Int,
+            sort: Sort? = null
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
-        return trackBy(contractStateType, criteria, pageNumber, pageSize, sort)
+        return trackBy(contractStateType = contractStateType, criteria = criteria, pageNumber = pageNumber, pageSize = pageSize, sort = sort)
     }
 }
 
@@ -197,25 +197,25 @@ open class BasicStateService<T : ContractState>(
 
     /** [PoolBoyConnection]-based constructor */
     constructor(
-            poolBoy: PoolBoyConnection, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServicePoolBoyDelegate(poolBoy, contractStateType, defaults))
+            poolBoy: PoolBoyConnection, contractStateType: Class<T>
+    ) : this(StateServicePoolBoyDelegate(poolBoy, contractStateType))
 
     /** [NodeRpcConnection]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServiceRpcConnectionDelegate(nodeRpcConnection, contractStateType, defaults))
+            nodeRpcConnection: NodeRpcConnection, contractStateType: Class<T>
+    ) : this(StateServiceRpcConnectionDelegate(nodeRpcConnection, contractStateType))
 
     /** [CordaRPCOps]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            rpcOps: CordaRPCOps, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServiceRpcDelegate(rpcOps, contractStateType, defaults))
+            rpcOps: CordaRPCOps, contractStateType: Class<T>
+    ) : this(StateServiceRpcDelegate(rpcOps, contractStateType))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, contractStateType: Class<T>, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServiceHubDelegate(serviceHub, contractStateType, defaults))
+            serviceHub: ServiceHub, contractStateType: Class<T>
+    ) : this(StateServiceHubDelegate(serviceHub, contractStateType))
 
 
     override val ofLinearState: Boolean by lazy { isLinearState(delegate.contractStateType) }
@@ -261,7 +261,7 @@ interface ExtendedStateService<
      */
     @Suspendable
     fun queryBy(
-            condition: Q, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, ignoreAggregates: Boolean = false
+            condition: Q, pageNumber: Int, pageSize: Int, ignoreAggregates: Boolean = false
     ): Vault.Page<T> {
         val criteria = condition.toCriteria(ignoreAggregates)
         val sort = condition.toSort()
@@ -275,9 +275,9 @@ interface ExtendedStateService<
      */
     @Suspendable
     fun queryBy(
-            criteria: QueryCriteria = defaults.criteria,
-            pageNumber: Int = defaults.pageNumber,
-            pageSize: Int = defaults.pageSize,
+            criteria: QueryCriteria? = null,
+            pageNumber: Int,
+            pageSize: Int,
             vararg sort: Pair<String, Sort.Direction>
     ): Vault.Page<T> {
         return if (sort.isNotEmpty()) queryBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
@@ -290,11 +290,11 @@ interface ExtendedStateService<
      */
     @Suspendable
     fun queryBy(
-            criteria: QueryCriteria = defaults.criteria,
-            paging: PageSpecification = defaults.paging,
+            criteria: QueryCriteria? = null,
+            paging: PageSpecification? = null,
             vararg sort: Pair<String, Sort.Direction>
     ): Vault.Page<T> {
-        return if (sort.isNotEmpty()) queryBy(criteria, paging, toSort(*sort))
+        return if (sort.isNotEmpty()) queryBy(criteria = criteria, paging = paging, sort = toSort(*sort))
         else queryBy(criteria, paging)
     }
 
@@ -305,12 +305,12 @@ interface ExtendedStateService<
      */
     @Suspendable
     fun trackBy(
-            criteria: QueryCriteria = defaults.criteria,
-            pageNumber: Int = defaults.pageNumber,
-            pageSize: Int = defaults.pageSize,
+            criteria: QueryCriteria? = null,
+            pageNumber: Int,
+            pageSize: Int,
             vararg sort: Pair<String, Sort.Direction>
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
-        return if (sort.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), toSort(*sort))
+        return if (sort.isNotEmpty()) trackBy(criteria = criteria,paging = PageSpecification(pageNumber, pageSize), sort = toSort(*sort))
         else trackBy(criteria, PageSpecification(pageNumber, pageSize))
     }
 
@@ -320,25 +320,24 @@ interface ExtendedStateService<
      */
     @Suspendable
     fun trackBy(
-            criteria: QueryCriteria = defaults.criteria,
-            paging: PageSpecification = defaults.paging,
+            criteria: QueryCriteria? = null,
+            paging: PageSpecification? = null,
             vararg sort: Pair<String, Sort.Direction>
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
-        return if (sort.isNotEmpty()) trackBy(criteria, paging, toSort(*sort))
+        return if (sort.isNotEmpty()) trackBy(criteria = criteria, paging = paging, sort = toSort(*sort))
         else trackBy(criteria, paging)
     }
-
     /**
      * Track the vault for states of type [T] matching the given DSL query,
      * applying the given page number and size, ignoring any aggregates.
      */
     @Suspendable
     fun trackBy(
-            condition: Q, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize
+            condition: Q, pageNumber: Int, pageSize: Int
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
         val criteria = condition.toCriteria(true)
         val sort = condition.toSort()
-        return if (sort.columns.isNotEmpty()) trackBy(criteria, PageSpecification(pageNumber, pageSize), sort)
+        return if (sort.columns.isNotEmpty()) trackBy(criteria = criteria, paging = PageSpecification(pageNumber, pageSize), sort = sort)
         else trackBy(criteria, PageSpecification(pageNumber, pageSize))
     }
 }

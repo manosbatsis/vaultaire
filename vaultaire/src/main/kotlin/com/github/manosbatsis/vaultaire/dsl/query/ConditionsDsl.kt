@@ -414,6 +414,7 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
                     .takeIf { it.isNotEmpty() }
                     ?.reduce { chain, link -> chain.and(link) }
             }else null
+
         // Always applied (the product of) root last to override status etc.
         return aggregateCriteria?.and(toCriteria()) ?: toCriteria()
     }

@@ -24,6 +24,7 @@
 package com.github.manosbatsis.vaultaire.plugin.accounts.dto
 
 import co.paralleluniverse.fibers.Suspendable
+import com.github.manosbatsis.vaultaire.dto.VaultaireDtoBase.Companion.errNull
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.VaultaireAccountsAwareStateClientDto
 import com.github.manosbatsis.vaultaire.service.dao.StateService

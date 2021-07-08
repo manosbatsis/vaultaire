@@ -22,8 +22,6 @@ package com.github.manosbatsis.vaultaire.service.node
 import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
-import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
@@ -64,7 +62,7 @@ interface NodeService : NodeServiceDelegate {
             externalIds: List<UUID> = emptyList()
     ): StateAndRef<T> {
         return getByLinearId(
-                contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
+            contractStateType, UniqueIdentifier(id = linearId), relevancyStatus)
     }
 
     /**
@@ -144,7 +142,7 @@ interface NodeService : NodeServiceDelegate {
 
     /** Count states of type [T] matching stored in the vault and matching any given criteria */
     fun <T : ContractState> countBy(
-            contractStateType: Class<T>, criteria: QueryCriteria = defaults.criteria): Long
+            contractStateType: Class<T>, criteria: QueryCriteria?): Long
 
     /**
      * Query the vault for states of type [T] matching the given criteria,
@@ -152,10 +150,10 @@ interface NodeService : NodeServiceDelegate {
      */
     fun <T : ContractState> queryBy(
             contractStateType: Class<T>,
-            criteria: QueryCriteria = defaults.criteria,
-            pageNumber: Int = defaults.pageNumber,
-            pageSize: Int = defaults.pageSize,
-            sort: Sort = defaults.sort
+            criteria: QueryCriteria? = null,
+            pageNumber: Int,
+            pageSize: Int,
+            sort: Sort? = null
     ): Vault.Page<T>
 
     /**
@@ -164,10 +162,10 @@ interface NodeService : NodeServiceDelegate {
      */
     fun <T : ContractState> trackBy(
             contractStateType: Class<T>,
-            criteria: QueryCriteria = defaults.criteria,
-            pageNumber: Int = defaults.pageNumber,
-            pageSize: Int = defaults.pageSize,
-            sort: Sort = defaults.sort
+            criteria: QueryCriteria? = null,
+            pageNumber: Int,
+            pageSize: Int,
+            sort: Sort? = null
     ): DataFeed<Vault.Page<T>, Vault.Update<T>>
 }
 
@@ -181,32 +179,35 @@ open class BasicNodeService(
 
     /** [PoolBoyConnection]-based constructor */
     constructor(
-            poolBoy: PoolBoyConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(NodeServiceRpcPoolBoyDelegate(poolBoy, defaults))
+            poolBoy: PoolBoyConnection
+    ) : this(NodeServiceRpcPoolBoyDelegate(poolBoy))
 
     /** [NodeRpcConnection]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
+            nodeRpcConnection: NodeRpcConnection
+    ) : this(NodeServiceRpcConnectionDelegate(nodeRpcConnection))
 
     /** [CordaRPCOps]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(NodeServiceRpcDelegate(rpcOps, defaults))
+            rpcOps: CordaRPCOps
+    ) : this(NodeServiceRpcDelegate(rpcOps))
 
     /** [ServiceHub]-based constructor, initializes a Corda Service delegate */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub
     ) : this(serviceHub.cordaService(NodeServiceHubDelegate::class.java))
 
     @Suspendable
     override fun <T : ContractState> findByLinearId(
             contractStateType: Class<T>, linearId: UniqueIdentifier, relevancyStatus: Vault.RelevancyStatus): StateAndRef<T>? {
-        return if (isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
+        return if (isLinearState(contractStateType)) this.queryBy(
+            contractStateType = contractStateType,
+            criteria = LinearStateQueryCriteria(
                 linearId = listOf(linearId),
-                relevancyStatus = relevancyStatus), 1, 1).states.firstOrNull()
+                relevancyStatus = relevancyStatus),
+            pageNumber = 1, pageSize = 1).states.firstOrNull()
         else throw IllegalStateException("Type is not a LinearState: ${contractStateType.simpleName}")
     }
 
@@ -214,9 +215,11 @@ open class BasicNodeService(
     override fun <T : ContractState> findByExternalId(
             contractStateType: Class<T>,
             externalId: String): StateAndRef<T>? {
-        return if (isLinearState(contractStateType)) this.queryBy(contractStateType, LinearStateQueryCriteria(
+        return if (isLinearState(contractStateType)) this.queryBy(contractStateType = contractStateType,
+            criteria = LinearStateQueryCriteria(
                 externalId = listOf(externalId),
-                status = Vault.StateStatus.UNCONSUMED), 1, 1)
+                status = Vault.StateStatus.UNCONSUMED),
+            pageNumber = 1, pageSize = 11)
                 .states.firstOrNull()
         else throw IllegalStateException("Type is not a LinearState: ${contractStateType.simpleName}")
     }
@@ -224,29 +227,29 @@ open class BasicNodeService(
     @Suspendable
     override fun <T : ContractState> countBy(
             contractStateType: Class<T>,
-            criteria: QueryCriteria): Long =
-            queryBy(contractStateType, criteria, 1, 1).totalStatesAvailable
+            criteria: QueryCriteria?
+    ): Long = queryBy(contractStateType = contractStateType, criteria = criteria, pageNumber = 1, pageSize = 1).totalStatesAvailable
 
     @Suspendable
     override fun <T : ContractState> queryBy(
             contractStateType: Class<T>,
-            criteria: QueryCriteria,
+            criteria: QueryCriteria?,
             pageNumber: Int,
             pageSize: Int,
-            sort: Sort
+            sort: Sort?
     ): Vault.Page<T> {
-        return queryBy(contractStateType, criteria, PageSpecification(pageNumber, pageSize), sort)
+        return queryBy(contractStateType = contractStateType, criteria = criteria, paging = PageSpecification(pageNumber, pageSize), sort = sort)
     }
 
     @Suspendable
     override fun <T : ContractState> trackBy(
             contractStateType: Class<T>,
-            criteria: QueryCriteria,
+            criteria: QueryCriteria?,
             pageNumber: Int,
             pageSize: Int,
-            sort: Sort
+            sort: Sort?
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
-        return this.trackBy(contractStateType, criteria, PageSpecification(pageNumber, pageSize), sort)
+        return this.trackBy(contractStateType = contractStateType, criteria = criteria, paging = PageSpecification(pageNumber, pageSize), sort = sort)
     }
 
 }
