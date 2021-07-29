@@ -23,7 +23,6 @@ import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.support.AbstractPublicationContract
 import net.corda.core.contracts.*
-import net.corda.core.identity.Party
 import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.math.BigDecimal
@@ -31,33 +30,12 @@ import java.security.PublicKey
 import java.util.*
 
 // Contract and state.
-val MAGAZINE_CONTRACT_PACKAGE = MagazineContract::class.java.`package`.name
-val MAGAZINE_CONTRACT_ID = MagazineContract::class.java.canonicalName
+val NEWSPAPER_CONTRACT_PACKAGE = NewsPaperContract::class.java.`package`.name
+val NEWSPAPER_CONTRACT_ID = NewsPaperContract::class.java.canonicalName
 
-class MagazineContract : AbstractPublicationContract<AccountParty, MagazineState>(MagazineState::class.java) {
-
-
-
-    @CordaSerializable
-    enum class MagazineGenre {
-        UNKNOWN,
-        TECHNOLOGY,
-        SCIENCE_FICTION,
-        FANTACY,
-        HISTORICAL
-    }
-
-    data class MagazineModel(val publisher: AccountParty?,
-                             val author: AccountParty,
-                             val price: BigDecimal,
-                             val genre: MagazineGenre,
-                             val issues: Int = 1,
-                             val title: String,
-                             @DefaultValue("Date()")
-                             val published: Date,
-                             @DefaultValue("UniqueIdentifier()")
-                             val linearId: UniqueIdentifier = UniqueIdentifier())
-
+abstract class NewsPaperContract : AbstractPublicationContract<AccountParty, NewsPaperContractState>(
+        NewsPaperContractState::class.java
+) {
 
     override fun owningKey(party: AccountParty?): PublicKey? {
         return party?.party?.owningKey

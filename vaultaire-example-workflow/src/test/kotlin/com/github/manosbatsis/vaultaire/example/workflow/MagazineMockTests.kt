@@ -25,7 +25,7 @@ import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.*
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
+import com.github.manosbatsis.vaultaire.example.contract.MagazineState
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
@@ -452,7 +452,7 @@ class MagazineMockTests {
             stateService: StateService<MagazineState>,
             criteria: QueryCriteria,
             sort: Sort,
-            magazineState: MagazineContract.MagazineState) {
+            magazineState: MagazineState) {
 
         val magazineSearchPage = stateService.queryBy(
             criteria, 1, 10, sort

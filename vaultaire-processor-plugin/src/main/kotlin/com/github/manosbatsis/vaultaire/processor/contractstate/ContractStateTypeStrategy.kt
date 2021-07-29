@@ -17,31 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.processor.dto
+package com.github.manosbatsis.vaultaire.processor.contractstate
 
 
-import com.github.manosbatsis.kotlin.utils.api.Dto
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.dto.VaultaireDto
-import com.github.manosbatsis.vaultaire.dto.VaultaireDtoBase
-import com.squareup.kotlinpoet.TypeName
+import com.github.manosbatsis.vaultaire.util.ContractStateLogic
+import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeSpec.Builder
-import com.squareup.kotlinpoet.asTypeName
-import net.corda.core.serialization.CordaSerializable
 
-open class StateDtoTypeStrategy(
+open class ContractStateTypeStrategy(
         rootDtoStrategy: DtoStrategyLesserComposition
 ) : SimpleDtoTypeStrategy(rootDtoStrategy) {
 
-
-    override fun getRootDtoType(): TypeName = VaultaireDtoBase::class.java.asTypeName()
-
-    override fun getDtoInterface(): Class<*> = VaultaireDto::class.java
-
+    override fun addSuperTypes(typeSpecBuilder: TypeSpec.Builder) {
+        typeSpecBuilder.addSuperinterface(annotatedElementInfo.primaryTargetTypeElement.asKotlinClassName())
+                .addSuperinterface(ContractStateLogic::class.java)
+    }
     override fun addAnnotations(typeSpecBuilder: Builder) {
         super.addAnnotations(typeSpecBuilder)
-        typeSpecBuilder.addAnnotation(CordaSerializable::class.java)
     }
 }

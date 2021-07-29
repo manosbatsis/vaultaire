@@ -24,6 +24,8 @@ import com.github.manosbatsis.kotlin.utils.kapt.plugins.AbstractDtoStrategyFacto
 import com.github.manosbatsis.kotlin.utils.kapt.plugins.DtoStrategyFactoryProcessorPlugin
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
+import com.github.manosbatsis.vaultaire.processor.contractstate.ContractStateStrategy
+import com.github.manosbatsis.vaultaire.processor.contractstate.PersistentStateStrategy
 import com.github.manosbatsis.vaultaire.processor.dto.ModelClientDtoStrategy
 import com.github.manosbatsis.vaultaire.processor.dto.StateClientDtoStrategy
 import com.github.manosbatsis.vaultaire.processor.dto.StateDtoStrategy
@@ -37,7 +39,9 @@ class BasicDtoStrategyFactoryProcessorPlugin : AbstractDtoStrategyFactoryProcess
         private val strategies = mapOf(
                 VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO.toString() to StateDtoStrategy::class.java,
                 VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO.toString() to StateClientDtoStrategy::class.java,
-                ModelClientDtoStrategy.STRATEGY_KEY to ModelClientDtoStrategy::class.java
+                ModelClientDtoStrategy.STRATEGY_KEY to ModelClientDtoStrategy::class.java,
+                ContractStateStrategy.STRATEGY_KEY to ContractStateStrategy::class.java,
+                PersistentStateStrategy.STRATEGY_KEY to PersistentStateStrategy::class.java
         )
     }
 

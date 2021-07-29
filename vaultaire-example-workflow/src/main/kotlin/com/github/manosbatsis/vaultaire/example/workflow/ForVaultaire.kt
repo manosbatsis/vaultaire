@@ -21,16 +21,15 @@ package com.github.manosbatsis.vaultaire.example.workflow
 
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.annotation.*
-import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState.MagazineSchemaV1.PersistentMagazineState
+import com.github.manosbatsis.vaultaire.example.contract.MagazineState
+import com.github.manosbatsis.vaultaire.example.contract.MagazineState.MagazineSchemaV1.PersistentMagazineState
 import com.r3.corda.lib.tokens.contracts.internal.schemas.PersistentFungibleToken
 import com.r3.corda.lib.tokens.contracts.states.FungibleToken
 import net.corda.core.contracts.UniqueIdentifier
 import java.util.*
 
-
+/* TODO
 @VaultaireViews([
       VaultaireView(nameSuffix = "AuthorView", includeNamedFields = ["price", "customMixinField"]),
       VaultaireView(nameSuffix = "PriceView", includeNamedFields = ["author", "customMixinField"])

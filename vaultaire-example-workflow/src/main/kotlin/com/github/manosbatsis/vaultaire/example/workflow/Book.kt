@@ -31,6 +31,7 @@ import com.github.manosbatsis.partiture.flow.tx.TransactionBuilderWrapper
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
 import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowResponder
 import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_ID
+import com.github.manosbatsis.vaultaire.example.contract.support.AbstractPublicationContract.Commands
 import com.github.manosbatsis.vaultaire.example.contract.BookContract
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
 import com.github.manosbatsis.vaultaire.example.contract.BookStateDto
@@ -53,7 +54,7 @@ class CreateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<Boo
                                 linearId = input.linearId ?: UniqueIdentifier()
                         )
                         .toTargetType(), BOOK_CONTRACT_ID)
-                .addCommand(BookContract.Commands.Create())
+                .addCommand(Commands.Create())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
     }
@@ -69,7 +70,7 @@ class UpdateBookInputConverter : PartitureFlowDelegateBase(), InputConverter<Boo
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
                 .addInputState(existing)
                 .addOutputState(updated, BOOK_CONTRACT_ID)
-                .addCommand(BookContract.Commands.Update())
+                .addCommand(Commands.Update())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
     }
@@ -82,7 +83,7 @@ class DeleteBookInputConverter : PartitureFlowDelegateBase(), InputConverter<Boo
         // Prepare a TX builder
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
                 .addInputState(existing)
-                .addCommand(BookContract.Commands.Update())
+                .addCommand(Commands.Update())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
     }

@@ -30,8 +30,8 @@ import kotlin.reflect.KFunction1
 abstract class ConstructorRefsCompositeDtoStrategyCopycat(
         originalStrategy: ConstructorRefsCompositeDtoStrategy<*,*,*>,
         annotatedElementInfo: AnnotatedElementInfo = originalStrategy.annotatedElementInfo,
-        dtoNameStrategyConstructor: KFunction1<AnnotatedElementInfo, DtoNameStrategy> = originalStrategy.dtoNameStrategyConstructor,
-        dtoTypeStrategyConstructor: KFunction1<AnnotatedElementInfo, DtoTypeStrategy> = originalStrategy.dtoTypeStrategyConstructor,
+        dtoNameStrategyConstructor: KFunction1<DtoStrategyLesserComposition, DtoNameStrategy> = originalStrategy.dtoNameStrategyConstructor,
+        dtoTypeStrategyConstructor: KFunction1<DtoStrategyLesserComposition, DtoTypeStrategy> = originalStrategy.dtoTypeStrategyConstructor,
         dtoMembersStrategyConstructor: KFunction1<DtoStrategyLesserComposition, DtoMembersStrategy> = originalStrategy.dtoMembersStrategyConstructor
 ): ConstructorRefsCompositeDtoStrategy<DtoNameStrategy, DtoTypeStrategy, DtoMembersStrategy>(
         annotatedElementInfo, dtoNameStrategyConstructor, dtoTypeStrategyConstructor, dtoMembersStrategyConstructor

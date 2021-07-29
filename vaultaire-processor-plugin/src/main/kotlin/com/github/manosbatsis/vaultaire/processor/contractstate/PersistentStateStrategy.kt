@@ -17,23 +17,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.processor.dto
+package com.github.manosbatsis.vaultaire.processor.contractstate
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoNameStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
+import com.github.manosbatsis.vaultaire.processor.dto.BaseVaultaireDtoStrategy
 
-open class StateClientDtoNameStrategy(
-        rootDtoStrategy: DtoStrategyLesserComposition
-) : SimpleDtoNameStrategy(rootDtoStrategy) {
+/** Default overrides for building a ContractState from a spec interface */
+open class PersistentStateStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : BaseVaultaireDtoStrategy<PersistentStateNameStrategy, PersistentStateTypeStrategy, PersistentStateMembersStrategy>(
+        annotatedElementInfo = annotatedElementInfo,
+        dtoNameStrategyConstructor = ::PersistentStateNameStrategy,
+        dtoTypeStrategyConstructor = ::PersistentStateTypeStrategy,
+        dtoMembersStrategyConstructor = ::PersistentStateMembersStrategy
+){
 
     companion object{
-        val STRATEGY_KEY = VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO.toString()
-        val OVERLAP = "State"
+        const val STRATEGY_KEY = PersistentStateNameStrategy.STRATEGY_KEY
     }
 
-    override fun getClassNameSuffix(): String = annotatedElementInfo.overrideClassNameSuffix
-            ?: if(annotatedElementInfo.primaryTargetTypeElementSimpleName.endsWith(OVERLAP)){STRATEGY_KEY.removePrefix(OVERLAP)}else{STRATEGY_KEY}
-
+    override fun with(annotatedElementInfo: AnnotatedElementInfo): PersistentStateStrategy {
+        return PersistentStateStrategy(annotatedElementInfo)
+    }
 }

@@ -36,9 +36,10 @@ import com.github.manosbatsis.partiture.flow.tx.initiating.TxStrategyExecutionEx
 import com.github.manosbatsis.partiture.flow.tx.responder.SimpleTypeCheckingResponderTxStrategy
 import com.github.manosbatsis.partiture.flow.util.IdentitySyncMode.SKIP
 import com.github.manosbatsis.vaultaire.annotation.VaultaireFlowResponder
+import com.github.manosbatsis.vaultaire.example.contract.support.AbstractPublicationContract.Commands
 import com.github.manosbatsis.vaultaire.example.contract.MAGAZINE_CONTRACT_ID
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
+import com.github.manosbatsis.vaultaire.example.contract.MagazineState
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import net.corda.core.flows.FlowSession
 import net.corda.core.flows.InitiatingFlow
@@ -74,7 +75,7 @@ class CreateMagazineInputConverter :
         // Prepare a TX builder
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
                 .addOutputState(contractState, MAGAZINE_CONTRACT_ID)
-                .addCommand(MagazineContract.Commands.Create())
+                .addCommand(Commands.Create())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
     }
@@ -94,7 +95,7 @@ class UpdateMagazineInputConverter :
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
                 .addInputState(existing)
                 .addOutputState(updated, MAGAZINE_CONTRACT_ID)
-                .addCommand(MagazineContract.Commands.Update())
+                .addCommand(Commands.Update())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
     }
@@ -108,7 +109,7 @@ class DeleteMagazineInputConverter : PartitureFlowDelegateBase(), InputConverter
         // Prepare a TX builder
         val txBuilder = TransactionBuilderWrapper(clientFlow.getFirstNotary())
                 .addInputState(existing)
-                .addCommand(MagazineContract.Commands.Update())
+                .addCommand(Commands.Update())
         // Return a TX context with builder and participants
         return CallContext(CallContextEntry(txBuilder))
     }
@@ -119,7 +120,7 @@ open class BaseMagazineFlowResponder(
 ) : PartitureResponderFlow(
         otherPartySession = otherPartySession,
         responderTxStrategy = SimpleTypeCheckingResponderTxStrategy(
-                MagazineContract.MagazineState::class.java)
+                MagazineState::class.java)
 )
 
 abstract class BaseMagazineFlow<IN, OUT>(

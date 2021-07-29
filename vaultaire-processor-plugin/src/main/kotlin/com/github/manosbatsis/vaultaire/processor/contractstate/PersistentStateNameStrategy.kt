@@ -17,31 +17,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.processor.dto
+package com.github.manosbatsis.vaultaire.processor.contractstate
 
-
-import com.github.manosbatsis.kotlin.utils.api.Dto
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoTypeStrategy
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoNameStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.dto.VaultaireDto
-import com.github.manosbatsis.vaultaire.dto.VaultaireDtoBase
-import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.TypeSpec.Builder
-import com.squareup.kotlinpoet.asTypeName
-import net.corda.core.serialization.CordaSerializable
+import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
+import com.squareup.kotlinpoet.ClassName
 
-open class StateDtoTypeStrategy(
+open class PersistentStateNameStrategy(
         rootDtoStrategy: DtoStrategyLesserComposition
-) : SimpleDtoTypeStrategy(rootDtoStrategy) {
+) : SimpleDtoNameStrategy(rootDtoStrategy) {
 
-
-    override fun getRootDtoType(): TypeName = VaultaireDtoBase::class.java.asTypeName()
-
-    override fun getDtoInterface(): Class<*> = VaultaireDto::class.java
-
-    override fun addAnnotations(typeSpecBuilder: Builder) {
-        super.addAnnotations(typeSpecBuilder)
-        typeSpecBuilder.addAnnotation(CordaSerializable::class.java)
+    companion object{
+        const val STRATEGY_KEY = "PersistentState"
     }
+
+    override fun getClassName(): ClassName {
+        val mappedPackageName = mapPackageName(annotatedElementInfo.generatedPackageName)
+        var baseName = annotatedElementInfo.primaryTargetTypeElementSimpleName
+                .removeSuffix("StateSpec")
+                .removeSuffix("State")
+                .removeSuffix("Spec")
+        return ClassName(mappedPackageName, "${primaryTargetTypeElement.simpleName}${getClassNameSuffix()}")
+    }
+
+    override fun getClassNameSuffix(): String = STRATEGY_KEY
+
+
 }

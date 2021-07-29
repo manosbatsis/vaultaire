@@ -17,15 +17,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
+package com.github.manosbatsis.vaultaire.processor.contractstate
 
-import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
-import com.github.manosbatsis.vaultaire.processor.dto.ModelClientDtoNameStrategy
+import com.github.manosbatsis.vaultaire.processor.dto.BaseVaultaireDtoStrategy
 
-open class AccountsAwareModelClientDtoNameStrategy(
-        rootDtoStrategy: DtoStrategyLesserComposition
-) : ModelClientDtoNameStrategy(rootDtoStrategy) {
+/** Default overrides for building a ContractState from a spec interface */
+open class ContractStateStrategy(
+        annotatedElementInfo: AnnotatedElementInfo
+) : BaseVaultaireDtoStrategy<ContractStateNameStrategy, ContractStateTypeStrategy, ContractStateMembersStrategy>(
+        annotatedElementInfo = annotatedElementInfo,
+        dtoNameStrategyConstructor = ::ContractStateNameStrategy,
+        dtoTypeStrategyConstructor = ::ContractStateTypeStrategy,
+        dtoMembersStrategyConstructor = ::ContractStateMembersStrategy
+){
 
+    companion object{
+        const val STRATEGY_KEY = ContractStateNameStrategy.STRATEGY_KEY
+    }
 
+    override fun with(annotatedElementInfo: AnnotatedElementInfo): ContractStateStrategy {
+        return ContractStateStrategy(annotatedElementInfo)
+    }
 }
