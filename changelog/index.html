@@ -432,8 +432,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#042-044" class="md-nav__link">
-    0.42 - 0.44
+  <a href="#046" class="md-nav__link">
+    0.46
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#042-045" class="md-nav__link">
+    0.42 - 0.45
   </a>
   
 </li>
@@ -767,8 +774,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#042-044" class="md-nav__link">
-    0.42 - 0.44
+  <a href="#046" class="md-nav__link">
+    0.46
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#042-045" class="md-nav__link">
+    0.42 - 0.45
   </a>
   
 </li>
@@ -1073,7 +1087,11 @@
                 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <p>The following sections describe major changes per version 
 and can be helpful with version upgrades.</p>
-<h2 id="042-044">0.42 - 0.44<a class="headerlink" href="#042-044" title="Permanent link">&para;</a></h2>
+<h2 id="046">0.46<a class="headerlink" href="#046" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed account resolution when using only name and host</li>
+</ul>
+<h2 id="042-045">0.42 - 0.45<a class="headerlink" href="#042-045" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>VaultaireView</code> annotation changes:</li>
 <li>Enhanced control of the generated Class name with <code>name</code> and <code>nameSuffix</code> attributes, check the KDoc</li>
@@ -1085,6 +1103,10 @@ and can be helpful with version upgrades.</p>
   parent annotation. Thus, views generated e.g. for a DTO will now include <code>toPatched</code> and 
   <code>toTargetType</code> methods targeting the full DTO.</li>
 <li>DTO Companion&rsquo;s <code>mapToDto</code> was renamed to <code>from</code>.</li>
+<li>Services&rsquo; <code>queryBy</code> no longer provides defaults for paging, sorting etc. 
+  to make different signatures in <code>serviceHub</code>, RPC etc.  more accessible; 
+  they do have their uses e.g. in aggregate quries. In short expect you&rsquo;ll 
+  need <code>queryBy(criteria, 1, 10)</code> VS <code>queryBy(criteria)</code>for it to work as expected.</li>
 </ul>
 <h2 id="041">0.41<a class="headerlink" href="#041" title="Permanent link">&para;</a></h2>
 <p>Minor view fixes</p>

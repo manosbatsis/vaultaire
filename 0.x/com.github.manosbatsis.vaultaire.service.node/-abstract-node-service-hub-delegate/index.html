@@ -461,13 +461,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inherited-properties" class="md-nav__link">
-    Inherited Properties
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#functions" class="md-nav__link">
     Functions
   </a>
@@ -551,21 +544,6 @@
 </tr>
 </tbody>
 </table>
-<h3 id="inherited-properties">Inherited Properties<a class="headerlink" href="#inherited-properties" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Summary</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="../-node-service-delegate/defaults/">defaults</a></td>
-<td><code>abstract val defaults:</code><a href="../../com.github.manosbatsis.vaultaire.service/-service-defaults/"><code>ServiceDefaults</code></a></td>
-</tr>
-</tbody>
-</table>
 <h3 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -625,7 +603,7 @@
 </tr>
 <tr>
 <td><a href="query-by/">queryBy</a></td>
-<td><code>open fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria, paging: PageSpecification, sort: Sort): Page&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>open fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria?, paging: PageSpecification?, sort: Sort?): Page&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="server-time/">serverTime</a></td>
@@ -633,7 +611,7 @@
 </tr>
 <tr>
 <td><a href="track-by/">trackBy</a></td>
-<td><code>open fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria, paging: PageSpecification, sort: Sort): DataFeed&lt;Page&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-node-service-delegate/track-by/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>open fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria?, paging: PageSpecification?, sort: Sort?): DataFeed&lt;Page&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-node-service-delegate/track-by/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="upload-attachment/">uploadAttachment</a></td>

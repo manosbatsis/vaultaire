@@ -457,7 +457,9 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.service.dao</a> / <a href="../">StateServiceDelegate</a> / <a href="./">queryBy</a></p>
 <h1 id="queryby">queryBy<a class="headerlink" href="#queryby" title="Permanent link">&para;</a></h1>
-<p><code>@Suspendable open fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
+<p><code>@Suspendable open fun queryBy(criteria: QueryCriteria, paging: PageSpecification): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
+<p>Query the vault for <a href="../#T">T</a> states matching the given criteria and paging</p>
+<p><code>@Suspendable open fun queryBy(criteria: QueryCriteria? = null, paging: PageSpecification? = null, sort: Sort? = null): Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;</code></p>
 <p>Query the vault for <a href="../#T">T</a> states matching the given criteria,
 applying the given paging and sorting specifications if any</p>
                 

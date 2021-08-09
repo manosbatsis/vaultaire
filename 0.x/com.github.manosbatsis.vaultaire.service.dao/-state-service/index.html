@@ -556,7 +556,7 @@
 <tbody>
 <tr>
 <td><a href="count-by/">countBy</a></td>
-<td><code>open fun countBy(criteria: QueryCriteria = defaults.criteria): Long</code><br>Count states of type <a href="./#T">T</a> matching stored in the vault and matching any given criteria</td>
+<td><code>open fun countBy(criteria: QueryCriteria? = null): Long</code><br>Count states of type <a href="./#T">T</a> matching stored in the vault and matching any given criteria</td>
 </tr>
 <tr>
 <td><a href="find-by-external-id/">findByExternalId</a></td>
@@ -576,11 +576,11 @@
 </tr>
 <tr>
 <td><a href="query-by/">queryBy</a></td>
-<td><code>open fun queryBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>open fun queryBy(criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="./#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="track-by/">trackBy</a></td>
-<td><code>open fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>open fun trackBy(criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="./#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 </tbody>
 </table>
@@ -595,7 +595,7 @@
 <tbody>
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/count-by/">countBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; countBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/count-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria): Long</code><br>Count states of type <a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/count-by/#T">T</a> matching stored in the vault and matching any given criteria</td>
+<td><code>abstract fun &lt;T : ContractState&gt; countBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/count-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria?): Long</code><br>Count states of type <a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/count-by/#T">T</a> matching stored in the vault and matching any given criteria</td>
 </tr>
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/find-by-external-id/">findByExternalId</a></td>
@@ -615,19 +615,19 @@
 </tr>
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/query-by/">queryBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): Page&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/query-by/#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): Page&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/query-by/#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="../-state-service-delegate/query-by/">queryBy</a></td>
-<td><code>open fun queryBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for <a href="../-state-service-delegate/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>open fun queryBy(criteria: QueryCriteria, paging: PageSpecification): Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for <a href="../-state-service-delegate/#T">T</a> states matching the given criteria and paging<code>open fun queryBy(criteria: QueryCriteria? = null, paging: PageSpecification? = null, sort: Sort? = null): Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for <a href="../-state-service-delegate/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/">trackBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>abstract fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): DataFeed&lt;Page&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../../com.github.manosbatsis.vaultaire.service.node/-node-service/track-by/#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="../-state-service-delegate/track-by/">trackBy</a></td>
-<td><code>open fun trackBy(criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-state-service-delegate/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>open fun trackBy(criteria: QueryCriteria, paging: PageSpecification): DataFeed&lt;Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-state-service-delegate/#T">T</a> states matching the given criteria, applying the given paging specifications<code>open fun trackBy(criteria: QueryCriteria? = null, paging: PageSpecification? = null, sort: Sort? = null): DataFeed&lt;Page&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-state-service-delegate/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-state-service-delegate/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 </tbody>
 </table>

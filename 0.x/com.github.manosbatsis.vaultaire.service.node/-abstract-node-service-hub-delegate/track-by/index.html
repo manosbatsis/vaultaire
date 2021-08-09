@@ -457,7 +457,7 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.service.node</a> / <a href="../">AbstractNodeServiceHubDelegate</a> / <a href="./">trackBy</a></p>
 <h1 id="trackby">trackBy<a class="headerlink" href="#trackby" title="Permanent link">&para;</a></h1>
-<p><code>@Suspendable open fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria, paging: PageSpecification, sort: Sort): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code></p>
+<p><code>@Suspendable open fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria?, paging: PageSpecification?, sort: Sort?): DataFeed&lt;Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="./#T"><code>T</code></a><code>&gt;&gt;</code></p>
 <p>Overrides <a href="../../-node-service-delegate/track-by/">NodeServiceDelegate.trackBy</a></p>
 <p>Track the vault for events of <a href="../../-node-service-delegate/track-by/#T">T</a> states matching the given criteria,
 applying the given paging and sorting specifications if any</p>

@@ -457,7 +457,7 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.service.node</a> / <a href="../">NodeService</a> / <a href="./">queryBy</a></p>
 <h1 id="queryby">queryBy<a class="headerlink" href="#queryby" title="Permanent link">&para;</a></h1>
-<p><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
+<p><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="./#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): Page&lt;</code><a href="./#T"><code>T</code></a><code>&gt;</code></p>
 <p>Query the vault for states of type <a href="./#T">T</a> matching the given criteria,
 applying the given page number, size and sorting specifications if any</p>
                 

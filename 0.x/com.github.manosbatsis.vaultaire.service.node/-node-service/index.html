@@ -514,10 +514,6 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="../-node-service-delegate/defaults/">defaults</a></td>
-<td><code>abstract val defaults:</code><a href="../../com.github.manosbatsis.vaultaire.service/-service-defaults/"><code>ServiceDefaults</code></a></td>
-</tr>
-<tr>
 <td><a href="../-node-service-delegate/node-identity/">nodeIdentity</a></td>
 <td><code>abstract val nodeIdentity: Party</code></td>
 </tr>
@@ -542,7 +538,7 @@
 <tbody>
 <tr>
 <td><a href="count-by/">countBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; countBy(contractStateType: Class&lt;</code><a href="count-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria): Long</code><br>Count states of type <a href="count-by/#T">T</a> matching stored in the vault and matching any given criteria</td>
+<td><code>abstract fun &lt;T : ContractState&gt; countBy(contractStateType: Class&lt;</code><a href="count-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria?): Long</code><br>Count states of type <a href="count-by/#T">T</a> matching stored in the vault and matching any given criteria</td>
 </tr>
 <tr>
 <td><a href="find-by-external-id/">findByExternalId</a></td>
@@ -562,11 +558,11 @@
 </tr>
 <tr>
 <td><a href="query-by/">queryBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): Page&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="query-by/#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): Page&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states of type <a href="query-by/#T">T</a> matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="track-by/">trackBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="track-by/#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
+<td><code>abstract fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): DataFeed&lt;Page&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="track-by/#T">T</a> states matching the given criteria, applying the given page number, size and sorting specifications if any</td>
 </tr>
 </tbody>
 </table>
@@ -645,7 +641,7 @@
 </tr>
 <tr>
 <td><a href="../-node-service-delegate/query-by/">queryBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="../-node-service-delegate/query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): Page&lt;</code><a href="../-node-service-delegate/query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>abstract fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="../-node-service-delegate/query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria? = null, paging: PageSpecification? = null, sort: Sort? = null): Page&lt;</code><a href="../-node-service-delegate/query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="../-node-service-delegate/save-attachment/">saveAttachment</a></td>
@@ -661,7 +657,7 @@
 </tr>
 <tr>
 <td><a href="../-node-service-delegate/track-by/">trackBy</a></td>
-<td><code>abstract fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="../-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria = defaults.criteria, paging: PageSpecification = defaults.paging, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="../-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-node-service-delegate/track-by/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>abstract fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="../-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria? = null, paging: PageSpecification? = null, sort: Sort? = null): DataFeed&lt;Page&lt;</code><a href="../-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../-node-service-delegate/track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-node-service-delegate/track-by/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="../-node-service-delegate/upload-attachment/">uploadAttachment</a></td>

@@ -457,7 +457,7 @@
                 
                 <p><a href="../../">com.github.manosbatsis.vaultaire.service.dao</a> / <a href="../">StateService</a> / <a href="./">trackBy</a></p>
 <h1 id="trackby">trackBy<a class="headerlink" href="#trackby" title="Permanent link">&para;</a></h1>
-<p><code>@Suspendable open fun trackBy(criteria: QueryCriteria = defaults.criteria, pageNumber: Int = defaults.pageNumber, pageSize: Int = defaults.pageSize, sort: Sort = defaults.sort): DataFeed&lt;Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../#T"><code>T</code></a><code>&gt;&gt;</code></p>
+<p><code>@Suspendable open fun trackBy(criteria: QueryCriteria? = null, pageNumber: Int, pageSize: Int, sort: Sort? = null): DataFeed&lt;Page&lt;</code><a href="../#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="../#T"><code>T</code></a><code>&gt;&gt;</code></p>
 <p>Track the vault for events of <a href="../#T">T</a> states matching the given criteria,
 applying the given page number, size and sorting specifications if any</p>
                 

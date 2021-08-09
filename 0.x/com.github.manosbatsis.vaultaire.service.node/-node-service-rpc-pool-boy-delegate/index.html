@@ -513,7 +513,7 @@
 <tbody>
 <tr>
 <td><a href="-init-/">&lt;init&gt;</a></td>
-<td><code>NodeServiceRpcPoolBoyDelegate(poolBoy: PoolBoyConnection, defaults:</code><a href="../../com.github.manosbatsis.vaultaire.service/-service-defaults/"><code>ServiceDefaults</code></a><code>= SimpleServiceDefaults())</code><br>RPC implementation base</td>
+<td><code>NodeServiceRpcPoolBoyDelegate(poolBoy: PoolBoyConnection)</code><br>RPC implementation base</td>
 </tr>
 </tbody>
 </table>
@@ -526,10 +526,6 @@
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><a href="defaults/">defaults</a></td>
-<td><code>open val defaults:</code><a href="../../com.github.manosbatsis.vaultaire.service/-service-defaults/"><code>ServiceDefaults</code></a></td>
-</tr>
 <tr>
 <td><a href="node-identity/">nodeIdentity</a></td>
 <td><code>open val nodeIdentity: Party</code></td>
@@ -582,6 +578,10 @@
 <td><code>open fun nodes(): List&lt;Party&gt;</code><br>Get a list of nodes in the network, including self and notaries.</td>
 </tr>
 <tr>
+<td><a href="none-null/">noneNull</a></td>
+<td><code>fun noneNull(vararg elements: Any?): Boolean</code></td>
+</tr>
+<tr>
 <td><a href="notaries/">notaries</a></td>
 <td><code>open fun notaries(): List&lt;Party&gt;</code></td>
 </tr>
@@ -603,7 +603,7 @@
 </tr>
 <tr>
 <td><a href="query-by/">queryBy</a></td>
-<td><code>open fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria, paging: PageSpecification, sort: Sort): Page&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>open fun &lt;T : ContractState&gt; queryBy(contractStateType: Class&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria?, paging: PageSpecification?, sort: Sort?): Page&lt;</code><a href="query-by/#T"><code>T</code></a><code>&gt;</code><br>Query the vault for states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="server-time/">serverTime</a></td>
@@ -611,7 +611,7 @@
 </tr>
 <tr>
 <td><a href="track-by/">trackBy</a></td>
-<td><code>open fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria, paging: PageSpecification, sort: Sort): DataFeed&lt;Page&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-node-service-delegate/track-by/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
+<td><code>open fun &lt;T : ContractState&gt; trackBy(contractStateType: Class&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, criteria: QueryCriteria?, paging: PageSpecification?, sort: Sort?): DataFeed&lt;Page&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;, Update&lt;</code><a href="track-by/#T"><code>T</code></a><code>&gt;&gt;</code><br>Track the vault for events of <a href="../-node-service-delegate/track-by/#T">T</a> states matching the given criteria, applying the given paging and sorting specifications if any</td>
 </tr>
 <tr>
 <td><a href="upload-attachment/">uploadAttachment</a></td>
