@@ -19,15 +19,10 @@
  */
 package com.github.manosbatsis.vaultaire.example.contract.support
 
-import com.github.manosbatsis.kotlin.utils.api.DefaultValue
-import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import net.corda.core.contracts.*
 import net.corda.core.schemas.QueryableState
 import net.corda.core.transactions.LedgerTransaction
-import java.math.BigDecimal
 import java.security.PublicKey
-import java.util.*
 
 interface PublicationContractState<P>: LinearState, QueryableState {
     val publisher: P?
@@ -78,7 +73,7 @@ abstract class AbstractPublicationContract<P, T: PublicationContractState<P>>(
         val yo = tx.outputsOfType(contractStateType).single()
         "Cannot publish your own publication!" using (yo.author != yo.publisher)
         "The publication must be signed by the publisher." using (command.signers.contains(owningKey(yo.publisher)))
-        //"The publication must be signed by the author." using (command.signers.contains(yo.author.owningKey))
+        "The publication must be signed by the author." using (command.signers.contains(owningKey(yo.author)))
     }
 
     fun verifyUpdate(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
@@ -88,7 +83,7 @@ abstract class AbstractPublicationContract<P, T: PublicationContractState<P>>(
         val yo = tx.outputsOfType(contractStateType).single()
         "Cannot publish your own publication!" using (yo.author != yo.publisher)
         "The publication must be signed by the publisher." using (command.signers.contains(owningKey(yo.publisher)))
-        //"The publication must be signed by the author." using (command.signers.contains(yo.author.owningKey))
+        "The publication must be signed by the author." using (command.signers.contains(owningKey(yo.author)))
     }
 
     fun verifyDelete(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
@@ -98,7 +93,7 @@ abstract class AbstractPublicationContract<P, T: PublicationContractState<P>>(
         val yo = tx.outputsOfType(contractStateType).single()
         "Cannot delete your own publication!" using (yo.author != yo.publisher)
         "The publication deletion must be signed by the publisher." using (command.signers.contains(owningKey(yo.publisher)))
-        //"The publication must be signed by the author." using (command.signers.contains(yo.author.owningKey))
+        "The publication must be signed by the author." using (command.signers.contains(owningKey(yo.author)))
     }
 
 

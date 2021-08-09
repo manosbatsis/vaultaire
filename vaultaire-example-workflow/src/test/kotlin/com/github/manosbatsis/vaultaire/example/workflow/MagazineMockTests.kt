@@ -195,7 +195,7 @@ class MagazineMockTests {
         val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)
         val stateService = MagazineStateService(b.services)
 
-        // Test DTO > State > DTO
+        // Test DTO > State > DTO...
         val fullDto = MagazineStateClientDto(
                 publisher = aPublisherDto,
                 author = bAuthorDto,
@@ -203,8 +203,39 @@ class MagazineMockTests {
                 genre = HISTORICAL,
                 issues = 24,
                 title = "Vault diaries, Volume 29")
+        // ... with full AccountInfoStateClientDtos
         val contractState = fullDto.toTargetType(stateService)
         assertEquals(fullDto, MagazineStateClientDto.from(contractState, stateService))
+        val magazine1 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto)).single()
+        assertEquals(fullDto, MagazineStateClientDto.from(magazine1, stateService))
+        // ... with id+host in AccountInfoStateClientDtos
+        val fullDto2 = fullDto.copy(
+                publisher = AccountInfoStateClientDto(
+                        identifier = aPublisherDto.identifier,
+                        host = aPublisherDto.host
+                )
+        )
+        val contractState2 = fullDto2.toTargetType(stateService)
+        assertEquals(fullDto, MagazineStateClientDto.from(contractState2, stateService))
+        val magazine2 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto2)).single()
+        assertEquals(fullDto, MagazineStateClientDto.from(magazine2, stateService))
+
+        // ... with name+host in AccountInfoStateClientDtos
+        val fullDto3 = fullDto.copy(
+                publisher = AccountInfoStateClientDto(
+                        name = aPublisherDto.name,
+                        host = aPublisherDto.host
+                )
+        )
+        val contractState3 = fullDto3.toTargetType(stateService)
+        // java.lang.AssertionError: Expected
+        // <MagazineStateClientDto(
+        // publisher=AccountInfoStateClientDto(name=aPublisher, host=O=Mock Company 1, L=London, C=GB, identifier=3dee8eb3-7b5a-44ba-9405-60e35b866018, externalId=null), author=AccountInfoStateClientDto(name=bAuthor, host=O=Mock Company 2, L=London, C=GB, identifier=08aa9d70-bada-433b-ab01-e47e038bdeac, externalId=null), price=82, genre=HISTORICAL, issues=24, title=Vault diaries, Volume 29, published=Mon Aug 09 05:28:16 EEST 2021, linearId=5e0f8046-bc66-477e-b69d-10a9b9633895, customMixinField=null)>,
+        // publisher=null, author=AccountInfoStateClientDto(name=bAuthor, host=O=Mock Company 2, L=London, C=GB, identifier=08aa9d70-bada-433b-ab01-e47e038bdeac, externalId=null), price=82, genre=HISTORICAL, issues=24, title=Vault diaries, Volume 29, published=Mon Aug 09 05:28:16 EEST 2021, linearId=5e0f8046-bc66-477e-b69d-10a9b9633895, customMixinField=null)>.
+        assertEquals(fullDto, MagazineStateClientDto.from(contractState3, stateService))
+        val magazine3 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto3)).single()
+        assertEquals(fullDto, MagazineStateClientDto.from(magazine3, stateService))
+
         // Test DTO > View > DTO > State
         val updatedIssues = contractState.issues + 1
         val updatedPublished = Date()

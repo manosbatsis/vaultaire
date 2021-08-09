@@ -2,6 +2,5 @@ com.github.manosbatsis.vaultaire.processor.VaultaireQueryDslAndDaoServiceAnnotat
 com.github.manosbatsis.vaultaire.processor.VaultaireInitiatingFlowAnnotationProcessor
 com.github.manosbatsis.vaultaire.processor.VaultaireModelDtoAnnotationProcessor
 com.github.manosbatsis.vaultaire.processor.VaultaireStateDtoAnnotationProcessor
-com.github.manosbatsis.vaultaire.processor.VaultaireStateTypeAnnotationProcessor
 
 

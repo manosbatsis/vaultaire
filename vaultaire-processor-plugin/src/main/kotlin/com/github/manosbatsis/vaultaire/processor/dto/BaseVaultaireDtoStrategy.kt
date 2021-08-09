@@ -27,8 +27,6 @@ import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStra
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import kotlin.reflect.KFunction1
-import kotlin.reflect.KFunction2
-import kotlin.reflect.KFunction3
 
 /** Base Vaultaire-specific class for building a DTO type spec */
 abstract class BaseVaultaireDtoStrategy<N: DtoNameStrategy, T: DtoTypeStrategy, M: DtoMembersStrategy>(
@@ -49,5 +47,7 @@ abstract class BaseVaultaireDtoStrategy<N: DtoNameStrategy, T: DtoTypeStrategy, 
             if (ignoreParticipants())  plusElement( "participants")
             else this
         }
+
+
 }
 

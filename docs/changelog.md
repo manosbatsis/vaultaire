@@ -6,6 +6,11 @@ and can be helpful with version upgrades.
 
 
 
+## 0.46
+
+- Fixed account resolution when using only name and host
+
+
 ## 0.42 - 0.45
 
 - `VaultaireView` annotation changes:

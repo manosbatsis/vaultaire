@@ -24,12 +24,13 @@ import com.github.manosbatsis.vaultaire.annotation.*
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineState
 import com.github.manosbatsis.vaultaire.example.contract.MagazineState.MagazineSchemaV1.PersistentMagazineState
+import com.r3.corda.lib.accounts.contracts.internal.schemas.PersistentAccountInfo
+import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import com.r3.corda.lib.tokens.contracts.internal.schemas.PersistentFungibleToken
 import com.r3.corda.lib.tokens.contracts.states.FungibleToken
 import net.corda.core.contracts.UniqueIdentifier
 import java.util.*
 
-/* TODO
 @VaultaireViews([
       VaultaireView(nameSuffix = "AuthorView", includeNamedFields = ["price", "customMixinField"]),
       VaultaireView(nameSuffix = "PriceView", includeNamedFields = ["author", "customMixinField"])
@@ -85,7 +86,7 @@ data class MagazineMixin(
 )
 
 //TODO: move to module, have it generated
-/*
+
 @VaultaireStateUtilsMixin(name = "accountInfoConditions",
         persistentStateType = PersistentAccountInfo::class,
         contractStateType = AccountInfo::class)
@@ -93,4 +94,4 @@ data class MagazineMixin(
         persistentStateType = PersistentAccountInfo::class,
         contractStateType = AccountInfo::class,
         strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO])
-class AccountInfoMixin */
+class AccountInfoMixin

@@ -69,7 +69,7 @@ class BookContractTests {
             }
             transaction {
                 output(BOOK_CONTRACT_ID, bookState)
-                command(alice.publicKey, Commands.Create())
+                command(listOf(alice.publicKey, bob.publicKey), Commands.Create())
                 this.verifies()
             }
         }
