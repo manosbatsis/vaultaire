@@ -20,15 +20,23 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 
+import com.github.manosbatsis.kotlin.utils.api.Dto
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.dto.VaultaireDto
+import com.github.manosbatsis.vaultaire.dto.VaultaireDtoBase
+import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec.Builder
+import com.squareup.kotlinpoet.asTypeName
 import net.corda.core.serialization.CordaSerializable
 
 open class StateDtoTypeStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : SimpleDtoTypeStrategy(annotatedElementInfo) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : SimpleDtoTypeStrategy(rootDtoStrategy) {
+
+
+    override fun getRootDtoType(): TypeName = VaultaireDtoBase::class.java.asTypeName()
 
     override fun getDtoInterface(): Class<*> = VaultaireDto::class.java
 

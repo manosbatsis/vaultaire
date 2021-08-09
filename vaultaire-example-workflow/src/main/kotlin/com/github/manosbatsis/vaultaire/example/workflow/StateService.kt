@@ -40,13 +40,13 @@ class CustomBasicBookStateService(
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
+            rpcOps: CordaRPCOps
+    ) : this(StateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java, defaults))
+            serviceHub: ServiceHub
+    ) : this(StateServiceHubDelegate(serviceHub, BookContract.BookState::class.java))
 
     // Custom business methods...
 }
@@ -61,12 +61,12 @@ class MyExtendedBookStateService(
 
     /** [CordaRPCOps]-based constructor */
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(AccountsAwareStateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java, defaults))
+            rpcOps: CordaRPCOps
+    ) : this(AccountsAwareStateServiceRpcDelegate(rpcOps, BookContract.BookState::class.java))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub
     ) : this(serviceHub.cordaService(BookStateCordaServiceDelegate::class.java))
 
     // Custom business methods...

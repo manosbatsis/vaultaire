@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.example.contract
 
+import com.github.manosbatsis.vaultaire.example.contract.support.AbstractPublicationContract.Commands
 import net.corda.core.identity.CordaX500Name
 import net.corda.testing.core.DummyCommandData
 import net.corda.testing.core.TestIdentity
@@ -44,9 +45,9 @@ class BookContractTests {
             // Input state present.
             transaction {
                 input(BOOK_CONTRACT_ID, bookState)
-                command(alice.publicKey, BookContract.Commands.Create())
+                command(alice.publicKey, Commands.Create())
                 output(BOOK_CONTRACT_ID, bookState)
-                this.failsWith("There can be no inputs when creating books.")
+                this.failsWith("There can be no inputs when creating publications.")
             }
             // Wrong command.
             transaction {
@@ -57,18 +58,18 @@ class BookContractTests {
             // Command signed by wrong key.
             transaction {
                 output(BOOK_CONTRACT_ID, bookState)
-                command(miniCorp.publicKey, BookContract.Commands.Create())
-                this.failsWith("The book must be signed by the publisher.")
+                command(miniCorp.publicKey, Commands.Create())
+                this.failsWith("The publication must be signed by the publisher.")
             }
             // Sending to yourself is not allowed.
             transaction {
                 output(BOOK_CONTRACT_ID, BookContract.BookState(alice.party, alice.party, BigDecimal.TEN, BookContract.Genre.TECHNOLOGY))
-                command(alice.publicKey, BookContract.Commands.Create())
-                this.failsWith("Cannot publish your own book!")
+                command(alice.publicKey, Commands.Create())
+                this.failsWith("Cannot publish your own publication!")
             }
             transaction {
                 output(BOOK_CONTRACT_ID, bookState)
-                command(alice.publicKey, BookContract.Commands.Create())
+                command(listOf(alice.publicKey, bob.publicKey), Commands.Create())
                 this.verifies()
             }
         }

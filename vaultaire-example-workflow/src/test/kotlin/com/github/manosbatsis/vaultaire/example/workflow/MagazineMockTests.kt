@@ -25,7 +25,7 @@ import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.*
-import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineState
+import com.github.manosbatsis.vaultaire.example.contract.MagazineState
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
@@ -195,7 +195,7 @@ class MagazineMockTests {
         val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)
         val stateService = MagazineStateService(b.services)
 
-        // Test DTO > State > DTO
+        // Test DTO > State > DTO...
         val fullDto = MagazineStateClientDto(
                 publisher = aPublisherDto,
                 author = bAuthorDto,
@@ -203,8 +203,39 @@ class MagazineMockTests {
                 genre = HISTORICAL,
                 issues = 24,
                 title = "Vault diaries, Volume 29")
+        // ... with full AccountInfoStateClientDtos
         val contractState = fullDto.toTargetType(stateService)
         assertEquals(fullDto, MagazineStateClientDto.from(contractState, stateService))
+        val magazine1 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto)).single()
+        assertEquals(fullDto, MagazineStateClientDto.from(magazine1, stateService))
+        // ... with id+host in AccountInfoStateClientDtos
+        val fullDto2 = fullDto.copy(
+                publisher = AccountInfoStateClientDto(
+                        identifier = aPublisherDto.identifier,
+                        host = aPublisherDto.host
+                )
+        )
+        val contractState2 = fullDto2.toTargetType(stateService)
+        assertEquals(fullDto, MagazineStateClientDto.from(contractState2, stateService))
+        val magazine2 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto2)).single()
+        assertEquals(fullDto, MagazineStateClientDto.from(magazine2, stateService))
+
+        // ... with name+host in AccountInfoStateClientDtos
+        val fullDto3 = fullDto.copy(
+                publisher = AccountInfoStateClientDto(
+                        name = aPublisherDto.name,
+                        host = aPublisherDto.host
+                )
+        )
+        val contractState3 = fullDto3.toTargetType(stateService)
+        // java.lang.AssertionError: Expected
+        // <MagazineStateClientDto(
+        // publisher=AccountInfoStateClientDto(name=aPublisher, host=O=Mock Company 1, L=London, C=GB, identifier=3dee8eb3-7b5a-44ba-9405-60e35b866018, externalId=null), author=AccountInfoStateClientDto(name=bAuthor, host=O=Mock Company 2, L=London, C=GB, identifier=08aa9d70-bada-433b-ab01-e47e038bdeac, externalId=null), price=82, genre=HISTORICAL, issues=24, title=Vault diaries, Volume 29, published=Mon Aug 09 05:28:16 EEST 2021, linearId=5e0f8046-bc66-477e-b69d-10a9b9633895, customMixinField=null)>,
+        // publisher=null, author=AccountInfoStateClientDto(name=bAuthor, host=O=Mock Company 2, L=London, C=GB, identifier=08aa9d70-bada-433b-ab01-e47e038bdeac, externalId=null), price=82, genre=HISTORICAL, issues=24, title=Vault diaries, Volume 29, published=Mon Aug 09 05:28:16 EEST 2021, linearId=5e0f8046-bc66-477e-b69d-10a9b9633895, customMixinField=null)>.
+        assertEquals(fullDto, MagazineStateClientDto.from(contractState3, stateService))
+        val magazine3 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto3)).single()
+        assertEquals(fullDto, MagazineStateClientDto.from(magazine3, stateService))
+
         // Test DTO > View > DTO > State
         val updatedIssues = contractState.issues + 1
         val updatedPublished = Date()
@@ -389,7 +420,7 @@ class MagazineMockTests {
             }
         }
         val criteria = consumed.toCriteria()
-        val results = extendedService.queryBy(criteria)
+        val results = extendedService.queryBy(criteria, 1, 10)
         // Get/find by external ID
         assertEquals(2, results.totalStatesAvailable.toInt())
         assertTrue(results.states.first().state.data.issues < 3)
@@ -408,7 +439,7 @@ class MagazineMockTests {
             }
         }
 
-        val unconsumedResults = extendedService.queryBy(unconsumedCriteria.toCriteria())
+        val unconsumedResults = extendedService.queryBy(unconsumedCriteria.toCriteria(), 1, 10)
 
         assertEquals(1, unconsumedResults.totalStatesAvailable.toInt())
         assertTrue(unconsumedResults.states.single().state.data.issues == 3)
@@ -425,7 +456,7 @@ class MagazineMockTests {
             }
         }
 
-        val defaultResults = extendedService.queryBy(defaultCriteria.toCriteria())
+        val defaultResults = extendedService.queryBy(defaultCriteria.toCriteria(), 1, 10)
 
         assertEquals(1, defaultResults.totalStatesAvailable.toInt())
         assertTrue(defaultResults.states.single().state.data.issues == 3)
@@ -443,7 +474,7 @@ class MagazineMockTests {
             }
         }
 
-        val allResults = extendedService.queryBy(allCriteria.toCriteria())
+        val allResults = extendedService.queryBy(allCriteria.toCriteria(), 1, 10)
 
         assertEquals(3, allResults.totalStatesAvailable.toInt())
     }
@@ -452,10 +483,10 @@ class MagazineMockTests {
             stateService: StateService<MagazineState>,
             criteria: QueryCriteria,
             sort: Sort,
-            magazineState: MagazineContract.MagazineState) {
+            magazineState: MagazineState) {
 
         val magazineSearchPage = stateService.queryBy(
-                criteria, 1, 10, sort
+            criteria, 1, 10, sort
         )
         assertEquals(UNCONSUMED, magazineSearchPage.stateTypes,
         "Result states must be unconsumed1")

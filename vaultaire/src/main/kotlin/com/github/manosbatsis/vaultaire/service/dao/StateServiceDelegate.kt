@@ -52,18 +52,42 @@ interface StateServiceDelegate<T : ContractState> : NodeServiceDelegate {
     val contractStateType: Class<T>
 
     /**
+     * Query the vault for [T] states matching the given criteria and paging
+     */
+    @Suspendable
+    fun queryBy(
+        criteria: QueryCriteria,
+        paging: PageSpecification
+    ): Vault.Page<T> {
+        return queryBy(contractStateType = contractStateType, criteria = criteria, paging = paging,  sort = null)
+    }
+
+    /**
      * Query the vault for [T] states matching the given criteria,
      * applying the given paging and sorting specifications if any
      */
-
     @Suspendable
     fun queryBy(
-            criteria: QueryCriteria = defaults.criteria,
-            paging: PageSpecification = defaults.paging,
-            sort: Sort = defaults.sort
+        criteria: QueryCriteria? = null,
+        paging: PageSpecification? = null,
+        sort: Sort? = null
     ): Vault.Page<T> {
-        return queryBy(contractStateType, criteria, paging, sort)
+        return queryBy(contractStateType = contractStateType, criteria = criteria, paging = paging,  sort = sort)
     }
+
+
+    /**
+     * Track the vault for events of [T] states matching the given criteria,
+     * applying the given paging specifications
+     */
+    @Suspendable
+    fun trackBy(
+        criteria: QueryCriteria,
+        paging: PageSpecification
+    ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
+        return trackBy(contractStateType = contractStateType, criteria = criteria, paging = paging,  sort = null)
+    }
+
 
     /**
      * Track the vault for events of [T] states matching the given criteria,
@@ -71,45 +95,40 @@ interface StateServiceDelegate<T : ContractState> : NodeServiceDelegate {
      */
     @Suspendable
     fun trackBy(
-            criteria: QueryCriteria = defaults.criteria,
-            paging: PageSpecification = defaults.paging,
-            sort: Sort = defaults.sort
+        criteria: QueryCriteria? = null,
+        paging: PageSpecification? = null,
+        sort: Sort? = null
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
-        return trackBy(contractStateType, criteria, paging, sort)
+        return trackBy(contractStateType = contractStateType, criteria = criteria, paging = paging,  sort = sort)
     }
 }
 
 open class StateServicePoolBoyDelegate<T : ContractState>(
         poolBoy: PoolBoyConnection,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceRpcPoolBoyDelegate(poolBoy, defaults), StateServiceDelegate<T>
+        override val contractStateType: Class<T>
+) : NodeServiceRpcPoolBoyDelegate(poolBoy), StateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
 @Deprecated(message = "Use [com.github.manosbatsis.vaultaire.service.dao.StateServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class StateServiceRpcDelegate<T : ContractState>(
         rpcOps: CordaRPCOps,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceRpcDelegate(rpcOps, defaults), StateServiceDelegate<T>
+        override val contractStateType: Class<T>
+) : NodeServiceRpcDelegate(rpcOps), StateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
 open class StateServiceRpcConnectionDelegate<T : ContractState>(
         nodeRpcConnection: NodeRpcConnection,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults), StateServiceDelegate<T>
+        override val contractStateType: Class<T>
+) : NodeServiceRpcConnectionDelegate(nodeRpcConnection), StateServiceDelegate<T>
 
 /** [ServiceHub]-based [StateServiceDelegate] implementation */
 open class StateServiceHubDelegate<T : ContractState>(
         serviceHub: ServiceHub,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceHubDelegate(serviceHub, defaults), StateServiceDelegate<T>
+        override val contractStateType: Class<T>
+) : NodeServiceHubDelegate(serviceHub), StateServiceDelegate<T>
 
 /** Implementation of [StateServiceDelegate] as a CordaService */
 abstract class StateCordaServiceDelegate<T : ContractState>(
         serviceHub: AppServiceHub,
-        override val contractStateType: Class<T>,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
+        override val contractStateType: Class<T>
 ) : NodeCordaServiceDelegate(serviceHub), StateServiceDelegate<T>

@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dto.VaultaireAccountsAwareStateClientDto
 import com.github.manosbatsis.vaultaire.processor.dto.StateClientDtoTypeStrategy
@@ -27,8 +28,8 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 
 open class AccountsAwareStateClientDtoTypeStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : StateClientDtoTypeStrategy(annotatedElementInfo) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : StateClientDtoTypeStrategy(rootDtoStrategy) {
     // TODO: use fun getDtoInterface()?
     override fun addSuperTypes(typeSpecBuilder: TypeSpec.Builder) {
         typeSpecBuilder.addSuperinterface(

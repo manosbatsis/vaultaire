@@ -247,9 +247,6 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                 ).build())
                 .addFunction(FunSpec.constructorBuilder()
                         .addParameter("serviceHub", ServiceHub::class.java)
-                        .addParameter(ParameterSpec
-                                .builder("defaults", ServiceDefaults::class.java)
-                                .defaultValue("%T()", SimpleServiceDefaults::class.java).build())
                         .addKdoc("ServiceHub-based constructor, creates a Corda Service delegate")
                         .callThisConstructor(CodeBlock.builder()
                                 .add("serviceHub.cordaService(%N::class.java)",
@@ -292,13 +289,10 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     ): Builder {
         val builder = FunSpec.constructorBuilder()
                 .addParameter(paramName, paramType)
-                .addParameter(ParameterSpec.builder("defaults", ServiceDefaults::class)
-                        .defaultValue("%T()", SimpleServiceDefaults::class.java)
-                        .build())
                 .callThisConstructor(CodeBlock.builder()
-                        .add("%T(%N, %T::class.java, %N)",
+                        .add("%T(%N, %T::class.java)",
                                 delegateClassName, paramName,
-                                annotatedElementInfo.secondaryTargetTypeElement!!, "defaults").build()
+                                annotatedElementInfo.secondaryTargetTypeElement!!).build()
                 )
         if(kdoc != null) builder.addKdoc(kdoc)
         if(annotations != null) builder.addAnnotations(annotations)
@@ -361,7 +355,6 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                 enclosingParameterisedType,
                 field.asKotlinTypeName())
         processingEnv.noteMessage { "buildPersistentStateFieldWrapperPropertySpec, field name: ${field.simpleName},  type: ${enclosingType}" }
-        println("buildPersistentStateFieldWrapperPropertySpec, field name: ${field.simpleName},  type: ${enclosingType}")
 
         return PropertySpec.builder(field.simpleName.toString(), fieldType, KModifier.PUBLIC)
                 .initializer("%T(%T::${field.simpleName})", fieldWrapperClass, enclosingParameterisedType)

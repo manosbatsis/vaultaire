@@ -25,7 +25,8 @@ import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 import com.github.manosbatsis.vaultaire.annotation.VaultaireStateDto
 import com.github.manosbatsis.vaultaire.annotation.VaultaireStateUtils
 import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.example.contract.BookContract.Commands.*
+import com.github.manosbatsis.vaultaire.example.contract.support.AbstractPublicationContract
+import com.github.manosbatsis.vaultaire.example.contract.support.PublicationContractState
 import net.corda.core.contracts.*
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
@@ -45,67 +46,7 @@ import javax.persistence.Table
 val BOOK_CONTRACT_PACKAGE = BookContract::class.java.`package`.name
 val BOOK_CONTRACT_ID = BookContract::class.java.canonicalName
 
-class BookContract : Contract {
-
-    /**
-     * Contract commands
-     */
-    interface Commands : CommandData {
-        /** Create the initial state */
-        class Create : TypeOnlyCommandData(), Commands
-
-        /** Create the updated state */
-        class Update : TypeOnlyCommandData(), Commands
-
-        /** Delete the state */
-        class Delete : TypeOnlyCommandData(), Commands
-    }
-
-    /**
-     * Verify transactions
-     */
-    override fun verify(tx: LedgerTransaction) {
-        // Ensure only one of this contract's commands is present
-        val command = tx.commands.requireSingleCommand<Commands>()
-        // Forward to command-specific verification
-        val signers = command.signers.toSet()
-        when (command.value) {
-            is Create -> verifyCreate(tx, signers)
-            is Update -> verifyUpdate(tx, signers)
-            is Delete -> verifyDelete(tx, signers)
-            else -> throw IllegalArgumentException("Unrecognised command.")
-        }
-    }
-
-    fun verifyCreate(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
-        val command = tx.commands.requireSingleCommand<Create>()
-        "There can be no inputs when creating books." using (tx.inputs.isEmpty())
-        "There must be one output book" using (tx.outputs.size == 1)
-        val yo = tx.outputsOfType<BookState>().single()
-        "Cannot publish your own book!" using (yo.author != yo.publisher)
-        "The book must be signed by the publisher." using (command.signers.contains(yo.publisher!!.owningKey))
-        //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
-    }
-
-    fun verifyUpdate(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
-        val command = tx.commands.requireSingleCommand<Update>()
-        "There must be one input book." using (tx.inputs.size == 1)
-        "There must be one output book" using (tx.outputs.size == 1)
-        val yo = tx.outputsOfType<BookState>().single()
-        "Cannot publish your own book!" using (yo.author != yo.publisher)
-        "The book must be signed by the publisher." using (command.signers.contains(yo.publisher!!.owningKey))
-        //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
-    }
-
-    fun verifyDelete(tx: LedgerTransaction, signers: Set<PublicKey>) = requireThat {
-        val command = tx.commands.requireSingleCommand<Delete>()
-        "There must be one input book." using (tx.inputs.size == 1)
-        "There must no output book" using (tx.outputs.isEmpty())
-        val yo = tx.outputsOfType<BookState>().single()
-        "Cannot delete your own book!" using (yo.author != yo.publisher)
-        "The book deletion must be signed by the publisher." using (command.signers.contains(yo.publisher!!.owningKey))
-        //"The book must be signed by the author." using (command.signers.contains(yo.author.owningKey))
-    }
+class BookContract : AbstractPublicationContract<Party, BookContract.BookState>(BookContract.BookState::class.java) {
 
 
     @CordaSerializable
@@ -117,15 +58,17 @@ class BookContract : Contract {
         HISTORICAL
     }
 
-    // States.
+    /* TODO
     @VaultaireStateDto(
             copyAnnotationPackages = ["com.fasterxml.jackson.annotation"],
             // Default is [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO]
             strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO])
+
+     */
     data class PrivateBookDraftState(
-            val author: AccountParty,
-            val publisher: AccountParty?,
-            override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
+            override val author: AccountParty,
+            override val publisher: AccountParty?,
+            override val linearId: UniqueIdentifier = UniqueIdentifier()) : PublicationContractState<AccountParty> {
 
         companion object {
             val test = "test"
@@ -171,8 +114,8 @@ class BookContract : Contract {
             // Default is [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO]
             strategies = [VaultaireDtoStrategyKeys.CORDAPP_LOCAL_DTO, VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO])
     data class BookState(
-            val publisher: Party?,
-            val author: Party,
+            override val publisher: Party?,
+            override val author: Party,
             val price: BigDecimal,
             val genre: Genre,
             @DefaultValue("1")
@@ -181,7 +124,7 @@ class BookContract : Contract {
             val published: Date = Date(),
             @field:JsonProperty("alias")
             val alternativeTitle: String? = null,
-            override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState, QueryableState {
+            override val linearId: UniqueIdentifier = UniqueIdentifier()) : PublicationContractState<Party> {
 
         companion object {
             val test = "test"
@@ -238,6 +181,11 @@ class BookContract : Contract {
             ) : PersistentState()
         }
     }
+
+    override fun owningKey(party: Party?): PublicKey? {
+        return party?.owningKey
+    }
+
 }
 
 

@@ -19,13 +19,14 @@
  */
 package com.github.manosbatsis.vaultaire.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.SimpleDtoNameStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireDtoStrategyKeys
 
 open class StateClientDtoNameStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : SimpleDtoNameStrategy(annotatedElementInfo) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : SimpleDtoNameStrategy(rootDtoStrategy) {
 
     companion object{
         val STRATEGY_KEY = VaultaireDtoStrategyKeys.CORDAPP_CLIENT_DTO.toString()

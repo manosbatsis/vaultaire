@@ -1,3 +1,22 @@
+/*
+ * Vaultaire: query DSL and data access utilities for Corda developers.
+ * Copyright (C) 2018 Manos Batsis
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
+ */
 package com.github.manosbatsis.vaultaire.processor.dto
 
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.ConstructorRefsCompositeDtoStrategy
@@ -40,14 +59,12 @@ class DtoViewStrategy(
     override fun getFieldsToProcess(): List<VariableElement> {
         val fields = originalStrategy.getFieldsToProcess()
                 .includeNames(getFieldIncludes()).excludeNames(getFieldExcludes())
-        println("DtoViewStrategy.getFieldsToProcess(): ${fields.joinToString { it.simpleName.toString() }}")
         return fields
     }
 
     override fun getExtraFieldsFromMixin(): List<VariableElement> {
         val fields = originalStrategy.getExtraFieldsFromMixin()
                 .includeNames(getFieldIncludes()).excludeNames(getFieldExcludes())
-        println("DtoViewStrategy.getExtraFieldsFromMixin(): ${fields.joinToString { it.simpleName.toString() }}")
         return fields
     }
 
@@ -59,7 +76,6 @@ class DtoViewStrategy(
                 it.ignoreIfNotIncludeNamedField == false || includeNamedFields.contains(it.name)
             }.map{it.name})
         }.toList()
-        println("DtoViewStrategy.getFieldIncludes(): ${names.joinToString()}")
         return names
     }
 
@@ -67,15 +83,14 @@ class DtoViewStrategy(
         val names = super.getFieldExcludes().toMutableSet().also {
             it.addAll(viewInfo.viewAnnotation.excludeNamedFields)
         }.toList()
-        println("DtoViewStrategy.getFieldExcludes(): ${names.joinToString()}")
         return names
     }
 
     override fun getClassName(): ClassName {
         val mappedPackageName = mapPackageName(annotatedElementInfo.generatedPackageName)
         val simpleName = when {
-            viewInfo.targetName != null -> "${viewInfo.targetName}${viewInfo.targetNameSuffix}"
-            viewInfo.targetNameSuffix != null -> "${annotatedElementInfo.primaryTargetTypeElement.simpleName}${viewInfo.targetNameSuffix}"
+            viewInfo.targetName.isNotBlank() -> "${viewInfo.targetName}${viewInfo.targetNameSuffix}"
+            viewInfo.targetNameSuffix.isNotBlank() -> "${annotatedElementInfo.primaryTargetTypeElement.simpleName}${viewInfo.targetNameSuffix}"
             else -> throw IllegalArgumentException("A @VaultaireView must define either a name, a nameSuffix, or both ")
         }
         return ClassName(mappedPackageName, simpleName)

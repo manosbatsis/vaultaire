@@ -27,26 +27,27 @@ import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStra
 import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoTypeStrategy
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import kotlin.reflect.KFunction1
-import kotlin.reflect.KFunction2
-import kotlin.reflect.KFunction3
 
 /** Base Vaultaire-specific class for building a DTO type spec */
 abstract class BaseVaultaireDtoStrategy<N: DtoNameStrategy, T: DtoTypeStrategy, M: DtoMembersStrategy>(
         annotatedElementInfo: AnnotatedElementInfo,
-        dtoNameStrategyConstructor: KFunction1<AnnotatedElementInfo, N>,
-        dtoTypeStrategyConstructor: KFunction1<AnnotatedElementInfo, T>,
+        dtoNameStrategyConstructor: KFunction1<DtoStrategyLesserComposition, N>,
+        dtoTypeStrategyConstructor: KFunction1<DtoStrategyLesserComposition, T>,
         dtoMembersStrategyConstructor: KFunction1<DtoStrategyLesserComposition, M>
 ) : ConstructorRefsCompositeDtoStrategy<N, T, M>(
         annotatedElementInfo, dtoNameStrategyConstructor, dtoTypeStrategyConstructor, dtoMembersStrategyConstructor
 ), ProcessingEnvironmentAware, AnnotatedElementInfo by annotatedElementInfo {
 
     private fun ignoreParticipants() = annotatedElementInfo.annotation
-        .getAnnotationValue("includeParticipants").value as Boolean
+        .findAnnotationValue("includeParticipants")?.value as Boolean?
+            ?: false
 
     override fun getFieldExcludes(): List<String> =
         super.getFieldExcludes().run {
             if (ignoreParticipants())  plusElement( "participants")
             else this
         }
+
+
 }
 

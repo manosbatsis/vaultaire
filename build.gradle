@@ -26,7 +26,7 @@ buildscript {
         kotlintest_version = '3.1.10'
         kotlinpoet_version = '1.5.0'
 
-        kotlinutils_version = '0.25'
+        kotlinutils_version = '0.28'
         partiture_version = '0.15'
         poolboy_version = '0.4'
 
@@ -117,18 +117,23 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'kotlin'
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-parameters" // Required by Corda's serialisation framework.
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
         kotlinOptions {
             languageVersion = "1.2"
             apiVersion = "1.2"
             jvmTarget = "1.8"
-            freeCompilerArgs = ["-Xjsr305=strict","-Xnormalize-constructor-calls=enable"]
             javaParameters = true   // Useful for reflection.
+            freeCompilerArgs = ["-Xjsr305=strict", "-java-parameters"]
         }
     }
 
     tasks.withType(org.jetbrains.dokka.gradle.DokkaTask) {
         skipDeprecated = true
+        apiVersion = "1.2"
         // Disable linking to online JDK documentation
         noJdkLink = true
         noStdlibLink=true

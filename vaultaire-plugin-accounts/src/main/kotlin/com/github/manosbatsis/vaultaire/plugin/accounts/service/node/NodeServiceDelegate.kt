@@ -69,27 +69,27 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
     @Suspendable
     fun findStoredAccounts(
             host: Party,
-            paging: PageSpecification = defaults.paging,
-            sort: Sort = defaults.sort
+            paging: PageSpecification? = null,
+            sort: Sort? = null
     ): Vault.Page<AccountInfo> {
-        return queryBy(AccountInfo::class.java, accountBaseCriteria.and(accountHostCriteria(host)), paging, sort)
+        return queryBy(AccountInfo::class.java, accountBaseCriteria.and(accountHostCriteria(host)), paging = paging,  sort = sort)
     }
 
     /** Find accounts that belong to the host (node) in context */
     @Suspendable
     fun findHostedAccounts(
-            paging: PageSpecification = defaults.paging,
-            sort: Sort = defaults.sort
+            paging: PageSpecification? = null,
+            sort: Sort? = null
     ): Vault.Page<AccountInfo> {
-        return findStoredAccounts(nodeIdentity, paging, sort)
+        return findStoredAccounts(host = nodeIdentity, paging = paging,  sort = sort)
     }
 
     /** Find accounts that are already stored locally and match the given [criteria] */
     @Suspendable
     fun findStoredAccounts(
             criteria: QueryCriteria = accountBaseCriteria,
-            paging: PageSpecification = defaults.paging,
-            sort: Sort = defaults.sort
+            paging: PageSpecification? = null,
+            sort: Sort? = null
     ): Vault.Page<AccountInfo> {
         return queryBy(AccountInfo::class.java, criteria)
     }
@@ -247,9 +247,8 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
 
 /** RPC implementation base that uses a [PoolBoyConnection] RPC connection pool */
 open class AccountsAwareNodeServicePoolBoyDelegate(
-        poolBoy: PoolBoyConnection,
-        defaults: ServiceDefaults = SimpleServiceDefaults()
-) : NodeServiceRpcPoolBoyDelegate(poolBoy, defaults), AccountsAwareNodeServiceDelegate {
+        poolBoy: PoolBoyConnection
+) : NodeServiceRpcPoolBoyDelegate(poolBoy), AccountsAwareNodeServiceDelegate {
 
     //@Suspendable
     override fun findStoredAccountOrNull(owningKey: PublicKey?): StateAndRef<AccountInfo>? {
@@ -312,15 +311,14 @@ open class AccountsAwareNodeServicePoolBoyDelegate(
 open class AccountsAwareNodeServiceRpcDelegate(
         rpcOps: CordaRPCOps,
         defaults: ServiceDefaults = SimpleServiceDefaults()
-) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledRawRpcConnection(rpcOps), defaults)
+) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledRawRpcConnection(rpcOps))
 
 
 /** [NodeRpcConnection]-based [NodeServiceDelegate] implementation */
 @Deprecated(message = "Use [AccountsAwareNodeServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareNodeServiceRpcConnectionDelegate(
-        nodeRpcConnection: NodeRpcConnection,
-        override val defaults: ServiceDefaults = SimpleServiceDefaults()
-) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection), defaults)
+        nodeRpcConnection: NodeRpcConnection
+) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection))
 
 /** A [NodeServiceDelegate] with extended Corda Accounts support, implemented as a CordaServicen */
 open class AccountsAwareNodeCordaServiceDelegate(
@@ -367,10 +365,8 @@ open class AccountsAwareNodeCordaServiceDelegate(
 
     @Suspendable
     override fun requestAccount(identifier: UUID, host: Party): AccountInfo? {
-        logger.debug("requestAccount, identifier: $identifier, host: ${host.name}")
         val requestAccountInfoFlow = RequestAccountInfo(identifier, host)
         val future = flowAwareStartFlow(requestAccountInfoFlow)
-        logger.debug("requestAccount, return value")
         return future.get()
     }
 

@@ -19,8 +19,12 @@
  */
 package com.github.manosbatsis.vaultaire.util
 
+import com.github.manosbatsis.vaultaire.dto.AccountParty
 import net.corda.core.contracts.UniqueIdentifier
 import java.util.UUID
+
+
+inline fun accountPartyToParticipant(accountParty: AccountParty?) = accountParty?.party
 
 fun String.asUniqueIdentifier(): UniqueIdentifier {
     // Is an external ID included?

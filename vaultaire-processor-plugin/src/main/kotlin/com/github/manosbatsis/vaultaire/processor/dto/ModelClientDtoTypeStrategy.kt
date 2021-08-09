@@ -20,12 +20,13 @@
 package com.github.manosbatsis.vaultaire.processor.dto
 
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.dto.VaultaireModelClientDto
 
 open class ModelClientDtoTypeStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : StateClientDtoTypeStrategy(annotatedElementInfo) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : StateClientDtoTypeStrategy(rootDtoStrategy) {
 
     override fun getDtoInterface(): Class<*> = annotatedElementInfo.overrideDtoInterface ?: VaultaireModelClientDto::class.java
 

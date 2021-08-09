@@ -19,11 +19,12 @@
  */
 package com.github.manosbatsis.vaultaire.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 
 open class ModelClientDtoNameStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : StateClientDtoNameStrategy(annotatedElementInfo) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : StateClientDtoNameStrategy(rootDtoStrategy) {
 
     companion object{
         val STRATEGY_KEY = ModelClientDtoStrategy.STRATEGY_KEY

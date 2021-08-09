@@ -25,12 +25,9 @@ import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
-import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import net.corda.core.contracts.ContractState
-import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.AnonymousParty
 import net.corda.core.identity.CordaX500Name
@@ -195,16 +192,6 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
         return toPublicKeyOrNull(accountInfoDto)
                 ?: throw IllegalArgumentException("No public key could be matched to the given AccountInfoStateDto")
     }
-/*
-    fun  toParty(
-            partyName: CordaX500Name?,
-            stateService: S,
-            propertyName: String = "unknown"
-    ): Party = if(partyName != null) stateService.wellKnownPartyFromX500Name(partyName)
-                    ?: throw DtoInsufficientMappingException("Name ${partyName} not found for property: $propertyName")
-            else throw DtoInsufficientMappingException("Required property: $propertyName was null")
-
- */
 
     @Suspendable
     fun toAccountPartyOrNull(accountInfo: AccountInfo?): AccountParty? {
@@ -262,13 +249,12 @@ interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
             propertyName: String = "unknown"
     ): AccountParty? {
 
-        val accountParty = when{
-            host != null && identifier != null ->  toAccountPartyOrNull(findAccountOrNull(identifier, host))
-            // TODO host != null && name != null ->  toAccountPartyOrNull(findAccountOrNull(name, host))
+        return when {
+            host != null && identifier != null -> toAccountPartyOrNull(findAccountOrNull(identifier, host))
+            host != null && name != null -> toAccountPartyOrNull(findAccountOrNull(name, host))
             host == null && identifier != null -> toAccountPartyOrNull(findStoredAccountOrNull(identifier)?.state?.data)
             else -> null
         }
-        return accountParty
     }
 
     // TODO: needs cleanup
@@ -324,23 +310,23 @@ open class BasicAccountsAwareNodeService(
 
     /** [PoolBoyConnection]-based constructor */
     constructor(
-            poolBoy: PoolBoyConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(AccountsAwareNodeServicePoolBoyDelegate(poolBoy, defaults))
+            poolBoy: PoolBoyConnection
+    ) : this(AccountsAwareNodeServicePoolBoyDelegate(poolBoy))
 
     /** [NodeRpcConnection]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            nodeRpcConnection: NodeRpcConnection, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection, defaults))
+            nodeRpcConnection: NodeRpcConnection
+    ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection))
 
     /** [CordaRPCOps]-based constructor */
     @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
-            rpcOps: CordaRPCOps, defaults: ServiceDefaults = SimpleServiceDefaults()
-    ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps, defaults))
+            rpcOps: CordaRPCOps
+    ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps))
 
     /** [ServiceHub]-based constructor */
     constructor(
-            serviceHub: ServiceHub, defaults: ServiceDefaults = SimpleServiceDefaults()
+            serviceHub: ServiceHub
     ) : this(serviceHub.cordaService(AccountsAwareNodeCordaServiceDelegate::class.java))
 }

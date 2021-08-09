@@ -19,12 +19,13 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.processor.dto
 
+import com.github.manosbatsis.kotlin.utils.kapt.dto.strategy.composition.DtoStrategyLesserComposition
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.processor.dto.ModelClientDtoNameStrategy
 
 open class AccountsAwareModelClientDtoNameStrategy(
-        annotatedElementInfo: AnnotatedElementInfo
-) : ModelClientDtoNameStrategy(annotatedElementInfo) {
+        rootDtoStrategy: DtoStrategyLesserComposition
+) : ModelClientDtoNameStrategy(rootDtoStrategy) {
 
 
 }
