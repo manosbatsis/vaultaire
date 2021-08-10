@@ -409,7 +409,7 @@ class MagazineMockTests {
             and {
                 fields.price `==` createdState.price
                 fields.genre `==` createdState.genre
-                fields.author `==` createdState.author.name
+                fields.authorName `==` createdState.author.name
                 //if(createdState.publisher != null) fields.publisher `==` createdState.author.name+"1"
                 if(createdState.genre != null) fields.genre `in` listOf(MagazineGenre.FANTACY, HISTORICAL, SCIENCE_FICTION, TECHNOLOGY, UNKNOWN)
                 or {
@@ -433,7 +433,7 @@ class MagazineMockTests {
             and {
                 fields.price `==` createdState.price
                 fields.genre `==` createdState.genre
-                fields.author `==` createdState.author.name
+                fields.authorName `==` createdState.author.name
                 fields.issues `in` listOf(1, 2, 3)
                 fields.title `like` "%${createdState.title}%"
             }
@@ -450,7 +450,7 @@ class MagazineMockTests {
             and {
                 fields.price `==` createdState.price
                 fields.genre `==` createdState.genre
-                fields.author `==` createdState.author.name
+                fields.authorName `==` createdState.author.name
                 fields.issues `in` listOf(1, 2, 3)
                 fields.title `like` "%${createdState.title}%"
             }
@@ -468,7 +468,7 @@ class MagazineMockTests {
             and {
                 fields.price `==` createdState.price
                 fields.genre `==` createdState.genre
-                fields.author `==` createdState.author.name
+                fields.authorName `==` createdState.author.name
                 fields.issues `in` listOf(1, 2, 3)
                 fields.title `like` "%${createdState.title}%"
             }

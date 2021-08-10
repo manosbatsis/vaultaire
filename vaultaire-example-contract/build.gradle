@@ -23,6 +23,11 @@ dependencies {
     cordaCompile project(':vaultaire-plugin-accounts')
     kapt(project(':vaultaire-processor'))
 
+    // Core dependency
+    cordaCompile "com.github.manosbatsis.corda.leanstate:leanstate-contracts:$leanstate_version"
+    // Annotation processing
+    kapt "com.github.manosbatsis.corda.leanstate:leanstate-processor:$leanstate_version"
+
     cordaCompile group: 'io.swagger', name: 'swagger-annotations', version: '1.6.0'
     cordaCompile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7"
     cordaCompile "$tokens_release_group:tokens-contracts:$tokens_release_version"

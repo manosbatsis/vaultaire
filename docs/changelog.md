@@ -6,6 +6,11 @@ and can be helpful with version upgrades.
 
 
 
+## 0.47
+
+- Updated deps, tested side-by-side with 
+  [corda-lean-state](https://manosbatsis.github.io/corda-lean-state/)
+
 ## 0.46
 
 - Fixed account resolution when using only name and host
