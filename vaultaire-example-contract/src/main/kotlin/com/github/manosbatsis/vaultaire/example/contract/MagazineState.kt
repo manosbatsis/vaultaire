@@ -19,6 +19,9 @@
  */
 package com.github.manosbatsis.vaultaire.example.contract
 
+import com.github.manosbatsis.corda.leanstate.annotation.PropertyMappingMode
+import com.github.manosbatsis.corda.leanstate.annotation.LeanStateModel
+import com.github.manosbatsis.corda.leanstate.annotation.LeanStateProperty
 import com.github.manosbatsis.kotlin.utils.api.DefaultValue
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.example.contract.support.PublicationContractState
@@ -32,6 +35,31 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Table
 
+@LeanStateModel(
+        contractClass = MagazineContract::class,
+        contractStateName = "MagazineState",
+        persistentStateName = "PersistentMagazineState",
+        mappingModes = [
+            PropertyMappingMode.NATIVE,
+            PropertyMappingMode.STRINGIFY,
+            PropertyMappingMode.EXPANDED
+        ]
+)
+interface Magazine : PublicationContractState<AccountParty>{
+    override val publisher: AccountParty?
+    override val author: AccountParty
+    val price: BigDecimal
+    val genre: MagazineContract.MagazineGenre
+    @get:LeanStateProperty(initializer = "1")
+    val issues: Int
+    val title: String
+    @get:LeanStateProperty(initializer ="Date()")
+    val published: Date
+    @get:Column(name = "description", length = 500)
+    val description: String?
+}
+
+/*
 @BelongsToContract(MagazineContract::class)
 data class MagazineState(override val publisher: AccountParty?,
                          override val author: AccountParty,
@@ -88,3 +116,5 @@ data class MagazineState(override val publisher: AccountParty?,
         ) : PersistentState()
     }
 }
+(
+ */
