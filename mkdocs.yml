@@ -52,7 +52,7 @@ nav:
   - 'Plugins':
     - 'Corda Accounts': plugins/corda-accounts.md
     - 'RSQL Support': plugins/rsql-support.md
-  - 'API Reference': /vaultaire/0.x/index.md
+  - 'API Reference': 0.x/index.md
   - 'FAQ': faq.md
   - 'Change Log': changelog.md
   - 'Credits': credits.md
