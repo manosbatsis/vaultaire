@@ -207,14 +207,6 @@ configure([project(':vaultaire'),
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
 
-
-    task dokkaForGhPages(type: org.jetbrains.dokka.gradle.DokkaTask) {
-        outputDirectory = "$rootDir/docs/0.x"
-        outputFormat = "gfm"
-        inputs.dir 'src/main/kotlin'
-
-    }
-    
     dokka {
         outputFormat = 'javadoc'
         outputDirectory = javadoc.destinationDir

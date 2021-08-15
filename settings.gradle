@@ -1,6 +1,7 @@
 rootProject.name = 'vaultaire-parent'
-include ':vaultaire',
-        ':vaultaire-processor',
+include ':docs',
+		':vaultaire',
+		':vaultaire-processor',
 		':vaultaire-processor-plugin',
         ':vaultaire-example-contract',
         ':vaultaire-example-workflow',

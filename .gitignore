@@ -19,3 +19,4 @@ temp-clone/
 # For mkdoc
 site/
 docs/index.md
+/docs/0.x/

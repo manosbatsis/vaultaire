@@ -21,7 +21,7 @@ git clone $REPO $DIR
 cd $DIR
 
 # Generate the API docs
-./gradlew :vaultaire:dokkaForGhPages
+./gradlew :docs:dokkaForSite
 
 # Add readme as index
 cat README.md > docs/index.md

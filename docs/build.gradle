@@ -1,0 +1,57 @@
+apply plugin: 'org.jetbrains.dokka'
+
+def internalPackagePrefixes(sourceDirs) {
+    def prefixes = []
+    // Kotlin allows packages to deviate from the directory structure, but let's assume they don't:
+    sourceDirs.collect { sourceDir ->
+        sourceDir.traverse(type: groovy.io.FileType.DIRECTORIES) {
+            if (it.name == 'internal') {
+                prefixes.add sourceDir.toPath().relativize(it.toPath()).toString().replace(File.separator, '.')
+            }
+        }
+    }
+    prefixes
+}
+
+ext {
+    dokkaSourceDirs = files(
+            '../vaultaire/src/main/kotlin',
+            '../vaultaire-plugin-accounts/src/main/kotlin',
+            '../vaultaire-plugin-rsql/src/main/kotlin')
+    internalPackagePrefixes = internalPackagePrefixes(dokkaSourceDirs)
+    archivedApiDocsBaseFilename = 'api-docs'
+}
+
+task dokkaForSite(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    //outputFormat = "gfm"
+    outputFormat = 'javadoc'
+    outputDirectory = "$rootDir/docs/0.x"
+    sourceDirs = dokkaSourceDirs
+    jdkVersion = 8
+    internalPackagePrefixes.collect { packagePrefix ->
+        packageOptions {
+            prefix = packagePrefix
+            suppress = true
+        }
+    }
+}
+
+
+
+dependencies {
+
+    compile project(':vaultaire')
+    compile project(':vaultaire-processor-plugin')
+    compile("com.github.manosbatsis.kotlin-utils:kotlin-utils-api:$kotlinutils_version")
+
+    implementation "$corda_release_group:corda-core:$corda_release_version"
+    implementation "$corda_release_group:corda:$corda_release_version"
+
+    // @Builder
+    compile 'com.thinkinglogic.builder:kotlin-builder-annotation:1.2.0'
+    kapt 'com.thinkinglogic.builder:kotlin-builder-processor:1.2.0'
+
+    compile "com.google.auto.service:auto-service-annotations:$autoservice_version"
+    kapt "com.google.auto.service:auto-service:$autoservice_version"
+}
+
