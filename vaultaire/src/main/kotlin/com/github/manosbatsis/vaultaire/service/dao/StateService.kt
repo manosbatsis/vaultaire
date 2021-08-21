@@ -23,13 +23,17 @@ import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
 import com.github.manosbatsis.vaultaire.dsl.query.VaultQueryCriteriaCondition
+import com.github.manosbatsis.vaultaire.dto.VaultaireDto
+import com.github.manosbatsis.vaultaire.dto.VaultaireModelClientDto
 import com.github.manosbatsis.vaultaire.service.ServiceDefaults
 import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
 import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.github.manosbatsis.vaultaire.service.node.NotFoundException
 import com.github.manosbatsis.vaultaire.util.Fields
+import com.github.manosbatsis.vaultaire.util.ResultsPage
 import com.github.manosbatsis.vaultaire.util.asUniqueIdentifier
+import com.github.manosbatsis.vaultaire.util.toResultsPage
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.contracts.UniqueIdentifier
@@ -184,6 +188,25 @@ interface StateService<T : ContractState> :
     ): DataFeed<Vault.Page<T>, Vault.Update<T>> {
         return trackBy(contractStateType = contractStateType, criteria = criteria, pageNumber = pageNumber, pageSize = pageSize, sort = sort)
     }
+
+    /**
+     * Same as [queryBy] only directly mapping to a [ResultsPage] or [D] DTO instances,
+     * using the given [transform],  e.g.
+     * `findResultsPage(criteria, paging, sort, MyDto.Companion::from)`
+     */
+    @Suspendable
+    fun <D: VaultaireModelClientDto<T, *>> findResultsPage(
+            criteria: QueryCriteria? = null,
+            paging: PageSpecification = PageSpecification(),
+            sort: Sort? = null,
+            transform: (original: T) -> D
+    ): ResultsPage<D> = queryBy(
+            contractStateType = contractStateType,
+            criteria = criteria, paging = paging,  sort = sort
+    ).toResultsPage(paging, sort, transform)
+
+
+
 }
 
 

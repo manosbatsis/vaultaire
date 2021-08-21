@@ -22,14 +22,15 @@ package com.github.manosbatsis.vaultaire.service.dao
 import co.paralleluniverse.fibers.Suspendable
 import com.github.manosbatsis.corda.rpc.poolboy.PoolBoyConnection
 import com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection
-import com.github.manosbatsis.vaultaire.service.ServiceDefaults
-import com.github.manosbatsis.vaultaire.service.SimpleServiceDefaults
+import com.github.manosbatsis.vaultaire.dto.VaultaireDto
 import com.github.manosbatsis.vaultaire.service.node.NodeCordaServiceDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceHubDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcConnectionDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcDelegate
 import com.github.manosbatsis.vaultaire.service.node.NodeServiceRpcPoolBoyDelegate
+import com.github.manosbatsis.vaultaire.util.ResultsPage
+import com.github.manosbatsis.vaultaire.util.toResultsPage
 import net.corda.core.contracts.ContractState
 import net.corda.core.messaging.CordaRPCOps
 import net.corda.core.messaging.DataFeed
@@ -68,13 +69,12 @@ interface StateServiceDelegate<T : ContractState> : NodeServiceDelegate {
      */
     @Suspendable
     fun queryBy(
-        criteria: QueryCriteria? = null,
-        paging: PageSpecification? = null,
-        sort: Sort? = null
+            criteria: QueryCriteria? = null,
+            paging: PageSpecification? = null,
+            sort: Sort? = null
     ): Vault.Page<T> {
         return queryBy(contractStateType = contractStateType, criteria = criteria, paging = paging,  sort = sort)
     }
-
 
     /**
      * Track the vault for events of [T] states matching the given criteria,
