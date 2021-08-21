@@ -6,6 +6,10 @@ and can be helpful with version upgrades.
 
 
 
+## 0.48
+
+- Added `StateService.findResultsPage` method
+
 ## 0.47
 
 - Updated deps, tested side-by-side with 
