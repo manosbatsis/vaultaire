@@ -8,7 +8,8 @@ and can be helpful with version upgrades.
 
 ## 0.48
 
-- Added `StateService.findResultsPage` method
+- Added `StateService.findResultsPage` method 
+  and `Vault.Page<T>.toResultsPage` extensions.
 
 ## 0.47
 

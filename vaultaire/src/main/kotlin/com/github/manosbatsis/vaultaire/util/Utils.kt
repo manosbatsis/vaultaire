@@ -19,18 +19,8 @@
  */
 package com.github.manosbatsis.vaultaire.util
 
-import co.paralleluniverse.fibers.Suspendable
-import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.dto.VaultaireDto
-import com.github.manosbatsis.vaultaire.dto.VaultaireModelClientDto
-import com.github.manosbatsis.vaultaire.service.dao.StateService
-import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.UniqueIdentifier
-import net.corda.core.node.services.Vault
-import net.corda.core.node.services.vault.PageSpecification
-import net.corda.core.node.services.vault.Sort
-import java.util.UUID
-
+import java.util.*
 
 
 fun String.asUniqueIdentifier(): UniqueIdentifier {
@@ -43,27 +33,4 @@ fun String.asUniqueIdentifier(): UniqueIdentifier {
 }
 
 
-@Suspendable
-fun <T: ContractState, D: VaultaireModelClientDto<T, *>> Vault.Page<T>.toResultsPage(
-        paging: PageSpecification,
-        sort: Sort?,
-        transform: (original: T) -> D
-): ResultsPage<D> {
-    // Must use old-school loops due to Suspendable
-    val mappedStates = mutableListOf<D>()
-    for (stateAndRef in states) {
-        mappedStates.add(transform(stateAndRef.state.data))
-    }
-    val mappedSortColumns = mutableMapOf<String, Sort.Direction>()
-    if (sort != null) {
-        for (col in sort.columns) {
-            mappedSortColumns["${col.sortAttribute}"] = col.direction
-        }
-    }
-    return ResultsPage(
-            content = mappedStates,
-            pageNumber = paging.pageNumber,
-            pageSize = paging.pageSize,
-            totalResults = totalStatesAvailable,
-            sort = mappedSortColumns)
-}
+
