@@ -247,6 +247,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#state-services" class="md-nav__link">
+    State Services
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rsql-plugin" class="md-nav__link">
     RSQL Plugin
   </a>
@@ -256,13 +263,6 @@
         <li class="md-nav__item">
   <a href="#accounts-plugin" class="md-nav__link">
     Accounts Plugin
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#state-services" class="md-nav__link">
-    State Services
   </a>
   
 </li>
@@ -536,6 +536,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#state-services" class="md-nav__link">
+    State Services
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rsql-plugin" class="md-nav__link">
     RSQL Plugin
   </a>
@@ -545,13 +552,6 @@
         <li class="md-nav__item">
   <a href="#accounts-plugin" class="md-nav__link">
     Accounts Plugin
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#state-services" class="md-nav__link">
-    State Services
   </a>
   
 </li>
@@ -616,6 +616,14 @@ processing.</p>
 <span class="p">}.</span><span class="na">toCriteria</span><span class="p">()</span>
 </code></pre></div>
 <p>For more details see <a href="https://manosbatsis.github.io/vaultaire/core/query-dsl/">Query DSL</a>.</p>
+<h2 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h2>
+<p>Vaultaire&rsquo;s <code>StateService</code> components provide a simple, consistent API to
+load, query and track vault states.</p>
+<p><code>StateService</code> implementations are usually auto-generated at build-time
+and specific to a <code>ContractState</code> type. They also help decouple your 
+code from <code>ServiceHub</code> and <code>CordaRPCOps</code> amd help increase code reuse in and out of a Node, 
+i.e. between cordapps and their clients.</p>
+<p>For more details see <a href="https://manosbatsis.github.io/vaultaire/core/state-services/">State Services</a>.</p>
 <h2 id="rsql-plugin">RSQL Plugin<a class="headerlink" href="#rsql-plugin" title="Permanent link">&para;</a></h2>
 <p>A plugin with support for <a href="https://www.baeldung.com/rest-api-search-language-rsql-fiql">RSQL</a>, 
 a URL-friendly query language for dynamic, complex queries and 
@@ -624,14 +632,6 @@ maintenance-free REST endpoints for searching the Vault.</p>
 <h2 id="accounts-plugin">Accounts Plugin<a class="headerlink" href="#accounts-plugin" title="Permanent link">&para;</a></h2>
 <p>A plugin for adding Corda Accounts support to Vaultaire&rsquo;s runtime and build-time modules.</p>
 <p>For more details see <a href="https://manosbatsis.github.io/vaultaire/plugins/corda-accounts/">Corda Accounts</a>.</p>
-<h2 id="state-services">State Services<a class="headerlink" href="#state-services" title="Permanent link">&para;</a></h2>
-<p>Vaultaire&rsquo;s <code>StateService</code> interface provide a simple, consistent API to
-load, query and track vault states.</p>
-<p><code>StateService</code> implementations are usually auto-generated at build time
-and specific to a single <code>ContractState</code> type.</p>
-<p>State Services can also decouple you code from <code>ServiceHub</code> and <code>CordaRPCOps</code>
-amd help increase code reuse between cordapps and their clients.</p>
-<p>For more details see <a href="https://manosbatsis.github.io/vaultaire/core/state-services/">State Services</a>.</p>
 <h2 id="state-dtos">State DTOs<a class="headerlink" href="#state-dtos" title="Permanent link">&para;</a></h2>
 <p>Maintaining Data Transfer Objects for your contract states can be a mundane, error-prone task. 
 Vaultaire’s annotation processing automates this by (re)generating those DTOs for you.</p>
