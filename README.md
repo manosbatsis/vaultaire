@@ -30,6 +30,18 @@ val queryCriteria: QueryCriteria = booksQuery {
 
 For more details see [Query DSL](https://manosbatsis.github.io/vaultaire/core/query-dsl/).
 
+## State Services
+
+Vaultaire's `StateService` components provide a simple, consistent API to
+load, query and track vault states.
+
+`StateService` implementations are usually auto-generated at build-time
+and specific to a `ContractState` type. They also help decouple your 
+code from `ServiceHub` and `CordaRPCOps` amd help increase code reuse in and out of a Node, 
+i.e. between cordapps and their clients.
+
+For more details see [State Services](https://manosbatsis.github.io/vaultaire/core/state-services/).
+
 
 ## RSQL Plugin
 
@@ -44,19 +56,6 @@ For more details see [RSQL Support](https://manosbatsis.github.io/vaultaire/plug
 A plugin for adding Corda Accounts support to Vaultaire's runtime and build-time modules.
 
 For more details see [Corda Accounts](https://manosbatsis.github.io/vaultaire/plugins/corda-accounts/).
-
-## State Services
-
-Vaultaire's `StateService` interface provide a simple, consistent API to
-load, query and track vault states.
-
-`StateService` implementations are usually auto-generated at build time
-and specific to a single `ContractState` type.
-
-State Services can also decouple you code from `ServiceHub` and `CordaRPCOps`
-amd help increase code reuse between cordapps and their clients.
-
-For more details see [State Services](https://manosbatsis.github.io/vaultaire/core/state-services/).
 
 ## State DTOs
 
