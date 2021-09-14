@@ -5,10 +5,13 @@ The following sections describe major changes per version
 and can be helpful with version upgrades.
 
 
+## 0.49
+
+- Annotated `ResultsPage` with `CordaSerializable`
 
 ## 0.48
 
-- Added `StateService.findResultsPage` method 
+- Added `StateService.findResultsPage` method
   and `Vault.Page<T>.toResultsPage` extensions.
 
 ## 0.47

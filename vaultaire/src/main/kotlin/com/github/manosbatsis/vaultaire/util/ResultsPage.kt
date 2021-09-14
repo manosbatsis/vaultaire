@@ -19,7 +19,6 @@
  */
 package com.github.manosbatsis.vaultaire.util
 
-
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.node.services.Vault
@@ -27,13 +26,14 @@ import net.corda.core.node.services.vault.PageSpecification
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.node.services.vault.Sort.Direction
 import net.corda.core.node.services.vault.SortAttribute
+import net.corda.core.serialization.CordaSerializable
 
 /**
  * A wrapper for page results. Typically used as a more
  * REST-friendly alternative to [Vault.Page] combined
  * with mapping to states or DTOs.
  */
-
+@CordaSerializable
 open class ResultsPage<T>(
         var content: List<T> = emptyList(),
         var pageNumber: Int = 1,
