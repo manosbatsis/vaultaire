@@ -195,7 +195,7 @@ interface StateService<T : ContractState> :
      * `findResultsPage(criteria, paging, sort, MyDto.Companion::from)`
      */
     @Suspendable
-    fun <D: VaultaireModelClientDto<T, *>> findResultsPage(
+    fun <D> findResultsPage(
             criteria: QueryCriteria? = null,
             paging: PageSpecification = PageSpecification(),
             sort: Sort? = null,

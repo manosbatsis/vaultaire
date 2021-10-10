@@ -5,6 +5,10 @@ The following sections describe major changes per version
 and can be helpful with version upgrades.
 
 
+## 0.50
+
+- Simplified result page transformations
+
 ## 0.49
 
 - Annotated `ResultsPage` with `CordaSerializable`

@@ -33,7 +33,7 @@ import java.util.UUID
 
 
 @Suspendable
-fun <T: ContractState, D: VaultaireModelClientDto<T, *>> Vault.Page<T>.toResultsPage(
+fun <T: ContractState, D> Vault.Page<T>.toResultsPage(
         service: StateService<T>,
         paging: PageSpecification,
         sort: Sort?,
@@ -48,7 +48,7 @@ fun <T: ContractState, D: VaultaireModelClientDto<T, *>> Vault.Page<T>.toResults
 }
 
 @Suspendable
-fun <T: ContractState, D: VaultaireModelClientDto<T, *>> Vault.Page<T>.toResultsPage(
+fun <T: ContractState, D> Vault.Page<T>.toResultsPage(
         paging: PageSpecification,
         sort: Sort?,
         transform: (original: T) -> D
@@ -61,7 +61,8 @@ fun <T: ContractState, D: VaultaireModelClientDto<T, *>> Vault.Page<T>.toResults
     return toResultsPage(mappedStates, paging, sort)
 }
 
-private fun <D : VaultaireModelClientDto<T, *>, T : ContractState> Vault.Page<T>.toResultsPage(
+@Suspendable
+private fun <D, T : ContractState> Vault.Page<T>.toResultsPage(
         mappedStates: MutableList<D>, paging: PageSpecification, sort: Sort?
 ): ResultsPage<D> {
     // Must use old-school loops due to Suspendable
