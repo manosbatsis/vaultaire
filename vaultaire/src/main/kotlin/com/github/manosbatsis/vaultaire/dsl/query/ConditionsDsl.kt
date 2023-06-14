@@ -83,6 +83,7 @@ interface RootCondition<P : StatePersistable> : Condition {
     var constraints: Set<Vault.ConstraintInfo>
     var participants: List<AbstractParty>?
     var externalIds: List<UUID>
+    val exactParticipants: List<AbstractParty>?
 }
 
 /** A [Condition] that contains other conditions. Allows for nested and/or condition groups */
@@ -340,8 +341,9 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
         override var relevancyStatus: Vault.RelevancyStatus = Vault.RelevancyStatus.ALL,
         override var constraintTypes: Set<Vault.ConstraintInfo.Type> = emptySet(),
         override var constraints: Set<Vault.ConstraintInfo> = emptySet(),
+        override var participants: List<AbstractParty>? = null,
         override var externalIds: List<UUID> = emptyList(),
-        override var participants: List<AbstractParty>? = null
+        override val exactParticipants: List<AbstractParty>? = null
 ) : ConditionsCondition<P, F>(), RootCondition<P> {
     override val rootCondition: RootCondition<P>
         get() = this
@@ -395,7 +397,9 @@ abstract class VaultQueryCriteriaCondition<P : StatePersistable, out F : Fields<
                 relevancyStatus = relevancyStatus,
                 constraintTypes = constraintTypes,
                 constraints = constraints,
-                participants = participants)
+                participants = participants,
+                exactParticipants = exactParticipants
+        )
         var criteria = this.conditions.mapNotNull { it.toCriteria() }
                 .takeIf { it.isNotEmpty() }
                 ?.reduce { chain, link -> chain.and(link) }
