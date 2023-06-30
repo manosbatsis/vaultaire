@@ -39,13 +39,19 @@ interface VaultaireStateClientDto<T : ContractState> : VaultaireBaseStateClientD
  * Base interface for client, REST-friendly DTOs, targeting [ContractState]  types,
  * with type conversion support using a [StateService]  for [toTargetType] and [toPatched].
  */
-interface VaultaireBaseStateClientDto<T : ContractState, S : StateService<T>> : VaultaireModelClientDto<T, S>
+interface VaultaireBaseStateClientDto<T : ContractState, S : StateService<T>> : VaultaireBaseModelClientDto<T, S>
 
 /**
  * Implemented by client, REST-friendly DTOs targeting model classes, i.e. non-ContractState types,
  * with type conversion support using a [NodeService]  for [toTargetType] and [toPatched].
  */
-interface VaultaireModelClientDto<T : Any, S : NodeServiceDelegate>: VaultaireDtoBase{
+interface VaultaireModelClientDto<T : Any>: VaultaireBaseModelClientDto<T, NodeService>
+
+/**
+ * Implemented by client, REST-friendly DTOs targeting model classes, i.e. non-ContractState types,
+ * with type conversion support using a [NodeService]  for [toTargetType] and [toPatched].
+ */
+interface VaultaireBaseModelClientDto<T : Any, in S : NodeService>: VaultaireDtoBase{
 
     /**
      * Create a patched copy of the given [T] instance,

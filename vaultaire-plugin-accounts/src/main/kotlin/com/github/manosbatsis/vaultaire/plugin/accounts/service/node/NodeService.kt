@@ -26,6 +26,7 @@ import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
 import com.github.manosbatsis.vaultaire.service.node.BasicNodeService
+import com.github.manosbatsis.vaultaire.service.node.NodeService
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
 import net.corda.core.contracts.ContractState
 import net.corda.core.identity.AbstractParty
@@ -42,7 +43,7 @@ import java.util.*
  * Short-lived helper, used for vault operations on a specific [ContractState] type
  * @param T the [ContractState] type
  */
-interface AccountsAwareNodeService : AccountsAwareNodeServiceDelegate {
+interface AccountsAwareNodeService : NodeService, AccountsAwareNodeServiceDelegate {
 
     @Suspendable
     fun toAccountInfoDtoOrNull(

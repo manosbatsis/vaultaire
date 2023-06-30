@@ -19,6 +19,7 @@
  */
 package com.github.manosbatsis.vaultaire.plugin.accounts.service.dto
 
+import com.github.manosbatsis.vaultaire.dto.VaultaireBaseModelClientDto
 import com.github.manosbatsis.vaultaire.dto.VaultaireBaseStateClientDto
 import com.github.manosbatsis.vaultaire.dto.VaultaireModelClientDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateService
@@ -31,4 +32,4 @@ interface VaultaireAccountsAwareStateClientDto<T : ContractState> : VaultaireBas
 
 
 /** Accounts-aware alternative to [VaultaireModelClientDto]. */
-interface AccountsAwareVaultaireModelClientDto<T : Any>: VaultaireModelClientDto<T, AccountsAwareNodeService>
+interface AccountsAwareVaultaireModelClientDto<T : Any>: VaultaireBaseModelClientDto<T, AccountsAwareNodeService>
