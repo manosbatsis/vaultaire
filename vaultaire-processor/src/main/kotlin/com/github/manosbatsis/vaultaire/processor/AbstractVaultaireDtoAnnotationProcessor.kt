@@ -54,23 +54,25 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
 
         val allStrategies = originalStrategies + viewStrategies
         allStrategies.map { (_, strategy) ->
-            val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
-            val dto = dtoStrategyBuilder.build()
             val dtoClassName = strategy.getClassName()
             val fileName = dtoClassName.simpleName
             val packageName = dtoClassName.packageName
             val annElem = strategy.annotatedElementInfo
-            val fileBuilder = getFileSpecBuilder(packageName, fileName)
-            strategy.onBeforeFileWrite(fileBuilder)
-            fileBuilder.addComment("\n")
+            val existing = processingEnv.elementUtils.getTypeElement("$packageName.$fileName")
+            //
+                val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
+                val dto = dtoStrategyBuilder.build()
+                val fileBuilder = getFileSpecBuilder(packageName, fileName)
+                strategy.onBeforeFileWrite(fileBuilder)
+            if (existing == null) {fileBuilder.addComment("\n")
                     .addComment("----------------------------------------------------\n")
                     .addComment("Vaultaire Annotation Processing Info\n")
                     .addComment("----------------------------------------------------\n")
                     .addComment("Annotation: ${annElem.annotation.annotationType}\n")
                     .addComment("Source Elements\n")
                     .addComment("   Primary:   ${annElem.primaryTargetTypeElement.asClassName().canonicalName}\n")
-                    .addComment("   Secondary: ${annElem.secondaryTargetTypeElement?.asClassName()?.canonicalName?:"none"}\n")
-                    .addComment("   Mixin:     ${annElem.mixinTypeElement?.asClassName()?.canonicalName?:"none"}\n")
+                    .addComment("   Secondary: ${annElem.secondaryTargetTypeElement?.asClassName()?.canonicalName ?: "none"}\n")
+                    .addComment("   Mixin:     ${annElem.mixinTypeElement?.asClassName()?.canonicalName ?: "none"}\n")
                     .addComment("Generator Strategies\n")
                     .addComment("   Main:    ${strategy.javaClass.simpleName}\n")
                     .addComment("   Name:    ${strategy.dtoNameStrategy.javaClass.canonicalName}\n")
@@ -80,6 +82,7 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
                     .addType(dto)
                     .build()
                     .writeTo(sourceRootFile)
+            } else processingEnv.noteMessage { "\nprocessElementInfo: Skipping for $packageName.$fileName as it already exists" }
         }
     }
 

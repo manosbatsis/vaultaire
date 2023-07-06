@@ -29,3 +29,14 @@ package com.github.manosbatsis.vaultaire.annotation
 annotation class VaultaireAccountInfo(
 )
 
+
+/**
+ * Marks a [net.corda.core.contracts.ContractState] property as a Corda Account collection.
+ * Supported item types are [java.security.PublicKey], [net.corda.core.identity.AbstractParty]
+ * and [net.corda.core.identity.AnonymousParty].
+ */
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
+annotation class VaultaireAccountInfos(
+)
+

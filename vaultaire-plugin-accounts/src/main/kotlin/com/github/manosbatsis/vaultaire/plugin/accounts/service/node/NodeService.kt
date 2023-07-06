@@ -132,14 +132,16 @@ interface AccountsAwareNodeService : NodeService, AccountsAwareNodeServiceDelega
 
     @Suspendable
     fun findAccountInfo(
-            accountInfoDto: AccountInfoStateDto?
+        accountInfoDto: AccountInfoStateDto?
     ): AccountInfo? {
-        return when {
-            // Return null input as is
-            accountInfoDto == null -> null
-            // Build instance otherwise, try by id first...
-            accountInfoDto.identifier != null -> {
-                findStoredAccount(accountInfoDto.identifier!!.id).state.data
+        if(accountInfoDto == null) return accountInfoDto
+        accountInfoDto.identifier
+            ?.let { findStoredAccountOrNull(accountInfoDto.identifier!!.id)?.state?.data }
+            ?.apply { return this }
+        return when{
+            // ... id and host otherwise
+            accountInfoDto.identifier != null && accountInfoDto.host != null -> {
+                findAccount(accountInfoDto.identifier!!.id, accountInfoDto.host!!.name)
             }
             // ... name and host otherwise
             accountInfoDto.name != null && accountInfoDto.host != null -> {
@@ -150,11 +152,40 @@ interface AccountsAwareNodeService : NodeService, AccountsAwareNodeServiceDelega
     }
 
     @Suspendable
+    fun findAccountInfo(
+        accountInfoDto: AccountInfoStateClientDto?
+    ): AccountInfo? {
+        if(accountInfoDto == null) return accountInfoDto
+        accountInfoDto.identifier
+            ?.let { findStoredAccountOrNull(accountInfoDto.identifier!!)?.state?.data }
+            ?.apply { return this }
+        return when {
+            // ... id and host otherwise
+            accountInfoDto.identifier != null && accountInfoDto.host != null -> {
+                findAccountOrNull(accountInfoDto.identifier!!, accountInfoDto.host!!)
+            }
+            // ... name and host otherwise
+            accountInfoDto.name != null && accountInfoDto.host != null -> {
+                findAccountOrNull(accountInfoDto.name!!, accountInfoDto.host!!)
+            }
+            else -> throw IllegalArgumentException("Invalid AccountInfoStateDto, must include either an id or name and host")
+        }
+    }
+
+    @Suspendable
     fun getAccountInfo(
-            accountInfoDto: AccountInfoStateDto?
+        accountInfoDto: AccountInfoStateDto
     ): AccountInfo {
         return findAccountInfo(accountInfoDto)
-                ?: throw IllegalArgumentException("No stored AccountInfo could be matched to the given AccountInfoStateDto")
+            ?: throw IllegalArgumentException("No AccountInfo could be matched to the given AccountInfoStateDto")
+    }
+
+    @Suspendable
+    fun getAccountInfo(
+        accountInfoDto: AccountInfoStateClientDto
+    ): AccountInfo {
+        return findAccountInfo(accountInfoDto)
+            ?: throw IllegalArgumentException("No AccountInfo could be matched to the given AccountInfoStateDto")
     }
 
     @Suspendable
@@ -195,11 +226,14 @@ interface AccountsAwareNodeService : NodeService, AccountsAwareNodeServiceDelega
     }
 
     @Suspendable
+    fun toAccountParty(accountInfo: AccountInfo): AccountParty {
+        val anonymousParty = createPublicKey(accountInfo)
+        return AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty, accountInfo.identifier.externalId)
+    }
+
+    @Suspendable
     fun toAccountPartyOrNull(accountInfo: AccountInfo?): AccountParty? {
-        return if(accountInfo != null) {
-            val anonymousParty = createPublicKey(accountInfo)
-            AccountParty(accountInfo.identifier.id, accountInfo.name, anonymousParty, accountInfo.identifier.externalId)
-        } else null
+        return accountInfo?.let { toAccountParty(it) }
     }
 
 

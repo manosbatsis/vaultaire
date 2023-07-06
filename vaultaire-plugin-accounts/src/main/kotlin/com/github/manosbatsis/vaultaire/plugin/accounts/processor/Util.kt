@@ -22,6 +22,7 @@ package com.github.manosbatsis.vaultaire.plugin.accounts.processor
 import com.github.manosbatsis.kotlin.utils.ProcessingEnvironmentAware
 import com.github.manosbatsis.kotlin.utils.kapt.processor.AnnotatedElementInfo
 import com.github.manosbatsis.vaultaire.annotation.VaultaireAccountInfo
+import com.github.manosbatsis.vaultaire.annotation.VaultaireAccountInfos
 import com.github.manosbatsis.vaultaire.dto.AccountParty
 import com.github.manosbatsis.vaultaire.plugin.accounts.processor.Util.Companion.CLASSNAME_ACCOUNT_INFO
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
@@ -33,6 +34,16 @@ import java.security.PublicKey
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
+import com.squareup.kotlinpoet.TypeVariableName
+
+import com.squareup.kotlinpoet.TypeName
+
+import javax.lang.model.element.TypeParameterElement
+
+import java.util.ArrayList
+import javax.lang.model.type.DeclaredType
+import javax.tools.Diagnostic
+
 
 class Util {
     companion object {
@@ -60,7 +71,7 @@ class AccountInfoHelper(
             val result = relevantFields.find {
                 // Not ignored and mapped to AccountInfo
                 !annotatedElementInfo.ignoreProperties.contains(it.simpleName.toString())
-                        && isAccountInfo(it)
+                        && (isAccountInfo(it) || isAccountInfos(it))
             }
             return result != null
         }
@@ -77,7 +88,8 @@ class AccountInfoHelper(
 
 
     fun isAccountInfo(variableElement: VariableElement): Boolean {
-        val fieldClassName = variableElement.asType().asTypeElement().asClassName()
+        val fieldTypeElement = variableElement.asType().asTypeElement()
+        val fieldClassName = fieldTypeElement.asClassName()
         return when {
             Util.CLASSNAME_ACCOUNT_PARTY == fieldClassName -> true
             listOf(Util.CLASSNAME_ABSTRACT_PARTY, Util.CLASSNAME_ANONYMOUS_PARTY, Util.CLASSNAME_PUBLIC_KEY).contains(fieldClassName)
@@ -87,5 +99,16 @@ class AccountInfoHelper(
                     "VaultaireAccountInfo annotation does not support type: $fieldClassName")
             else -> false
         }
+
+    }
+
+    fun isAccountInfos(variableElement: VariableElement): Boolean {
+        val fieldType = variableElement.asType()
+        val fieldTypeElement = fieldType.asTypeElement()
+        return if(fieldTypeElement.isAssignableTo(Iterable::class.java, true) && fieldType is DeclaredType){
+            fieldType.typeArguments.any {
+                it is DeclaredType && it.asTypeElement().asClassName() == Util.CLASSNAME_ACCOUNT_PARTY
+            }
+        } else false
     }
 }

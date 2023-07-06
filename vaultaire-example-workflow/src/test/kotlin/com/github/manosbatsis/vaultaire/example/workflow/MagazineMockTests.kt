@@ -19,26 +19,23 @@
  */
 package com.github.manosbatsis.vaultaire.example.workflow
 
-import com.github.manosbatsis.partiture.flow.PartitureFlow
-import com.github.manosbatsis.vaultaire.dto.AccountParty
-import com.github.manosbatsis.vaultaire.example.contract.BOOK_CONTRACT_PACKAGE
+import com.github.manosbatsis.corda.testacles.mocknetwork.NodeHandles
+import com.github.manosbatsis.corda.testacles.mocknetwork.config.MockNetworkConfig
+import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtension
+import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtensionConfig
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre
 import com.github.manosbatsis.vaultaire.example.contract.MagazineContract.MagazineGenre.*
 import com.github.manosbatsis.vaultaire.example.contract.MagazineState
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateClientDto
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.dao.StateService
 import com.github.manosbatsis.vaultaire.service.node.NotFoundException
-import com.r3.corda.lib.accounts.contracts.AccountInfoContract
 import com.r3.corda.lib.accounts.contracts.states.AccountInfo
+import com.r3.corda.lib.accounts.workflows.flows.AccountInfoByName
 import com.r3.corda.lib.accounts.workflows.flows.CreateAccount
-import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount
-import com.r3.corda.lib.ci.workflows.RequestKey
 import net.corda.core.contracts.UniqueIdentifier
-import net.corda.core.flows.FlowLogic
+import net.corda.core.identity.CordaX500Name
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.Vault.RelevancyStatus.RELEVANT
 import net.corda.core.node.services.Vault.StateStatus.*
@@ -47,85 +44,32 @@ import net.corda.core.node.services.vault.QueryCriteria.LinearStateQueryCriteria
 import net.corda.core.node.services.vault.Sort
 import net.corda.core.utilities.getOrThrow
 import net.corda.core.utilities.loggerFor
-import net.corda.testing.core.DUMMY_NOTARY_NAME
-import net.corda.testing.node.MockNetwork
-import net.corda.testing.node.MockNetworkNotarySpec
-import net.corda.testing.node.MockNetworkParameters
-import net.corda.testing.node.StartedMockNode
-import net.corda.testing.node.TestCordapp.Companion.findCordapp
-import org.junit.jupiter.api.*
+import net.corda.testing.core.ALICE_NAME
+import net.corda.testing.core.BOB_NAME
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-
-@Suppress(names = ["DEPRECATION"])
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
+@ExtendWith(MockNetworkExtension::class)
 class MagazineMockTests {
+
     companion object {
         val logger = loggerFor<MagazineMockTests>()
-    }
 
-    // Works as long as the main and test package names are  in sync
-    val cordappPackages = listOf(
-            // Acounts
-            AccountInfoContract::class.java.`package`.name,
-            RequestKeyForAccount::class.java.`package`.name,
-            RequestKey::class.java.`package`.name,
-            // Vaultaire
-            AccountParty::class.java.`package`.name,
-            AccountInfoStateDto::class.java.`package`.name,
-            // Partiture
-            PartitureFlow::class.java.`package`.name,
-            // Our coprdapp
-            BOOK_CONTRACT_PACKAGE,
-            this.javaClass.`package`.name)
-
-    lateinit var network: MockNetwork
-
-    lateinit var a: StartedMockNode
-    lateinit var aAccountService: AccountInfoService
-    lateinit var aPublisher: AccountInfo
-    lateinit var aAuthor: AccountInfo
-
-    lateinit var b: StartedMockNode
-    lateinit var bAccountService: AccountInfoService
-    lateinit var bPublisher: AccountInfo
-    lateinit var bAuthor: AccountInfo
-
-
-    @BeforeAll
-    fun setup() {
-        network = MockNetwork(MockNetworkParameters(
-                networkSendManuallyPumped = false,
-                notarySpecs = listOf(MockNetworkNotarySpec(DUMMY_NOTARY_NAME, true)),
-                cordappsForAllNodes = cordappPackages.map {
-                    findCordapp(it)
-                },
-                threadPerNode = true))
-
-        a = network.createPartyNode()
-        b = network.createPartyNode()
-        network.startNodes()
-
-        aAccountService = AccountInfoService(a.services)
-        aPublisher = flowWorksCorrectly(a, CreateAccount("aPublisher")).state.data
-        aAuthor = flowWorksCorrectly(a, CreateAccount("aAuthor")).state.data
-
-
-        bAccountService = AccountInfoService(b.services)
-        bPublisher = flowWorksCorrectly(b, CreateAccount("bPublisher")).state.data
-        bAuthor = flowWorksCorrectly(b, CreateAccount("bAuthor")).state.data
-
+        // Marks the field as config for the MockNetworkExtension
+        @MockNetworkExtensionConfig
+        @JvmStatic
+        val mockNetworkConfig: MockNetworkConfig = TestConfig.mockNetworkConfig(
+            ALICE_NAME, BOB_NAME
+        )
     }
 
 
-    @AfterAll
-    fun tearDown() {
-        network.stopNodes()
-    }
 
     @Test
     fun `Test @DefaultValue`() {
@@ -134,12 +78,15 @@ class MagazineMockTests {
 
 
     @Test
-    fun `Test DSL conditions`() {
-        val aPublisherDto = AccountInfoStateClientDto.from(aPublisher)//aAccountService.toAccountInfoDto(aPublisher)
-        val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)// aAccountService.toAccountInfoDto(bAuthor)
+    fun `Test DSL conditions`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
+        
+        val aPublisherDto = nodeHandles.getAccountDto("aPublisher", ALICE_NAME) 
+        val bAuthorDto = nodeHandles.getAccountDto("bAuthor", BOB_NAME)
         val magazineTitle = "Test DSL conditions ${UUID.randomUUID()}"
 
-        val magazineState = flowWorksCorrectly(a,
+        val magazineState = nodeA.startFlow(
                 CreateMagazineFlow(MagazineStateClientDto(
                         publisher = aPublisherDto,//AccountService.toAccountParty(aPublisherDto),
                         author = bAuthorDto,
@@ -147,7 +94,7 @@ class MagazineMockTests {
                         published = Date(),
                         genre = MagazineContract.MagazineGenre.TECHNOLOGY,
                         issues = 3,
-                        title = magazineTitle))).single()
+                        title = magazineTitle))).getOrThrow().single()
 
         // Use the generated DSL to create query criteria
         val magazineStateQuery = magazineStateQuery {
@@ -178,22 +125,25 @@ class MagazineMockTests {
         val criteria = magazineStateQuery.toCriteria()
         val sort = magazineStateQuery.toSort()
         // Test BasicStateService
-        val stateBasicService = BasicStateService(a.services, MagazineState::class.java)
+        val stateBasicService = BasicStateService(nodeA.services, MagazineState::class.java)
         testStateServiceQueryByForSingleResult(stateBasicService, criteria, sort, magazineState)
 
         // Test generated MagazineStateService
-        val serviceHubMagazineStateService = MagazineStateService(b.services)
+        val serviceHubMagazineStateService = MagazineStateService(nodeB.services)
         testStateServiceQueryByForSingleResult(stateBasicService, criteria, sort, magazineState)
 
     }
 
 
     @Test
-    fun `Test conversions for DTOs and Views`() {
+    fun `Test conversions for DTOs and Views`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
 
-        val aPublisherDto = AccountInfoStateClientDto.from(aPublisher)
-        val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)
-        val stateService = MagazineStateService(b.services)
+        val aPublisherDto = nodeHandles.getAccountDto("aPublisher", ALICE_NAME) 
+        val bAuthorDto = nodeHandles.getAccountDto("bAuthor", BOB_NAME)
+
+        val stateService = MagazineStateService(nodeB.services)
 
         // Test DTO > State > DTO...
         val fullDto = MagazineStateClientDto(
@@ -206,7 +156,7 @@ class MagazineMockTests {
         // ... with full AccountInfoStateClientDtos
         val contractState = fullDto.toTargetType(stateService)
         assertEquals(fullDto, MagazineStateClientDto.from(contractState, stateService))
-        val magazine1 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto)).single()
+        val magazine1 = nodeA.startFlow(CreateMagazineFlow(fullDto)).getOrThrow().single()
         assertEquals(fullDto, MagazineStateClientDto.from(magazine1, stateService))
         // ... with id+host in AccountInfoStateClientDtos
         val fullDto2 = fullDto.copy(
@@ -217,7 +167,7 @@ class MagazineMockTests {
         )
         val contractState2 = fullDto2.toTargetType(stateService)
         assertEquals(fullDto, MagazineStateClientDto.from(contractState2, stateService))
-        val magazine2 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto2)).single()
+        val magazine2 = nodeA.startFlow(CreateMagazineFlow(fullDto2)).getOrThrow().single()
         assertEquals(fullDto, MagazineStateClientDto.from(magazine2, stateService))
 
         // ... with name+host in AccountInfoStateClientDtos
@@ -233,7 +183,7 @@ class MagazineMockTests {
         // publisher=AccountInfoStateClientDto(name=aPublisher, host=O=Mock Company 1, L=London, C=GB, identifier=3dee8eb3-7b5a-44ba-9405-60e35b866018, externalId=null), author=AccountInfoStateClientDto(name=bAuthor, host=O=Mock Company 2, L=London, C=GB, identifier=08aa9d70-bada-433b-ab01-e47e038bdeac, externalId=null), price=82, genre=HISTORICAL, issues=24, title=Vault diaries, Volume 29, published=Mon Aug 09 05:28:16 EEST 2021, linearId=5e0f8046-bc66-477e-b69d-10a9b9633895, customMixinField=null)>,
         // publisher=null, author=AccountInfoStateClientDto(name=bAuthor, host=O=Mock Company 2, L=London, C=GB, identifier=08aa9d70-bada-433b-ab01-e47e038bdeac, externalId=null), price=82, genre=HISTORICAL, issues=24, title=Vault diaries, Volume 29, published=Mon Aug 09 05:28:16 EEST 2021, linearId=5e0f8046-bc66-477e-b69d-10a9b9633895, customMixinField=null)>.
         assertEquals(fullDto, MagazineStateClientDto.from(contractState3, stateService))
-        val magazine3 = flowWorksCorrectly(a, CreateMagazineFlow(fullDto3)).single()
+        val magazine3 = nodeA.startFlow(CreateMagazineFlow(fullDto3)).getOrThrow().single()
         assertEquals(fullDto, MagazineStateClientDto.from(magazine3, stateService))
 
         // Test DTO > View > DTO > State
@@ -260,18 +210,16 @@ class MagazineMockTests {
     }
 
     @Test
-    fun `Test get or find by id`() {
-        logger.info("AcountInfo for aPublisher: $aPublisher")
-        logger.info("AcountInfo for bAuthor: $bAuthor")
+    fun `Test get or find by id`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
 
-        val aPublisherDto = AccountInfoStateClientDto.from(aPublisher)
-        val bAuthorDto = AccountInfoStateClientDto.from(bAuthor)
-        logger.info("AcountInfoDto for aPublisher: $aPublisherDto")
-        logger.info("AcountInfoDto for bAuthor: $bAuthorDto")
+        val aPublisherDto = nodeHandles.getAccountDto("aPublisher", ALICE_NAME) 
+        val bAuthorDto = nodeHandles.getAccountDto("bAuthor", BOB_NAME)
 
         val identifier = UniqueIdentifier(id = UUID.randomUUID(), externalId = UUID.randomUUID().toString())
 
-        val magazine = flowWorksCorrectly(a,
+        val magazine = nodeA.startFlow(
                 CreateMagazineFlow(MagazineStateClientDto(
                         publisher = aPublisherDto,
                         author = bAuthorDto,
@@ -279,20 +227,20 @@ class MagazineMockTests {
                         genre = MagazineContract.MagazineGenre.HISTORICAL,
                         issues = 24,
                         title = "Vault diaries, Volume 29",
-                        linearId = identifier))).single()
+                        linearId = identifier))).getOrThrow().single()
         logger.info("Expected identifier: $identifier, actual: ${magazine.linearId}")
         assertEquals(identifier.id, magazine.linearId.id)
         assertEquals(identifier.externalId, magazine.linearId.externalId)
         assertEquals(aPublisherDto.identifier!!, magazine.publisher!!.identifier)
         assertEquals(bAuthorDto.identifier!!, magazine.author!!.identifier)
-        mapOf(bAuthorDto to b.services, aPublisherDto to a.services).forEach {
+        mapOf(bAuthorDto to nodeB.services, aPublisherDto to nodeA.services).forEach {
             val accountInfoDto = it.key
             val serviceHub = it.value
             val stateService = MagazineStateService(serviceHub)
             val manualQueryResult = stateService.queryBy(
                     contractStateType = MagazineState::class.java,
                     criteria = QueryCriteria.VaultQueryCriteria(
-                            //externalIds = listOf(accountInfoDto.identifier!!),
+                            externalIds = listOf(accountInfoDto.identifier!!),
                             contractStateTypes = setOf(MagazineState::class.java))
                             .and(LinearStateQueryCriteria(
                                     linearId = listOf(identifier),
@@ -335,13 +283,16 @@ class MagazineMockTests {
     }
 
     @Test
-    fun `Test find with state status cases`() {
-        val aAuthorDto = AccountInfoStateClientDto.from(aAuthor)
-        val bPublisherDto = AccountInfoStateClientDto.from(bPublisher)
+    fun `Test find with state status cases`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
+
+        val aAuthorDto = nodeHandles.getAccountDto("aAuthor", ALICE_NAME) 
+        val bPublisherDto = nodeHandles.getAccountDto("bPublisherDto", BOB_NAME)
 
         logger.info("aAuthorDto: $aAuthorDto")
         logger.info("bPublisherDto: $bPublisherDto")
-        val stateService = MagazineStateService(a.services)
+        val stateService = MagazineStateService(nodeA.services)
 
 
         logger.info("Author creates draft...")
@@ -357,8 +308,7 @@ class MagazineMockTests {
         logger.info("Step 2 Flow")
         val createMagazineFlow = CreateMagazineFlow(magazineDto)
         logger.info("Step 3 Start Flow")
-        val createdStates: List<MagazineState> = flowWorksCorrectly(a,
-                createMagazineFlow)
+        val createdStates: List<MagazineState> = nodeA.startFlow(createMagazineFlow).getOrThrow()
 
         assertTrue(createdStates.isNotEmpty())
         val createdState = createdStates.first()
@@ -368,28 +318,28 @@ class MagazineMockTests {
         // Update title
         logger.info("Author updates title and issues...")
         val updatedTitle = "${createdState.title} UPDATED"
-        var updatedState: MagazineState = flowWorksCorrectly(a,
+        var updatedState: MagazineState = nodeA.startFlow(
                 UpdateMagazineFlow(MagazineStateClientDto.from(
                         createdState.copy(
                                 title = updatedTitle,
                                 issues = 2),
-                        stateService))).single()
+                        stateService))).getOrThrow().single()
         assertEquals(createdState.linearId, updatedState.linearId)
 
         // Update
         logger.info("Author updates title and issues again...")
         val updatedTitle2 = "${createdState.title} UPDATED2"
-        val updatedState2: MagazineState = flowWorksCorrectly(a,
+        val updatedState2: MagazineState = nodeA.startFlow(
                 UpdateMagazineFlow(MagazineStateClientDto.from(createdState.copy(
                         title = updatedTitle2,
                         issues = 3
-                ), stateService))).single()
+                ), stateService))).getOrThrow().single()
         assertEquals(createdState.linearId, updatedState2.linearId)
         //
         logger.info("Publisher side: " +
                 "Query for the consumed on the counter party node...")
-        testFindWithStatusesAndService(MagazineStateService(a.services), bPublisherDto, createdState)
-        testFindWithStatusesAndService(MagazineStateService(b.services), bPublisherDto, createdState)
+        testFindWithStatusesAndService(MagazineStateService(nodeA.services), bPublisherDto, createdState)
+        testFindWithStatusesAndService(MagazineStateService(nodeB.services), bPublisherDto, createdState)
 
 
     }
@@ -497,13 +447,5 @@ class MagazineMockTests {
         assertEquals(magazineState.title, magazineSearchResult.title)
         assertEquals(1, stateService.countBy(criteria),
                 "Result of countBy must be 1")
-    }
-
-
-    inline fun <reified OUT> flowWorksCorrectly(node: StartedMockNode, flow: FlowLogic<OUT>): OUT {
-        val result = node.startFlow(flow).getOrThrow()
-        // Ask nodes to process any queued up inbound messages
-        network.waitQuiescent()
-        return result
     }
 }

@@ -78,10 +78,18 @@ interface AccountsAwareNodeServiceDelegate : NodeServiceDelegate {
     /** Find accounts that belong to the host (node) in context */
     @Suspendable
     fun findHostedAccounts(
-            paging: PageSpecification? = null,
-            sort: Sort? = null
+        paging: PageSpecification? = null,
+        sort: Sort? = null
     ): Vault.Page<AccountInfo> {
         return findStoredAccounts(host = nodeIdentity, paging = paging,  sort = sort)
+    }
+
+    /** Find accounts that belong to the host (node) in context */
+    @Suspendable
+    fun findHostedAccount(
+        identifier: UUID
+    ): AccountInfo {
+        return findAccount(identifier = identifier, host = nodeIdentity.name)
     }
 
     /** Find accounts that are already stored locally and match the given [criteria] */
@@ -292,10 +300,7 @@ open class AccountsAwareNodeServicePoolBoyDelegate(
 
     //@Suspendable
     override fun requestAccount(name: String, host: Party): AccountInfo? =
-            // TODO
-            null /*poolBoy.withConnection { connection ->
-                connection.proxy.startFlow(::RequestAccountInfo, identifier, host).returnValue.get()
-            }*/
+            TODO("Not implemented")
 
     //@Suspendable
     override fun toParty(owningKey: PublicKey): Party {
@@ -372,7 +377,6 @@ open class AccountsAwareNodeCordaServiceDelegate(
 
     @Suspendable
     override fun requestAccount(name: String, host: Party): AccountInfo? {
-        // TODO
-        return  null
+        TODO("Not implemented")
     }
 }

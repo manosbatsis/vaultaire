@@ -37,7 +37,7 @@ import net.corda.core.node.services.vault.Sort
 import net.corda.core.utilities.contextLogger
 import java.util.UUID
 
-class NotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.javaClass.simpleName} with id ${id}")
+class NotFoundException(id: String, stateType: Class<*>) : RuntimeException("Could not find a ${stateType.simpleName} with id ${id}")
 
 
 /**

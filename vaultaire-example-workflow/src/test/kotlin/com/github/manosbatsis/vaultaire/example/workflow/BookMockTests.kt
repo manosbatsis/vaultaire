@@ -19,89 +19,53 @@
  */
 package com.github.manosbatsis.vaultaire.example.workflow
 
-import com.github.manosbatsis.partiture.flow.PartitureFlow
-import com.github.manosbatsis.vaultaire.dto.AccountParty
+import com.github.manosbatsis.corda.testacles.mocknetwork.NodeHandles
+import com.github.manosbatsis.corda.testacles.mocknetwork.config.MockNetworkConfig
+import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtension
+import com.github.manosbatsis.corda.testacles.mocknetwork.jupiter.MockNetworkExtensionConfig
 import com.github.manosbatsis.vaultaire.example.contract.*
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.BookState.BookSchemaV1.PersistentBookState
 import com.github.manosbatsis.vaultaire.example.contract.BookContract.Genre.TECHNOLOGY
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoService
-import com.github.manosbatsis.vaultaire.plugin.accounts.dto.AccountInfoStateDto
 import com.github.manosbatsis.vaultaire.plugin.accounts.dto.accountInfoQuery
 import com.github.manosbatsis.vaultaire.plugin.rsql.support.SimpleRsqlArgumentsConverter
 import com.github.manosbatsis.vaultaire.plugin.rsql.withRsql
 import com.github.manosbatsis.vaultaire.service.dao.BasicStateService
 import com.github.manosbatsis.vaultaire.service.node.NotFoundException
-import com.r3.corda.lib.accounts.contracts.AccountInfoContract
 import com.r3.corda.lib.accounts.workflows.flows.CreateAccount
-import com.r3.corda.lib.accounts.workflows.flows.RequestKeyForAccount
-import com.r3.corda.lib.ci.workflows.RequestKey
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.FlowLogic
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.queryBy
 import net.corda.core.utilities.getOrThrow
 import net.corda.core.utilities.loggerFor
-import net.corda.testing.core.DUMMY_NOTARY_NAME
-import net.corda.testing.node.MockNetwork
-import net.corda.testing.node.MockNetworkNotarySpec
-import net.corda.testing.node.MockNetworkParameters
+import net.corda.testing.core.ALICE_NAME
+import net.corda.testing.core.BOB_NAME
 import net.corda.testing.node.StartedMockNode
-import net.corda.testing.node.TestCordapp.Companion.findCordapp
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
-@Suppress(names = ["DEPRECATION"])
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // allow non-static @BeforeAll etc.
+@ExtendWith(MockNetworkExtension::class)
 class BookMockTests {
     companion object {
         val logger = loggerFor<BookMockTests>()
-    }
 
-    // Works as long as the main and test package names are  in sync
-    val cordappPackages = listOf(
-            // Acounts
-            AccountInfoContract::class.java.`package`.name,
-            RequestKeyForAccount::class.java.`package`.name,
-            RequestKey::class.java.`package`.name,
-            // Vaultaire
-            AccountParty::class.java.`package`.name,
-            AccountInfoStateDto::class.java.`package`.name,
-            // Partiture
-            PartitureFlow::class.java.`package`.name,
-            // Our coprdapp
-            BOOK_CONTRACT_PACKAGE,
-            this.javaClass.`package`.name)
-
-    lateinit var network: MockNetwork
-    lateinit var a: StartedMockNode
-    lateinit var b: StartedMockNode
-
-    @BeforeAll
-    fun setup() {
-        network = MockNetwork(MockNetworkParameters(
-                networkSendManuallyPumped = false,
-                notarySpecs = listOf(MockNetworkNotarySpec(DUMMY_NOTARY_NAME, true)),
-                cordappsForAllNodes = cordappPackages.map {
-                    findCordapp(it)
-                },
-                threadPerNode = true))
-
-        a = network.createPartyNode()
-        b = network.createPartyNode()
-        network.startNodes()
-    }
-
-    @AfterAll
-    fun tearDown() {
-        network.stopNodes()
+        // Marks the field as config for the MockNetworkExtension
+        @MockNetworkExtensionConfig
+        @JvmStatic
+        val mockNetworkConfig: MockNetworkConfig = TestConfig.mockNetworkConfig(
+            ALICE_NAME, BOB_NAME
+        )
     }
 
     @Test
@@ -110,15 +74,17 @@ class BookMockTests {
     }
 
     @Test
-    fun `Test AccountInfo`() {
+    fun `Test AccountInfo`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
         // Create account
         val accountUuid = UUID.randomUUID()
         val accountName = "vaultaire"
-        flowWorksCorrectly(a, CreateAccount(accountName))
-        flowWorksCorrectly(a, CreateAccount("foobar"))
+        nodeA.startFlow(CreateAccount(accountName)).getOrThrow()
+        nodeA.startFlow(CreateAccount("foobar")).getOrThrow()
 
         // Query for account
-        val accountInfoService = AccountInfoService(a.services)
+        val accountInfoService = AccountInfoService(nodeA.services)
         val results = accountInfoService.queryBy(
                 accountInfoQuery {
                     and {
@@ -131,35 +97,37 @@ class BookMockTests {
     }
 
     @Test
-    fun `Test DSL conditions`() {
+    fun `Test DSL conditions`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
         val bookTitle = "A book on Corda"
         val bookState = BookContract.BookState(
-                publisher = a.info.legalIdentities.first(),
-                author = b.info.legalIdentities.first(),
+                publisher = nodeA.info.legalIdentities.first(),
+                author = nodeB.info.legalIdentities.first(),
                 price = BigDecimal.valueOf(10),
                 genre = BookContract.Genre.TECHNOLOGY,
                 editions = 3,
                 title = bookTitle)
 
 
-        val state = flowWorksCorrectly(a,
+        val state = nodeA.startFlow(
                 CreateBookFlow(BookStateDto(
-                        author = b.info.legalIdentities.first(),
+                        author = nodeB.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(10),
                         genre = TECHNOLOGY,
                         editions = 3,
-                        title = bookTitle)))
-        flowWorksCorrectly(a,
+                        title = bookTitle))).getOrThrow()
+        nodeA.startFlow(
                 CreateBookFlow(BookStateDto(
-                        author = b.info.legalIdentities.first(),
+                        author = nodeB.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(20),
                         genre = BookContract.Genre.TECHNOLOGY,
                         editions = 1,
-                        title = "$bookTitle 2")))
+                        title = "$bookTitle 2"))).getOrThrow()
         print("bTx == $state\n")
         // Check book state is stored in the vault.
         // Simple query.
-        val bYo = b.services.vaultService.queryBy<BookContract.BookState>()
+        val bYo = nodeB.services.vaultService.queryBy<BookContract.BookState>()
                 .states.map { it.state.data }.single { it.title == bookTitle }
 
         // Verify record
@@ -191,60 +159,62 @@ class BookMockTests {
         }
 
         // Test BasicStateService
-        val stateBasicService = BasicStateService(b.services, BookContract.BookState::class.java)
+        val stateBasicService = BasicStateService(nodeB.services, BookContract.BookState::class.java)
         testStateServiceQueryBy(stateBasicService, bookStateQuery, bookState)
 
         // Test manually coded subclass of BasicStateService
-        val bookBasicStateService = CustomBasicBookStateService(b.services)
+        val bookBasicStateService = CustomBasicBookStateService(nodeB.services)
         testStateServiceQueryBy(bookBasicStateService, bookStateQuery, bookState)
 
         // Test generated BookStateService
-        val serviceHubBookStateService = BookStateService(b.services)
+        val serviceHubBookStateService = BookStateService(nodeB.services)
         testStateServiceQueryBy(bookBasicStateService, bookStateQuery, bookState)
 
         // Test manually coded subclass of BookStateService
-        val myBookStateService = MyExtendedBookStateService(b.services)
+        val myBookStateService = MyExtendedBookStateService(nodeB.services)
         testStateServiceQueryBy(myBookStateService, bookStateQuery, bookState)
     }
 
     @Test
-    fun `Test DSL aggregates`() {
+    fun `Test DSL aggregates`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
         val bookTitle = "Corda Foundation"
         val bookState = BookContract.BookState(
-                publisher = a.info.legalIdentities.first(),
-                author = b.info.legalIdentities.first(),
+                publisher = nodeA.info.legalIdentities.first(),
+                author = nodeB.info.legalIdentities.first(),
                 price = BigDecimal.valueOf(8),
                 genre = BookContract.Genre.SCIENCE_FICTION,
                 editions = 3,
                 title = bookTitle)
 
 
-        val state = flowWorksCorrectly(a,
+        val state = nodeA.startFlow(
                 CreateBookFlow(BookStateDto(
                         author = bookState.author,
                         price = bookState.price,
                         genre = bookState.genre,
                         editions = bookState.editions,
-                        title = bookState.title)))
-        flowWorksCorrectly(a,
+                        title = bookState.title))).getOrThrow()
+        nodeA.startFlow(
                 CreateBookFlow(BookStateDto(
                         author = bookState.author,
                         price = BigDecimal.valueOf(10),
                         genre = BookContract.Genre.SCIENCE_FICTION,
                         editions = 2,
-                        title = "Forward the Corda Foundation")))
-        flowWorksCorrectly(a,
+                        title = "Forward the Corda Foundation"))).getOrThrow()
+        nodeA.startFlow(
                 CreateBookFlow(BookStateDto(
                         author = bookState.author,
                         price = BigDecimal.valueOf(12),
                         genre = BookContract.Genre.SCIENCE_FICTION,
                         editions = 2,
-                        title = "Corda Foundation and Earth")))
+                        title = "Corda Foundation and Earth"))).getOrThrow()
 
         print("state == $state\n")
         // Check book state is stored in the vault.
         // Simple query.
-        val bYo = b.services.vaultService.queryBy<BookContract.BookState>()
+        val bYo = nodeB.services.vaultService.queryBy<BookContract.BookState>()
                 .states.map { it.state.data }.single { it.title == bookTitle }
 
         // Verify record
@@ -273,7 +243,7 @@ class BookMockTests {
         }
 
         // Test BasicStateService
-        val stateService = BasicStateService(b.services, BookContract.BookState::class.java)
+        val stateService = BasicStateService(nodeB.services, BookContract.BookState::class.java)
 
         // Ensure three matching records
         var bookSearchPage = stateService.queryBy(
@@ -300,7 +270,7 @@ class BookMockTests {
         // Minimum price must be 12
         assertEquals(0, BigDecimal(12).compareTo(bookSearchPage.otherResults[5] as BigDecimal))
 
-        val extendedService = BookStateService(b.services)
+        val extendedService = BookStateService(nodeB.services)
         val querySpec = extendedService.buildQuery {
             status = Vault.StateStatus.UNCONSUMED // the default
             relevancyStatus = Vault.RelevancyStatus.ALL // the default
@@ -321,20 +291,24 @@ class BookMockTests {
     }
 
     @Test
-    fun `Test get or find by id`() {
+    fun `Test get or find by id`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
 
         val identifier = UniqueIdentifier(id = UUID.randomUUID(), externalId = UUID.randomUUID().toString())
-
-        flowWorksCorrectly(a,
+        val bookState = nodeA.startFlow(
                 CreateBookFlow(BookStateDto(
-                        author = b.info.legalIdentities.first(),
+                        author = nodeB.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(82),
                         genre = BookContract.Genre.HISTORICAL,
                         editions = 24,
                         title = "Vault diaries, Volume 29",
-                        linearId = identifier)))
-        val stateService = BasicStateService(b.services, BookContract.BookState::class.java)
+                        linearId = identifier))).getOrThrow()
 
+        assertEquals(identifier, bookState.single().linearId)
+
+        val stateService = BasicStateService(nodeB.services, BookContract.BookState::class.java)
+        TimeUnit.SECONDS.sleep(2L)
         // Get by linear ID
         assertNotNull(stateService.getByLinearId(identifier))
         assertNotNull(stateService.getByLinearId(identifier.toString()))
@@ -363,34 +337,36 @@ class BookMockTests {
     }
 
     @Test
-    fun `Test find consumed`() {
+    fun `Test find consumed`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
         // Create a state
-        val createdState: BookState = flowWorksCorrectly(a,
+        val createdState: BookState = nodeA.startFlow(
                 CreateBookFlow(BookStateDto(
-                        author = b.info.legalIdentities.first(),
+                        author = nodeB.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(87),
                         genre = BookContract.Genre.HISTORICAL,
                         editions = 1,
-                        title = "Vault diaries"))).single()
+                        title = "Vault diaries"))).getOrThrow().single()
         // Update title
         val updatedTitle = "${createdState.title} UPDATED"
-        val updatedState: BookState = flowWorksCorrectly(a,
+        val updatedState: BookState = nodeA.startFlow(
                 UpdateBookFlow(BookStateDto.from(createdState.copy(
                         title = updatedTitle,
                         editions = 2
-                )))).single()
+                )))).getOrThrow().single()
         assertEquals(createdState.linearId, updatedState.linearId)
 
         // Update title and editions
         val updatedTitle2 = "${createdState.title} UPDATED2"
-        val updatedState2: BookState = flowWorksCorrectly(a,
+        val updatedState2: BookState = nodeA.startFlow(
                 UpdateBookFlow(BookStateDto.from(createdState.copy(
                         title = updatedTitle2,
                         editions = 3
-                )))).single()
+                )))).getOrThrow().single()
         assertEquals(createdState.linearId, updatedState2.linearId)
         // Query for the consumed
-        val extendedService = BookStateService(a.services)
+        val extendedService = BookStateService(nodeA.services)
         val querySpec = extendedService.buildQuery {
             status = Vault.StateStatus.CONSUMED
             and {
@@ -413,33 +389,35 @@ class BookMockTests {
     }
 
     @Test
-    fun `Test RSQL`() {
+    fun `Test RSQL`(nodeHandles: NodeHandles) {
+        val nodeA = nodeHandles[ALICE_NAME]!!
+        val nodeB = nodeHandles[BOB_NAME]!!
         // Create a state
-        val createdState1: BookState = flowWorksCorrectly(a,
+        val createdState1: BookState = nodeA.startFlow(
             CreateBookFlow(BookStateDto(
-                author = b.info.legalIdentities.first(),
+                author = nodeB.info.legalIdentities.first(),
                 price = BigDecimal.valueOf(70),
                 genre = BookContract.Genre.HISTORICAL,
                 editions = 1,
                 title = "RSQL1",
-                alternativeTitle = "RSQL One"))).single()
-        val createdState2: BookState = flowWorksCorrectly(a,
+                alternativeTitle = "RSQL One"))).getOrThrow().single()
+        val createdState2: BookState = nodeA.startFlow(
             CreateBookFlow(BookStateDto(
-                author = b.info.legalIdentities.first(),
+                author = nodeB.info.legalIdentities.first(),
                 price = BigDecimal.valueOf(80),
                 genre = BookContract.Genre.HISTORICAL,
                 editions = 1,
                 title = "RSQL2",
-                alternativeTitle = "RSQL Two"))).single()
-        val createdState3: BookState = flowWorksCorrectly(a,
+                alternativeTitle = "RSQL Two"))).getOrThrow().single()
+        val createdState3: BookState = nodeA.startFlow(
             CreateBookFlow(BookStateDto(
-                author = b.info.legalIdentities.first(),
+                author = nodeB.info.legalIdentities.first(),
                 price = BigDecimal.valueOf(90),
                 genre = BookContract.Genre.HISTORICAL,
                 editions = 1,
-                title = "RSQL3"))).single()
+                title = "RSQL3"))).getOrThrow().single()
 
-        val extendedService = BookStateService(a.services)
+        val extendedService = BookStateService(nodeA.services)
 
         val converterFactory = SimpleRsqlArgumentsConverter
             .Factory<PersistentBookState, PersistentBookStateFields>()
@@ -502,13 +480,5 @@ class BookMockTests {
         assertEquals(bookState.title, bookSearchResult.title)
         assertEquals(1, stateService.countBy(bookStateQuery.toCriteria()))
         print("$bookSearchResult == $bookState\n")
-    }
-
-
-    inline fun <reified OUT> flowWorksCorrectly(node: StartedMockNode, flow: FlowLogic<OUT>): OUT {
-        val result = node.startFlow(flow).getOrThrow()
-        // Ask nodes to process any queued up inbound messages
-        network.waitQuiescent()
-        return result
     }
 }

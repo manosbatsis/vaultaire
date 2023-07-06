@@ -19,8 +19,8 @@ buildscript {
 
         dokka_version = '0.9.18'
         jackson_version = '2.9.7'
-        junitVersion = '5.3.2'
-        junit_jupiter_version = '5.3.2'
+        junitVersion = '5.6.2'
+        junit_jupiter_version = '5.6.2'
 
         kotlin_version = '1.2.71'
         kotlintest_version = '3.1.10'
@@ -31,6 +31,7 @@ buildscript {
         kotlinutils_version = '0.30'
         partiture_version = '0.15'
         poolboy_version = '0.4'
+        corda_testacles_version = '0.24'
 
         spring_version = '5.2.10.RELEASE'
     }
