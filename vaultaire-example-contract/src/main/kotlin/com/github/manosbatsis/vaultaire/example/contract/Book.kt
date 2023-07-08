@@ -122,6 +122,7 @@ class BookContract : AbstractPublicationContract<Party, BookContract.BookState>(
             val editions: Int = 1,
             val title: String = "Uknown",
             val published: Date = Date(),
+            val soldOut: Date? = null,
             @field:JsonProperty("alias")
             val alternativeTitle: String? = null,
             override val linearId: UniqueIdentifier = UniqueIdentifier()) : PublicationContractState<Party> {
@@ -137,16 +138,18 @@ class BookContract : AbstractPublicationContract<Party, BookContract.BookState>(
         override fun supportedSchemas() = listOf(BookSchemaV1)
 
         override fun generateMappedObject(schema: MappedSchema) = BookSchemaV1.PersistentBookState(
-                linearId.id.toString(),
-                linearId.externalId,
-                publisher!!.name.toString(),
-                author.name.toString(),
-                price,
-                genre,
-                editions,
-                title,
-                alternativeTitle,
-                published)
+            id = linearId.id.toString(),
+            externalId = linearId.externalId,
+            publisher = publisher!!.name.toString(),
+            author = author.name.toString(),
+            price = price,
+            genre = genre,
+            editions = editions,
+            title = title,
+            alternativeTitle = alternativeTitle,
+            published = published,
+            soldOut = soldOut
+        )
 
         object BookSchema
 
@@ -175,7 +178,9 @@ class BookContract : AbstractPublicationContract<Party, BookContract.BookState>(
                     @Column(name = "alt__title")
                     var alternativeTitle: String? = null,
                     @Column(name = "published")
-                    var published: Date = Date(),
+                    var published: Date,
+                    @Column(name = "sold_out")
+                    val soldOut: Date?,
                     @Column(name = "description", length = 500)
                     var description: String? = null
             ) : PersistentState()

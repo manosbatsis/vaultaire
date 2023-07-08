@@ -312,7 +312,6 @@ open class AccountsAwareNodeServicePoolBoyDelegate(
 }
 
 /** [CordaRPCOps]-based [NodeServiceDelegate] implementation */
-@Deprecated(message = "Use [AccountsAwareNodeServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareNodeServiceRpcDelegate(
         rpcOps: CordaRPCOps,
         defaults: ServiceDefaults = SimpleServiceDefaults()
@@ -320,7 +319,6 @@ open class AccountsAwareNodeServiceRpcDelegate(
 
 
 /** [NodeRpcConnection]-based [NodeServiceDelegate] implementation */
-@Deprecated(message = "Use [AccountsAwareNodeServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareNodeServiceRpcConnectionDelegate(
         nodeRpcConnection: NodeRpcConnection
 ) : AccountsAwareNodeServicePoolBoyDelegate(PoolBoyNonPooledConnection(nodeRpcConnection))

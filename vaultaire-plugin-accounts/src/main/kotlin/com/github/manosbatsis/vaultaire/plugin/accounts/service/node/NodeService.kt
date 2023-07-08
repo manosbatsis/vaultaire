@@ -349,13 +349,11 @@ open class BasicAccountsAwareNodeService(
     ) : this(AccountsAwareNodeServicePoolBoyDelegate(poolBoy))
 
     /** [NodeRpcConnection]-based constructor */
-    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             nodeRpcConnection: NodeRpcConnection
     ) : this(AccountsAwareNodeServiceRpcConnectionDelegate(nodeRpcConnection))
 
     /** [CordaRPCOps]-based constructor */
-    @Deprecated(message = "RPC-based services should use the Pool Boy constructor instead")
     constructor(
             rpcOps: CordaRPCOps
     ) : this(AccountsAwareNodeServiceRpcDelegate(rpcOps))

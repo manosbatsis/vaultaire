@@ -47,14 +47,12 @@ open class AccountsAwareStateServicePoolBoyDelegate<T : ContractState>(
 ) : AccountsAwareNodeServicePoolBoyDelegate(poolBoy), AccountsAwareStateServiceDelegate<T>
 
 /** [CordaRPCOps]-based [StateServiceDelegate] implementation */
-@Deprecated(message = "Use [com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServicePoolBoyDelegate] with a pool boy connection pool instead")
 open class AccountsAwareStateServiceRpcDelegate<T : ContractState>(
         rpcOps: CordaRPCOps,
         override val contractStateType: Class<T>
 ) : AccountsAwareNodeServiceRpcDelegate(rpcOps), AccountsAwareStateServiceDelegate<T>
 
 /** [NodeRpcConnection]-based [StateServiceDelegate] implementation */
-@Deprecated(message = "Use [com.github.manosbatsis.vaultaire.plugin.accounts.service.dao.AccountsAwareStateServicePoolBoyDelegate] with a pool boy connection pool instead")
 class AccountsAwareStateServiceRpcConnectionDelegate<T : ContractState>(
         nodeRpcConnection: NodeRpcConnection,
         override val contractStateType: Class<T>

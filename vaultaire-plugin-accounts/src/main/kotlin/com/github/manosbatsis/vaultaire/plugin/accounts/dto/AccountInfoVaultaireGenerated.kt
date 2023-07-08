@@ -178,14 +178,12 @@ open class AccountInfoService(
   /**
    * Legacy constructor without pool support
    */
-  @Deprecated(message = "Legacy constructor without pool support, use pool boy constructor instead")
   constructor(rpcOps: CordaRPCOps) :
       this(AccountsAwareStateServiceRpcDelegate(rpcOps, AccountInfo::class.java))
 
   /**
    * Legacy constructor without pool support
    */
-  @Deprecated(message = "Legacy constructor without pool support, use pool boy constructor instead")
   constructor(nodeRpcConnection: NodeRpcConnection) :
       this(AccountsAwareStateServiceRpcConnectionDelegate(nodeRpcConnection,
       AccountInfo::class.java))

@@ -47,6 +47,8 @@ import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -346,6 +348,7 @@ class BookMockTests {
                         author = nodeB.info.legalIdentities.first(),
                         price = BigDecimal.valueOf(87),
                         genre = BookContract.Genre.HISTORICAL,
+                        soldOut = Date(),
                         editions = 1,
                         title = "Vault diaries"))).getOrThrow().single()
         // Update title
@@ -373,6 +376,8 @@ class BookMockTests {
                 fields.price `==` createdState.price
                 fields.genre `==` createdState.genre
                 fields.author `==` updatedState.author.name.toString()
+                fields.published lte Date()
+                fields.soldOut lte Date()
                 or {
                     fields.editions `==` createdState.editions
                     fields.editions `==` updatedState.editions

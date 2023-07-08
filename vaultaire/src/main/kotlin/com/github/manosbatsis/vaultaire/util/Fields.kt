@@ -27,7 +27,7 @@ import kotlin.reflect.KProperty1
  * i.e. without conflicting [net.corda.core.node.services.vault.Builder]
  */
 interface TypedFieldWrapper<T, S> : FieldWrapper<T> {
-    override val property: KProperty1<T, S>
+    override val property: KProperty1<T, S?>
     val propertyNullable: Boolean
 }
 
@@ -66,6 +66,6 @@ class GenericFieldWrapper<T, S>(
  */
 class NullableGenericFieldWrapper<T, S>(
     override val property: KProperty1<T, S?>
-) : TypedFieldWrapper<T, S?>{
+) : TypedFieldWrapper<T, S>{
     override val propertyNullable = true
 }

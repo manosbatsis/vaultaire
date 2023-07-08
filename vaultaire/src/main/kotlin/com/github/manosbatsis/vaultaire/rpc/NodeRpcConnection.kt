@@ -22,5 +22,4 @@ package com.github.manosbatsis.vaultaire.rpc
 /**
  * Wraps a Corda Node RPC connection client and proxy
  */
-@Deprecated(message = "Deprecated, use com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection")
 interface NodeRpcConnection : com.github.manosbatsis.corda.rpc.poolboy.connection.NodeRpcConnection

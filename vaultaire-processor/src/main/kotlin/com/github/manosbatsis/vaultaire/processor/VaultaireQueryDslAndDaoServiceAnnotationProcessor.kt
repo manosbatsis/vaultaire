@@ -222,9 +222,6 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
     ): TypeSpec.Builder {
         val generatedSimpleName = "${annotatedElementInfo.secondaryTargetTypeElementSimpleName}Service"
         val legacyRpcDelegateConstructorKdoc = CodeBlock.of("Legacy constructor without pool support")
-        val legacyRpcDelegateConstructorAnnotation = AnnotationSpec
-                .builder(Deprecated::class.java)
-                .addMember("message = %S", "Legacy constructor without pool support, use pool boy constructor instead").build()
         //val conditionsLambda = LambdaTypeName.get(returnType = processingEnv.typeUtils.a.getTypeElement(conditionsSimpleName).asKotlinTypeName())
         val stateServiceSpecBuilder = TypeSpec.classBuilder(generatedSimpleName)
                 .addKdoc("A [%T]-specific [%T]", annotatedElementInfo.secondaryTargetTypeElement!!, baseClassesConfig.stateServiceClassName)
@@ -265,15 +262,13 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                         paramName = "rpcOps",
                         paramType = CordaRPCOps::class.java,
                         delegateClassName = baseClassesConfig.rpcDelegateClassName,
-                        kdoc = legacyRpcDelegateConstructorKdoc,
-                        annotations = listOf(legacyRpcDelegateConstructorAnnotation)).build())
+                        kdoc = legacyRpcDelegateConstructorKdoc).build())
                 .addFunction(delegateBasedConstructorBuilder(
                         annotatedElementInfo = annotatedElementInfo,
                         paramName = "nodeRpcConnection",
                         paramType = NodeRpcConnection::class.java,
                         delegateClassName = baseClassesConfig.rpcConnectionDelegateClassName,
-                        kdoc = legacyRpcDelegateConstructorKdoc,
-                        annotations = listOf(legacyRpcDelegateConstructorAnnotation)
+                        kdoc = legacyRpcDelegateConstructorKdoc
                 ).build())
                 .addFunction(buildDslFunSpec("buildQuery", conditionsClassName, KModifier.OVERRIDE))
         return stateServiceSpecBuilder
@@ -350,11 +345,9 @@ class VaultaireQueryDslAndDaoServiceAnnotationProcessor : AbstractAnnotatedModel
                             .parameterizedBy(enclosingTypeElement.typeParameters
                                     .map { TYPE_PARAMETER_STAR })
                 else enclosingTypeElement.asKotlinClassName()
-
         val fieldType = fieldWrapperClass.asClassName().parameterizedBy(
                 enclosingParameterisedType,
-                field.asKotlinTypeName())
-        processingEnv.noteMessage { "buildPersistentStateFieldWrapperPropertySpec, field name: ${field.simpleName},  type: ${enclosingType}" }
+                field.asKotlinTypeName().copy(nullable = false))
 
         return PropertySpec.builder(field.simpleName.toString(), fieldType, KModifier.PUBLIC)
                 .initializer("%T(%T::${field.simpleName})", fieldWrapperClass, enclosingParameterisedType)
