@@ -129,6 +129,9 @@ abstract class CompositeCondition<P : StatePersistable, out F : Fields<P>>(
     infix fun <S> TypedFieldWrapper<P, S>.equal(value: S) =
             addCondition(property.equal(value))
 
+    infix fun TypedFieldWrapper<P, String>.equalish(value: String) =
+        addCondition(property.equal(value, false))
+
     infix fun <S> TypedFieldWrapper<P, S>.`==`(value: S) = equal(value)
 
     infix fun <S> TypedFieldWrapper<P, S>.notEqual(value: S) =

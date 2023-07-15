@@ -251,7 +251,7 @@ open class BasicStateService<T : ContractState>(
 interface ExtendedStateService<
         T : ContractState,
         P : StatePersistable,
-        out F : Fields<P>,
+        F : Fields<P>,
         Q : VaultQueryCriteriaCondition<P, F>
         > : StateServiceDelegate<T> {
 
@@ -371,7 +371,7 @@ interface ExtendedStateService<
  *
  * Subclassed by Vaultaire's annotation processing to generate service components.
  */
-abstract class DefaultExtendedStateService<T : ContractState, P : StatePersistable, out F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>>(
+abstract class DefaultExtendedStateService<T : ContractState, P : StatePersistable, F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>>(
         delegate: StateServiceDelegate<T>
 ) : BasicStateService<T>(delegate), ExtendedStateService<T, P, F, Q> {
 

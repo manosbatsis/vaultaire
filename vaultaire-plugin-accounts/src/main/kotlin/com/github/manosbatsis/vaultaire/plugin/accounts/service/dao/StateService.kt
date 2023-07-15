@@ -64,7 +64,7 @@ open class BasicAccountsAwareStateService<T : ContractState>(
  *
  * Subclassed by Vaultaire's annotation processing to generate service components.
  */
-abstract class ExtendedAccountsAwareStateService<T : ContractState, P : StatePersistable, out F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>>(
+abstract class ExtendedAccountsAwareStateService<T : ContractState, P : StatePersistable, F : Fields<P>, Q : VaultQueryCriteriaCondition<P, F>>(
         delegate: AccountsAwareStateServiceDelegate<T>
 ) : BasicAccountsAwareStateService<T>(delegate), ExtendedStateService<T, P, F, Q> {
 
