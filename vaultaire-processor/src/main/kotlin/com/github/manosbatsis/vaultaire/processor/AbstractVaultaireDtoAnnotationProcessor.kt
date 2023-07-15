@@ -59,12 +59,11 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
             val packageName = dtoClassName.packageName
             val annElem = strategy.annotatedElementInfo
             val existing = processingEnv.elementUtils.getTypeElement("$packageName.$fileName")
-            //
-                val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
-                val dto = dtoStrategyBuilder.build()
-                val fileBuilder = getFileSpecBuilder(packageName, fileName)
-                strategy.onBeforeFileWrite(fileBuilder)
-            if (existing == null) {fileBuilder.addComment("\n")
+            val dtoStrategyBuilder = strategy.dtoTypeSpecBuilder()
+            val dto = dtoStrategyBuilder.build()
+            val fileBuilder = getFileSpecBuilder(packageName, fileName)
+            strategy.onBeforeFileWrite(fileBuilder)
+            fileBuilder.addComment("\n")
                     .addComment("----------------------------------------------------\n")
                     .addComment("Vaultaire Annotation Processing Info\n")
                     .addComment("----------------------------------------------------\n")
@@ -82,7 +81,6 @@ abstract class AbstractVaultaireDtoAnnotationProcessor(
                     .addType(dto)
                     .build()
                     .writeTo(sourceRootFile)
-            } else processingEnv.noteMessage { "\nprocessElementInfo: Skipping for $packageName.$fileName as it already exists" }
         }
     }
 
